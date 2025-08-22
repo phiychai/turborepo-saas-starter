@@ -1,0 +1,12 @@
+{
+  "name": "shared-config",
+  "version": "1.0.0",
+  "description": "Shared configuration files for the app platform",
+  "main": "index.js",
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}
