@@ -1,0 +1,60 @@
+# Dependencies
+node_modules
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Build outputs
+dist
+build
+.output
+.nuxt
+.next
+out
+
+# Cache
+.cache
+.eslintcache
+.stylelintcache
+
+# Logs
+*.log
+logs
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Generated files
+coverage
+*.generated.*
+auto-imports.d.ts
+components.d.ts
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# CMS/Directus
+apps/cms/directus/data/
+apps/cms/directus/uploads/
+apps/cms/directus/extensions/
+
+# Temporary files
+tmp
+temp
+*.tmp
+

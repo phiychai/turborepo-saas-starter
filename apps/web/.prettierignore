@@ -1,0 +1,29 @@
+# Dependencies
+node_modules
+pnpm-lock.yaml
+
+# Build outputs
+dist
+.output
+.nuxt
+
+# Cache
+.cache
+.eslintcache
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Auto-generated
+auto-imports.d.ts
+components.d.ts
+*.d.ts
+
+# Public assets
+public/
+

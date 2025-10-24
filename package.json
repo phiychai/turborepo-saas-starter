@@ -1,7 +1,7 @@
 {
-  "name": "app",
+  "name": "turborepo-saas-starter",
   "version": "1.0.0",
-  "description": "Monorepo template",
+  "description": "SaaS Starter template",
   "private": true,
   "workspaces": [
     "apps/*",
@@ -13,10 +13,12 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
     "type-check": "turbo run type-check",
     "test": "turbo run test",
     "clean": "turbo run clean && rm -rf node_modules",
-    "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
     "docker:build": "docker-compose build"
