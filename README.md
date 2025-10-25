@@ -1,0 +1,497 @@
+<div align="center">
+
+# 🚀 Turborepo SaaS Starter
+
+**Production-ready monorepo for building modern SaaS applications**
+
+[![Turborepo](https://img.shields.io/badge/Built%20with-Turborepo-EF4444?style=for-the-badge&logo=turborepo&logoColor=white)](https://turbo.build)
+[![Nuxt](https://img.shields.io/badge/Nuxt-4.0-00DC82?style=for-the-badge&logo=nuxt&logoColor=white)](https://nuxt.com)
+[![AdonisJS](https://img.shields.io/badge/AdonisJS-6.0-5A45FF?style=for-the-badge&logo=adonisjs&logoColor=white)](https://adonisjs.com)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![pnpm](https://img.shields.io/badge/pnpm-10.15-F69220?style=for-the-badge&logo=pnpm&logoColor=white)](https://pnpm.io)
+
+*A fully-featured, enterprise-grade monorepo with frontend, backend, CMS, and shared packages*
+
+[Features](#-features) • [Quick Start](#-quick-start) • [Architecture](#-architecture) • [Documentation](#-documentation)
+
+</div>
+
+---
+
+## ✨ Features
+
+### 🏗️ **Monorepo Architecture**
+- **Turborepo** - High-performance build system with intelligent caching
+- **pnpm Workspaces** - Fast, disk space efficient package management
+- **Shared Packages** - Reusable types, utilities, and configurations
+
+### 🎨 **Modern Frontend**
+- **Nuxt 4** - The Intuitive Vue Framework with server-side rendering
+- **Nuxt UI Pro** - Beautiful, accessible components built on Radix Vue
+- **TypeScript** - Full type safety across the entire stack
+- **Directus** - Headless CMS for content management
+- **Visual Editing** - Live preview and editing with Directus integration
+
+### ⚡ **Powerful Backend**
+- **AdonisJS 6** - Elegant Node.js framework with full TypeScript support
+- **SQLite/PostgreSQL** - Flexible database options with Lucid ORM
+- **Authentication** - Built-in auth system with session management
+- **API Documentation** - Auto-generated Swagger/OpenAPI docs
+
+### 💳 **Payments & Billing**
+- **Kill Bill** - Open-source subscription billing and payment platform
+  - Flexible subscription management
+  - Usage-based billing support
+  - Multiple payment gateway integrations
+  - Invoice generation and management
+  - Analytics and reporting
+  - PCI-compliant payment processing
+
+### 🛠️ **Developer Experience**
+- **ESLint 9** - Modern flat config with shared rules across workspace
+- **Prettier** - Consistent code formatting
+- **TypeScript Project References** - Fast incremental builds
+- **Hot Module Replacement** - Lightning-fast development workflow
+- **Docker** - Containerized development and deployment
+
+### 🔒 **Production Ready**
+- **Type-safe APIs** - End-to-end type safety with TypeScript
+- **Security Headers** - nuxt-security module configured
+- **SEO Optimized** - Meta tags, sitemaps, and structured data
+- **Performance** - Optimized builds with tree-shaking and code splitting
+
+---
+
+## 📁 Project Structure
+
+```
+turborepo-saas-starter/
+├── apps/
+│   ├── web/                    # Nuxt 4 frontend application
+│   │   ├── app/               # Nuxt app directory
+│   │   ├── server/            # Nuxt server routes & API
+│   │   ├── content/           # Content files (blog, docs, changelog)
+│   │   └── shared/            # App-specific shared code
+│   │
+│   ├── backend/               # AdonisJS API server
+│   │   ├── app/              # Controllers, models, middleware
+│   │   ├── config/           # Configuration files
+│   │   ├── database/         # Migrations and seeders
+│   │   └── start/            # Kernel and routes
+│   │
+│   └── cms/                   # Directus headless CMS
+│       └── directus/         # Directus instance
+│
+├── packages/
+│   ├── eslint-config/        # Shared ESLint configurations
+│   │   ├── base.js          # Base rules for all projects
+│   │   ├── typescript.js    # TypeScript-specific rules
+│   │   ├── vue.js           # Vue/Nuxt rules
+│   │   └── node.js          # Node.js/backend rules
+│   │
+│   ├── shared-config/        # Shared configurations
+│   │   └── tsconfig.base.json  # Base TypeScript config
+│   │
+│   ├── shared-types/         # Shared TypeScript types
+│   │   └── src/
+│   │       ├── index.ts     # Common types
+│   │       └── schema.ts    # Generated Directus schema
+│   │
+│   └── shared-utils/         # Shared utility functions
+│       └── src/
+│           └── index.ts     # Utility functions
+│
+└── docs/                      # Documentation
+    ├── TOOLING_SETUP.md      # ESLint, Prettier, TypeScript setup
+    ├── PACKAGE_FIXES.md      # Package configuration guide
+    └── ...                   # Additional documentation
+```
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- **Node.js** >= 18.0.0
+- **pnpm** >= 9.0.0
+- **Docker** (optional, for CMS)
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/turborepo-saas-starter.git
+cd turborepo-saas-starter
+
+# Install dependencies
+pnpm install
+
+# Start Directus CMS (optional)
+pnpm docker:up
+
+# Start development servers
+pnpm dev
+```
+
+This will start:
+- 🌐 **Frontend** at http://localhost:3000
+- 🔌 **Backend API** at http://localhost:3333
+- 📦 **Directus CMS** at http://localhost:8055
+
+### Environment Setup
+
+Create `.env` files in each app:
+
+```bash
+# apps/web/.env
+NUXT_PUBLIC_SITE_URL=http://localhost:3000
+DIRECTUS_URL=http://localhost:8055
+NUXT_PUBLIC_ENABLE_VISUAL_EDITING=true
+
+# apps/backend/.env
+PORT=3333
+HOST=0.0.0.0
+NODE_ENV=development
+APP_KEY=your-secret-key-here
+SESSION_DRIVER=cookie
+
+# Kill Bill Configuration (optional)
+KILLBILL_URL=http://localhost:8080
+KILLBILL_API_KEY=your-killbill-api-key
+KILLBILL_API_SECRET=your-killbill-api-secret
+```
+
+---
+
+## 💻 Development
+
+### Available Scripts
+
+```bash
+# Development
+pnpm dev              # Start all apps in development mode
+pnpm dev --filter web # Start only the web app
+
+# Building
+pnpm build           # Build all apps for production
+pnpm build --filter backend # Build only the backend
+
+# Code Quality
+pnpm lint            # Lint all packages
+pnpm lint:fix        # Fix linting issues
+pnpm format          # Format code with Prettier
+pnpm type-check      # Type check with TypeScript
+
+# Testing
+pnpm test            # Run all tests
+
+# Docker
+pnpm docker:up       # Start Docker services
+pnpm docker:down     # Stop Docker services
+pnpm docker:build    # Rebuild Docker containers
+
+# Cleanup
+pnpm clean           # Remove build artifacts and node_modules
+```
+
+### Adding a New Package
+
+```bash
+# Create package directory
+mkdir -p packages/my-package/src
+
+# Create package.json
+cat > packages/my-package/package.json << EOF
+{
+  "name": "@turborepo-saas-starter/my-package",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "type-check": "tsc --noEmit"
+  }
+}
+EOF
+
+# Install dependencies
+pnpm install
+```
+
+---
+
+## 🏛️ Architecture
+
+### Monorepo Benefits
+
+- **Code Sharing** - Share types, utilities, and configs across apps
+- **Atomic Changes** - Make changes across multiple packages in one PR
+- **Consistent Tooling** - Single ESLint, Prettier, and TypeScript config
+- **Optimized Builds** - Turborepo caches and parallelizes builds
+- **Type Safety** - End-to-end type safety with TypeScript project references
+
+### Tech Stack
+
+#### Frontend (Nuxt App)
+```typescript
+Nuxt 4 + Vue 3
+├── Nuxt UI Pro          // Component library
+├── Radix Vue            // Headless UI primitives
+├── Tailwind CSS         // Utility-first CSS
+├── VeeValidate + Zod    // Form validation
+├── @directus/sdk        // CMS integration
+└── Nuxt Content         // File-based CMS
+```
+
+#### Backend (AdonisJS)
+```typescript
+AdonisJS 6
+├── Lucid ORM           // Database ORM
+├── Auth Module         // Authentication
+├── Validator (Vine)    // Request validation
+├── Swagger             // API documentation
+└── Better-SQLite3      // Database driver
+```
+
+#### CMS (Directus)
+```typescript
+Directus
+├── PostgreSQL/SQLite   // Database
+├── Visual Editing SDK  // Live preview
+└── Type Generation     // TypeScript types
+```
+
+#### Payments (Kill Bill)
+```typescript
+Kill Bill
+├── Subscription Management  // Recurring billing
+├── Usage-based Billing     // Metered billing
+├── Payment Gateways        // Stripe, Braintree, etc.
+├── Invoice Generation      // Automated invoicing
+└── Analytics Dashboard     // Business insights
+```
+
+### Package Dependencies
+
+```mermaid
+graph TD
+    A[apps/web] --> E[shared-types]
+    A --> F[eslint-config]
+    B[apps/backend] --> E
+    B --> F
+    C[shared-utils] --> E
+    E --> D[shared-config]
+    F --> D
+```
+
+---
+
+## 💳 Kill Bill Integration
+
+### Setup Kill Bill
+
+```bash
+# Using Docker
+docker run -d \
+  -p 8080:8080 \
+  -p 8443:8443 \
+  --name killbill \
+  killbill/killbill:latest
+
+# Or using Docker Compose (included in project)
+pnpm docker:up
+```
+
+### Features
+
+#### 🔄 **Subscription Management**
+- Create and manage subscription plans
+- Handle upgrades, downgrades, and cancellations
+- Proration and trial periods
+- Multiple billing cycles (monthly, annual, custom)
+
+#### 📊 **Usage-Based Billing**
+- Track and bill for metered usage
+- Flexible rating and pricing models
+- Real-time usage reporting
+- Overage handling
+
+#### 💰 **Payment Processing**
+- Multiple payment gateway support (Stripe, Braintree, PayPal)
+- PCI-compliant payment handling
+- Recurring payment automation
+- Failed payment retry logic
+
+#### 📄 **Invoice & Reporting**
+- Automated invoice generation
+- Customizable invoice templates
+- Tax calculation and management
+- Analytics and revenue reporting
+
+### Example Integration
+
+```typescript
+// apps/backend/app/services/billing_service.ts
+import { KillBillClient } from '@killbill/killbill-client';
+
+export class BillingService {
+  private client: KillBillClient;
+
+  constructor() {
+    this.client = new KillBillClient({
+      serverUrl: process.env.KILLBILL_URL,
+      apiKey: process.env.KILLBILL_API_KEY,
+      apiSecret: process.env.KILLBILL_API_SECRET,
+    });
+  }
+
+  async createSubscription(userId: string, planId: string) {
+    return await this.client.subscriptions.create({
+      accountId: userId,
+      planName: planId,
+      billingPeriod: 'MONTHLY',
+    });
+  }
+
+  async trackUsage(subscriptionId: string, units: number) {
+    return await this.client.usage.record({
+      subscriptionId,
+      unitType: 'api_calls',
+      amount: units,
+    });
+  }
+}
+```
+
+---
+
+## 📚 Documentation
+
+### Core Documentation
+- [**Tooling Setup**](./docs/TOOLING_SETUP.md) - ESLint, Prettier, TypeScript configuration
+- [**Package Fixes**](./docs/PACKAGE_FIXES.md) - Package configuration and best practices
+- [**Package Structure**](./docs/PACKAGE_STRUCTURE.md) - Monorepo organization guide
+
+### Framework Documentation
+- [Turborepo Docs](https://turbo.build/repo/docs)
+- [Nuxt Documentation](https://nuxt.com/docs)
+- [AdonisJS Documentation](https://docs.adonisjs.com)
+- [Directus Documentation](https://docs.directus.io)
+- [Kill Bill Documentation](https://docs.killbill.io)
+
+### Guides & Tutorials
+- [Adding a New Package](#adding-a-new-package)
+- [Environment Configuration](#environment-setup)
+- [Deployment Guide](./docs/DEPLOYMENT.md) *(coming soon)*
+- [Contributing Guidelines](./CONTRIBUTING.md) *(coming soon)*
+
+---
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+pnpm test
+
+# Run tests for specific package
+pnpm test --filter backend
+
+# Run tests in watch mode
+pnpm test --watch
+```
+
+---
+
+## 🚢 Deployment
+
+### Build for Production
+
+```bash
+# Build all apps
+pnpm build
+
+# Build specific app
+pnpm build --filter web
+```
+
+### Docker Deployment
+
+```bash
+# Build production images
+pnpm docker:build
+
+# Deploy with Docker Compose
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### Recommended Platforms
+
+- **Frontend (Nuxt)**: Vercel, Netlify, Cloudflare Pages
+- **Backend (AdonisJS)**: Railway, Render, DigitalOcean App Platform
+- **CMS (Directus)**: Directus Cloud, self-hosted on any VPS
+- **Kill Bill**: Kubernetes, AWS ECS, or dedicated server
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read our [Contributing Guidelines](./CONTRIBUTING.md) before submitting a PR.
+
+### Development Workflow
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Run linting and tests (`pnpm lint && pnpm test`)
+5. Commit using conventional commits (`git commit -m 'feat(web): add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+---
+
+## 📝 License
+
+This project is licensed under the **ISC License**.
+
+---
+
+## 🙏 Acknowledgments
+
+Built with amazing open-source technologies:
+
+- [Turborepo](https://turbo.build/repo) - High-performance build system
+- [Nuxt](https://nuxt.com) - The Intuitive Vue Framework
+- [AdonisJS](https://adonisjs.com) - Elegant Node.js framework
+- [Directus](https://directus.io) - Open-source headless CMS
+- [Kill Bill](https://killbill.io) - Open-source billing platform
+- [Radix Vue](https://www.radix-vue.com) - Unstyled, accessible components
+- [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS framework
+
+---
+
+## 💬 Support
+
+- 📧 Email: support@example.com
+- 💬 Discord: [Join our community](https://discord.gg/example)
+- 🐦 Twitter: [@yourusername](https://twitter.com/yourusername)
+- 📖 Documentation: [docs.example.com](https://docs.example.com)
+
+---
+
+<div align="center">
+
+**[⬆ back to top](#-turborepo-saas-starter)**
+
+Made with ❤️ by developers, for developers
+
+</div>
+
