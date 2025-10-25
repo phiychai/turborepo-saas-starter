@@ -1,5 +1,5 @@
 {
-  "name": "nuxt-ui-pro-template-saas",
+  "name": "web",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,40 +9,47 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
-    "typecheck": "nuxt typecheck"
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "type-check": "nuxt typecheck"
   },
   "dependencies": {
+    "@directus/sdk": "19.1.0",
+    "@directus/visual-editing": "^1.1.0",
     "@iconify-json/lucide": "^1.2.57",
     "@iconify-json/simple-icons": "^1.2.43",
     "@nuxt/content": "^3.6.3",
     "@nuxt/image": "^1.10.0",
-    "@nuxt/ui-pro": "^3.2.0",
+    "@nuxt/scripts": "^0.11.5",
+    "@nuxt/ui-pro": "^3.3.7",
+    "@nuxtjs/seo": "3.2.2",
+    "@nuxtjs/sitemap": "7.3.0",
     "@standard-schema/spec": "^1.0.0",
+    "@turborepo-saas-starter/shared-types": "workspace:*",
+    "@vee-validate/zod": "^4.15.1",
+    "@vueuse/core": "13.5.0",
     "@vueuse/nuxt": "^13.5.0",
     "better-sqlite3": "^12.2.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-vue-next": "^0.487.0",
     "nuxt": "^4.0.3",
     "nuxt-og-image": "^5.1.9",
+    "nuxt-security": "^2.2.0",
+    "radix-vue": "^1.9.17",
+    "vee-validate": "^4.15.1",
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@directus/types": "13.1.1",
     "@nuxt/eslint": "^1.5.2",
+    "@turborepo-saas-starter/eslint-config": "workspace:*",
+    "directus-sdk-typegen": "^0.2.0",
     "eslint": "^9.31.0",
+    "prettier": "3.5.3",
     "typescript": "^5.8.3",
     "vue-tsc": "^3.0.1"
-  },
-  "resolutions": {
-    "unimport": "4.1.1"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "better-sqlite3"
-    ],
-    "ignoredBuiltDependencies": [
-      "@parcel/watcher",
-      "esbuild",
-      "sharp",
-      "vue-demi"
-    ]
   },
   "packageManager": "pnpm@10.13.1"
 }

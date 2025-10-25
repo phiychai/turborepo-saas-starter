@@ -101,3 +101,5 @@ Thumbs.db
 # Uploads
 uploads/
 public/uploads/
+*.tsbuildinfo
+*.code-workspace

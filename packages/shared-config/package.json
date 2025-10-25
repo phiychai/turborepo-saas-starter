@@ -1,10 +1,15 @@
 {
-  "name": "shared-config",
+  "name": "@turborepo-saas-starter/shared-config",
   "version": "1.0.0",
   "description": "Shared configuration files for the app platform",
-  "main": "index.js",
+  "private": true,
+  "exports": {
+    "./tsconfig.base.json": "./tsconfig.base.json"
+  },
   "scripts": {
-    "type-check": "tsc --noEmit"
+    "lint": "echo 'No linting needed for config package'",
+    "lint:fix": "echo 'No linting needed for config package'",
+    "type-check": "echo 'No type-check needed for config package'"
   },
   "devDependencies": {
     "typescript": "^5.8.3"

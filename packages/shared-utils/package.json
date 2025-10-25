@@ -1,17 +1,27 @@
 {
-  "name": "shared-utils",
+  "name": "@turborepo-saas-starter/shared-utils",
   "version": "1.0.0",
   "description": "Shared utility functions for the app platform",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
+    "lint": "echo 'No linting needed for utils package'",
+    "lint:fix": "echo 'No linting needed for utils package'",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "shared-types": "workspace:*"
+    "@turborepo-saas-starter/shared-types": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.8.3"

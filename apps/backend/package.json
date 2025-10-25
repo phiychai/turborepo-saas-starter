@@ -13,7 +13,7 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit"
+    "type-check": "tsc --noEmit"
   },
   "imports": {
     "#controllers/*": "./app/controllers/*.js",

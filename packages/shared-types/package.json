@@ -1,13 +1,28 @@
 {
-  "name": "shared-types",
+  "name": "@turborepo-saas-starter/shared-types",
   "version": "1.0.0",
   "description": "Shared TypeScript types and interfaces for the app platform",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./schema": {
+      "types": "./dist/schema.d.ts",
+      "import": "./dist/schema.js",
+      "default": "./dist/schema.js"
+    }
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
+    "lint": "echo 'No linting needed for types package'",
+    "lint:fix": "echo 'No linting needed for types package'",
     "type-check": "tsc --noEmit"
   },
   "devDependencies": {
