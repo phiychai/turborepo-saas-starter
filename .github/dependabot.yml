@@ -1,0 +1,82 @@
+version: 2
+
+updates:
+  # Enable version updates for npm
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    open-pull-requests-limit: 10
+    groups:
+      turborepo:
+        patterns:
+          - 'turbo*'
+      nuxt:
+        patterns:
+          - 'nuxt*'
+          - '@nuxt/*'
+      typescript:
+        patterns:
+          - 'typescript'
+          - '@types/*'
+      eslint:
+        patterns:
+          - 'eslint*'
+          - '@typescript-eslint/*'
+      testing:
+        patterns:
+          - 'vitest'
+          - '@vitest/*'
+          - 'playwright'
+          - '@playwright/*'
+
+  # Web app dependencies
+  - package-ecosystem: 'npm'
+    directory: '/apps/web'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    open-pull-requests-limit: 5
+
+  # Backend dependencies
+  - package-ecosystem: 'npm'
+    directory: '/apps/backend'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    open-pull-requests-limit: 5
+
+  # Shared packages
+  - package-ecosystem: 'npm'
+    directory: '/packages/eslint-config'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+
+  - package-ecosystem: 'npm'
+    directory: '/packages/shared-types'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+
+  - package-ecosystem: 'npm'
+    directory: '/packages/shared-utils'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+
+  # GitHub Actions
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    open-pull-requests-limit: 5
+
+  # Docker
+  - package-ecosystem: 'docker'
+    directory: '/apps/cms/directus'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'

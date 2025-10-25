@@ -411,6 +411,56 @@ pnpm test --watch
 
 ---
 
+## 🔄 CI/CD
+
+### GitHub Actions Workflows
+
+This project includes comprehensive CI/CD workflows:
+
+#### 🧪 **Continuous Integration**
+Runs on every push and PR:
+- ✅ **Lint** - Code quality checks
+- ✅ **Type Check** - TypeScript validation
+- ✅ **Build** - Production builds
+- ✅ **Test** - Automated testing
+
+#### 🚀 **Automated Deployment**
+- **Preview Deployments** - Automatic preview for PRs
+- **Production Deploy** - Deploy to production on merge to main
+- **Multi-platform Support** - Vercel, Netlify, Railway, Render
+
+#### 🔒 **Security & Quality**
+- **CodeQL Analysis** - Security vulnerability scanning
+- **Dependency Review** - License and security checks
+- **Dependabot** - Automated dependency updates
+
+#### 📦 **Release Management**
+- **Automated Releases** - Create releases from git tags
+- **Changelog Generation** - Auto-generated release notes
+- **Build Artifacts** - Downloadable builds
+
+### Status Badges
+
+[![CI](https://github.com/yourusername/turborepo-saas-starter/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/turborepo-saas-starter/actions/workflows/ci.yml)
+[![Deploy Production](https://github.com/yourusername/turborepo-saas-starter/actions/workflows/deploy-production.yml/badge.svg)](https://github.com/yourusername/turborepo-saas-starter/actions/workflows/deploy-production.yml)
+[![CodeQL](https://github.com/yourusername/turborepo-saas-starter/actions/workflows/codeql.yml/badge.svg)](https://github.com/yourusername/turborepo-saas-starter/actions/workflows/codeql.yml)
+
+### Setup CI/CD
+
+1. **Enable GitHub Actions** in repository settings
+2. **Add required secrets**:
+   ```bash
+   PRODUCTION_URL       # Your production domain
+   DIRECTUS_URL         # CMS URL
+   VERCEL_TOKEN         # Deployment token (if using Vercel)
+   ```
+3. **Configure branch protection** for `main` branch
+4. **Enable Dependabot** for automated updates
+
+See [`.github/workflows/README.md`](./.github/workflows/README.md) for detailed documentation.
+
+---
+
 ## 🚢 Deployment
 
 ### Build for Production
