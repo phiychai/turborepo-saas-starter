@@ -21,7 +21,9 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@turborepo-saas-starter/shared-types": "workspace:*"
+    "@turborepo-saas-starter/shared-types": "workspace:*",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.5.5"
   },
   "devDependencies": {
     "typescript": "^5.8.3"

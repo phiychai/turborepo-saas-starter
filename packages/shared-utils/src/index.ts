@@ -1,3 +1,7 @@
+// Tailwind utility
+import { type ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
 // Validation utilities
 export const isValidEmail = (email: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -49,14 +53,14 @@ export const createApiResponse = <T>(
   return {
     success,
     data,
-    message
+    message,
   };
 };
 
 export const createErrorResponse = (error: string): { success: false; error: string } => {
   return {
     success: false,
-    error
+    error,
   };
 };
 
@@ -71,7 +75,7 @@ export const createPaginatedResponse = <T>(
     total,
     page,
     limit,
-    totalPages: Math.ceil(total / limit)
+    totalPages: Math.ceil(total / limit),
   };
 };
 
@@ -99,10 +103,17 @@ export const unique = <T>(array: T[]): T[] => {
 //   return result;
 // };
 
-export const omit = <T extends Record<string, any>, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> => {
+export const omit = <T extends Record<string, any>, K extends keyof T>(
+  obj: T,
+  keys: K[]
+): Omit<T, K> => {
   const result = { ...obj };
-  keys.forEach(key => {
+  keys.forEach((key) => {
     delete result[key];
   });
   return result;
 };
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}

@@ -12,15 +12,13 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/image',
     '@nuxt/ui-pro',
-    '@nuxtjs/sitemap', // Add this line
-    // '@nuxt/content',
+    '@nuxt/content', // Must be before @nuxtjs/seo for proper integration
     '@vueuse/nuxt',
     'nuxt-og-image',
     'nuxt-security',
-    '@nuxtjs/seo',
-
+    '@nuxtjs/seo', // Includes sitemap functionality, no need for separate @nuxtjs/sitemap
     '@nuxt/scripts',
-    '@vueuse/nuxt',
+    '@nuxtjs/mdc',
   ],
 
   devtools: {
@@ -83,8 +81,21 @@ export default defineNuxtConfig({
   site: {
     url: process.env.NUXT_PUBLIC_SITE_URL as string,
   },
+
+  // Sitemap configuration (provided by @nuxtjs/seo)
   sitemap: {
     sources: ['/api/sitemap'],
+    // Disable automatic Nuxt Content integration to avoid import errors
+    exclude: [],
+    autoI18n: false,
+  },
+
+  // Nuxt Content configuration
+  content: {
+    // Prevent sitemap auto-detection issues
+    experimental: {
+      search: false,
+    },
   },
 
   security: {

@@ -138,15 +138,15 @@ importers:
       '@nuxtjs/seo':
         specifier: 3.2.2
         version: 3.2.2(@netlify/blobs@9.1.2)(@unhead/vue@2.0.19(vue@3.5.22(typescript@5.8.3)))(db0@0.3.2(better-sqlite3@12.2.0))(h3@1.15.4)(ioredis@5.6.1)(magicast@0.3.5)(rollup@4.46.2)(unhead@2.0.19)(unstorage@1.17.1(@netlify/blobs@9.1.2)(db0@0.3.2(better-sqlite3@12.2.0))(ioredis@5.6.1))(vite@7.1.2(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(yaml@2.8.0))(vue@3.5.22(typescript@5.8.3))
-      '@nuxtjs/sitemap':
-        specifier: 7.3.0
-        version: 7.3.0(h3@1.15.4)(magicast@0.3.5)(vite@7.1.2(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(yaml@2.8.0))(vue@3.5.22(typescript@5.8.3))
       '@standard-schema/spec':
         specifier: ^1.0.0
         version: 1.0.0
       '@turborepo-saas-starter/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types
+      '@turborepo-saas-starter/shared-utils':
+        specifier: workspace:*
+        version: link:../../packages/shared-utils
       '@vee-validate/zod':
         specifier: ^4.15.1
         version: 4.15.1(vue@3.5.22(typescript@5.8.3))(zod@3.25.76)
@@ -272,6 +272,12 @@ importers:
       '@turborepo-saas-starter/shared-types':
         specifier: workspace:*
         version: link:../shared-types
+      clsx:
+        specifier: ^2.1.1
+        version: 2.1.1
+      tailwind-merge:
+        specifier: ^2.5.5
+        version: 2.6.0
     devDependencies:
       typescript:
         specifier: ^5.8.3
@@ -1731,10 +1737,6 @@ packages:
 
   '@nuxtjs/seo@3.2.2':
     resolution: {integrity: sha512-tES+NakNvnmh3eEUkBBuMpHEo3O9mj5iKY3st9LSso1/nCJDuDAg6XvvrM3ZytMnGDmhaEixSCVdZkhhKEGiZQ==}
-
-  '@nuxtjs/sitemap@7.3.0':
-    resolution: {integrity: sha512-R3X5hqhWoMXIB4XWQmUuVSGmPFrKTFYFho7pk990si8iayKjSMbBCtTPtHdEscglZukKy4cL7V0WYdDFrUvV5w==}
-    engines: {node: '>=18.0.0'}
 
   '@nuxtjs/sitemap@7.4.7':
     resolution: {integrity: sha512-DUhX92lnCJD6tpghUmfmRIsSIoiXMS2SQ2Yd9Tg1+SnZskiKX+DGwLeAeHX8r0/9Pl/bTDpmYhs1snWcCoIkXA==}
@@ -8088,6 +8090,9 @@ packages:
     resolution: {integrity: sha512-ulAk51I9UVUyJgxlv9M6lFot2WP3e7t8Kz9+IS6D4rVba1tR9kON+Ey69f+1R4Q8cd45Lod6a4IcJIxnzGc/zA==}
     engines: {node: '>=18'}
 
+  tailwind-merge@2.6.0:
+    resolution: {integrity: sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA==}
+
   tailwind-merge@3.3.1:
     resolution: {integrity: sha512-gBXpgUm/3rp1lMZZrM/w7D8GKqshif0zAymAhbCyIt8KMe+0v9DQ7cdYLR4FHH/cKpdTXb+A/tKKU3eolfsI+g==}
 
@@ -11302,27 +11307,6 @@ snapshots:
       - unhead
       - unstorage
       - uploadthing
-      - vite
-      - vue
-
-  '@nuxtjs/sitemap@7.3.0(h3@1.15.4)(magicast@0.3.5)(vite@7.1.2(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(yaml@2.8.0))(vue@3.5.22(typescript@5.8.3))':
-    dependencies:
-      '@nuxt/devtools-kit': 2.6.5(magicast@0.3.5)(vite@7.1.2(@types/node@24.9.1)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.44.0)(yaml@2.8.0))
-      '@nuxt/kit': 3.19.3(magicast@0.3.5)
-      chalk: 5.6.2
-      defu: 6.1.4
-      h3-compression: 0.3.2(h3@1.15.4)
-      nuxt-site-config: 3.2.11(h3@1.15.4)(magicast@0.3.5)(vue@3.5.22(typescript@5.8.3))
-      ofetch: 1.4.1
-      pathe: 2.0.3
-      pkg-types: 2.3.0
-      radix3: 1.1.2
-      semver: 7.7.3
-      sirv: 3.0.2
-      ufo: 1.6.1
-    transitivePeerDependencies:
-      - h3
-      - magicast
       - vite
       - vue
 
@@ -18739,6 +18723,8 @@ snapshots:
       '@pkgr/core': 0.2.9
 
   system-architecture@0.1.0: {}
+
+  tailwind-merge@2.6.0: {}
 
   tailwind-merge@3.3.1: {}
 
