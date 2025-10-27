@@ -38,14 +38,14 @@
 - **Authentication** - Built-in auth system with session management
 - **API Documentation** - Auto-generated Swagger/OpenAPI docs
 
-### 💳 **Payments & Billing**
-- **Kill Bill** - Open-source subscription billing and payment platform
-  - Flexible subscription management
-  - Usage-based billing support
-  - Multiple payment gateway integrations
-  - Invoice generation and management
-  - Analytics and reporting
-  - PCI-compliant payment processing
+### 💳 **Billing & Subscriptions**
+- **Lago** - Open-source billing platform for modern SaaS
+  - Subscription management (recurring billing, tiers)
+  - Usage-based billing (metered/pay-as-you-go)
+  - Multi-gateway support (Stripe, PayPal, Adyen)
+  - Invoice generation with tax handling
+  - REST API for easy integration
+  - Beautiful Admin Dashboard
 
 ### 🛠️ **Developer Experience**
 - **ESLint 9** - Modern flat config with shared rules across workspace
@@ -156,10 +156,13 @@ NODE_ENV=development
 APP_KEY=your-secret-key-here
 SESSION_DRIVER=cookie
 
-# Kill Bill Configuration (optional)
-KILLBILL_URL=http://localhost:8080
-KILLBILL_API_KEY=your-killbill-api-key
-KILLBILL_API_SECRET=your-killbill-api-secret
+# Lago Billing Configuration
+LAGO_API_URL=http://localhost:3100
+LAGO_API_KEY=your-lago-api-key
+
+# Payment Gateway (Stripe example)
+STRIPE_SECRET_KEY=sk_test_your_stripe_key
+STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_key
 ```
 
 ---
@@ -270,14 +273,15 @@ Directus
 └── Type Generation     // TypeScript types
 ```
 
-#### Payments (Kill Bill)
+#### Billing (Lago)
 ```typescript
-Kill Bill
-├── Subscription Management  // Recurring billing
-├── Usage-based Billing     // Metered billing
-├── Payment Gateways        // Stripe, Braintree, etc.
-├── Invoice Generation      // Automated invoicing
-└── Analytics Dashboard     // Business insights
+Lago
+├── Subscription Management   // Recurring billing, tiers
+├── Usage-Based Billing      // Metered billing
+├── Invoice Generation       // PDF invoices, tax
+├── REST APIs                // Easy integration
+├── Multi-Gateway Support    // Stripe, PayPal, Adyen
+└── Admin Dashboard          // Billing management UI
 ```
 
 ### Package Dependencies
@@ -295,82 +299,96 @@ graph TD
 
 ---
 
-## 💳 Kill Bill Integration
+## 💳 Lago Billing Integration
 
-### Setup Kill Bill
+### Setup Lago
 
 ```bash
-# Using Docker
-docker run -d \
-  -p 8080:8080 \
-  -p 8443:8443 \
-  --name killbill \
-  killbill/killbill:latest
+# Using Docker Compose (included in project)
+docker-compose up -d
 
-# Or using Docker Compose (included in project)
-pnpm docker:up
+# Access Lago Admin Dashboard
+open http://localhost:3001
+
+# Create your first plan via API
+curl -X POST http://localhost:3100/api/v1/plans \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"plan": {"code": "starter", "name": "Starter Plan", "interval": "monthly", "amount_cents": 2900}}'
 ```
 
 ### Features
 
-#### 🔄 **Subscription Management**
-- Create and manage subscription plans
-- Handle upgrades, downgrades, and cancellations
-- Proration and trial periods
-- Multiple billing cycles (monthly, annual, custom)
+#### 💰 **Subscription Management**
+- Recurring billing (monthly, yearly, weekly)
+- Tiered pricing and seat-based billing
+- Free trials and grace periods
+- Upgrade/downgrade handling
+- Proration support
 
 #### 📊 **Usage-Based Billing**
-- Track and bill for metered usage
-- Flexible rating and pricing models
-- Real-time usage reporting
-- Overage handling
+- Track API calls, storage, compute
+- Metered billing (pay-as-you-go)
+- Custom billable metrics
+- Real-time usage tracking
+- Aggregation rules (sum, count, max, etc.)
 
-#### 💰 **Payment Processing**
-- Multiple payment gateway support (Stripe, Braintree, PayPal)
-- PCI-compliant payment handling
-- Recurring payment automation
-- Failed payment retry logic
+#### 🧾 **Invoice Management**
+- Automatic invoice generation
+- PDF invoices with custom branding
+- Tax calculation and handling
+- Multiple currencies support
+- Dunning management (failed payments)
 
-#### 📄 **Invoice & Reporting**
-- Automated invoice generation
-- Customizable invoice templates
-- Tax calculation and management
-- Analytics and revenue reporting
+#### 🔌 **Multi-Gateway Support**
+- **Stripe** - Credit cards, ACH, SEPA
+- **PayPal** - PayPal accounts
+- **Adyen** - Global payment methods
+- Custom payment providers via API
+
+#### 🎨 **Admin Dashboard**
+- Customer management
+- Plan configuration
+- Invoice viewing
+- Real-time analytics
+- Webhook management
 
 ### Example Integration
 
 ```typescript
 // apps/backend/app/services/billing_service.ts
-import { KillBillClient } from '@killbill/killbill-client';
+import BillingService from '#services/billing_service';
 
-export class BillingService {
-  private client: KillBillClient;
+// Create customer
+const customer = await BillingService.createCustomer({
+  externalId: user.id,
+  name: user.fullName,
+  email: user.email,
+  currency: 'USD',
+});
 
-  constructor() {
-    this.client = new KillBillClient({
-      serverUrl: process.env.KILLBILL_URL,
-      apiKey: process.env.KILLBILL_API_KEY,
-      apiSecret: process.env.KILLBILL_API_SECRET,
-    });
-  }
+// Create subscription
+const subscription = await BillingService.createSubscription({
+  externalCustomerId: user.id,
+  planCode: 'starter',
+  name: 'Starter Subscription',
+});
 
-  async createSubscription(userId: string, planId: string) {
-    return await this.client.subscriptions.create({
-      accountId: userId,
-      planName: planId,
-      billingPeriod: 'MONTHLY',
-    });
-  }
+// Track usage (for metered billing)
+await BillingService.sendEvent({
+  transactionId: `api_${Date.now()}`,
+  externalCustomerId: user.id,
+  code: 'api_calls',
+  properties: { endpoint: '/api/data' },
+});
 
-  async trackUsage(subscriptionId: string, units: number) {
-    return await this.client.usage.record({
-      subscriptionId,
-      unitType: 'api_calls',
-      amount: units,
-    });
-  }
-}
+// Get customer invoices
+const invoices = await BillingService.getInvoices(user.id);
 ```
+
+### Documentation
+
+See [**LAGO_INTEGRATION.md**](./LAGO_INTEGRATION.md) for complete setup and usage guide
 
 ---
 
@@ -386,7 +404,7 @@ export class BillingService {
 - [Nuxt Documentation](https://nuxt.com/docs)
 - [AdonisJS Documentation](https://docs.adonisjs.com)
 - [Directus Documentation](https://docs.directus.io)
-- [Kill Bill Documentation](https://docs.killbill.io)
+- [Lago Documentation](https://docs.getlago.com)
 
 ### Guides & Tutorials
 - [Adding a New Package](#adding-a-new-package)
@@ -488,7 +506,7 @@ docker-compose -f docker-compose.prod.yml up -d
 - **Frontend (Nuxt)**: Vercel, Netlify, Cloudflare Pages
 - **Backend (AdonisJS)**: Railway, Render, DigitalOcean App Platform
 - **CMS (Directus)**: Directus Cloud, self-hosted on any VPS
-- **Kill Bill**: Kubernetes, AWS ECS, or dedicated server
+- **Lago**: Docker Compose, Kubernetes, or managed hosting
 
 ---
 
@@ -522,7 +540,7 @@ Built with amazing open-source technologies:
 - [Nuxt](https://nuxt.com) - The Intuitive Vue Framework
 - [AdonisJS](https://adonisjs.com) - Elegant Node.js framework
 - [Directus](https://directus.io) - Open-source headless CMS
-- [Kill Bill](https://killbill.io) - Open-source billing platform
+- [Lago](https://www.getlago.com) - Open-source billing platform
 - [Radix Vue](https://www.radix-vue.com) - Unstyled, accessible components
 - [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS framework
 

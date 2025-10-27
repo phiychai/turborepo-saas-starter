@@ -1,0 +1,71 @@
+version: "3.9"
+
+# Production overrides for docker-compose.yml
+services:
+  postgres:
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    restart: always
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+
+  directus:
+    restart: always
+    environment:
+      NODE_ENV: production
+      LOG_LEVEL: info
+      CACHE_ENABLED: true
+      REFRESH_TOKEN_COOKIE_SECURE: true
+      SESSION_COOKIE_SECURE: true
+      PUBLIC_URL: ${DIRECTUS_PUBLIC_URL}
+
+  killbill:
+    restart: always
+    environment:
+      KILLBILL_SERVER_TEST_MODE: false
+
+  kaui:
+    restart: always
+
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: Dockerfile.prod
+      args:
+        NODE_ENV: production
+    restart: always
+    environment:
+      NODE_ENV: production
+      LOG_LEVEL: info
+    volumes:
+      - backend_uploads:/app/uploads
+    command: node bin/server.js
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile.prod
+      args:
+        NODE_ENV: production
+    restart: always
+    environment:
+      NODE_ENV: production
+    command: node .output/server/index.mjs
+
+  nginx:
+    restart: always
+    volumes:
+      - ./nginx.prod.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - letsencrypt:/etc/letsencrypt
+
+volumes:
+  backend_uploads:
+    driver: local
+  letsencrypt:
+    driver: local
+

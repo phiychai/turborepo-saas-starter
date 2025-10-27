@@ -1,0 +1,44 @@
+FROM node:20-alpine AS base
+
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Builder stage
+FROM base AS builder
+WORKDIR /app
+
+# Copy workspace configuration
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
+COPY turbo.json ./
+
+# Copy packages
+COPY packages ./packages
+
+# Copy web app
+COPY apps/web ./apps/web
+
+# Install dependencies and build
+RUN pnpm install --frozen-lockfile
+RUN pnpm --filter web build
+
+# Production stage
+FROM base AS production
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Copy built output
+COPY --from=builder /app/apps/web/.output ./apps/web/.output
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
+RUN chown -R nodejs:nodejs /app
+USER nodejs
+
+WORKDIR /app/apps/web
+
+EXPOSE 3000
+
+CMD ["node", ".output/server/index.mjs"]
+
+

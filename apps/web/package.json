@@ -39,6 +39,9 @@
     "nuxt-security": "^2.2.0",
     "radix-vue": "^1.9.17",
     "vee-validate": "^4.15.1",
+    "@unovis/ts": "^1.6.1",
+    "@unovis/vue": "^1.6.1",
+    "date-fns": "^4.1.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {

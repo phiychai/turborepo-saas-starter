@@ -21,7 +21,11 @@
     "format:check": "prettier --check .",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down",
-    "docker:build": "docker-compose build"
+    "docker:build": "docker-compose build",
+    "docker:logs": "docker-compose logs -f",
+    "docker:restart": "docker-compose restart",
+    "docker:prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d",
+    "docker:prod:build": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d"
   },
   "keywords": [
     "monorepo",

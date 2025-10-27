@@ -78,3 +78,4 @@ jobs:
             turborepo-saas-starter-${{ github.ref_name }}.tar.gz
           draft: false
           prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
+

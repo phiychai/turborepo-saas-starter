@@ -1,0 +1,275 @@
+version: "3.9"
+
+services:
+  # PostgreSQL - Single instance with multiple databases
+  postgres:
+    image: postgis/postgis:16-master
+    platform: linux/amd64
+    container_name: saas-postgres
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_MULTIPLE_DATABASES: adonis_db,directus_db,lago_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - saas-network
+
+  # Redis - Shared cache for all services
+  redis:
+    image: redis:7-alpine
+    container_name: saas-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - saas-network
+
+  # Directus CMS
+  directus:
+    image: directus/directus:11.10.2
+    container_name: saas-directus
+    restart: unless-stopped
+    ports:
+      - "${DIRECTUS_PORT:-8055}:8055"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SECRET: ${DIRECTUS_SECRET}
+      ADMIN_EMAIL: ${DIRECTUS_ADMIN_EMAIL:-admin@example.com}
+      ADMIN_PASSWORD: ${DIRECTUS_ADMIN_PASSWORD:-admin}
+
+      DB_CLIENT: pg
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: directus_db
+      DB_USER: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+
+      CACHE_ENABLED: true
+      CACHE_AUTO_PURGE: true
+      CACHE_STORE: redis
+      REDIS: redis://redis:6379
+
+      WEBSOCKETS_ENABLED: true
+      PUBLIC_URL: ${DIRECTUS_PUBLIC_URL:-http://localhost:8055}
+
+      CORS_ENABLED: true
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000,http://localhost:3333}
+
+      REFRESH_TOKEN_COOKIE_SECURE: ${REFRESH_TOKEN_COOKIE_SECURE:-false}
+      REFRESH_TOKEN_COOKIE_SAME_SITE: ${REFRESH_TOKEN_COOKIE_SAME_SITE:-lax}
+
+      SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-false}
+      SESSION_COOKIE_SAME_SITE: ${SESSION_COOKIE_SAME_SITE:-lax}
+
+      EXTENSIONS_AUTO_RELOAD: true
+    volumes:
+      - directus_uploads:/directus/uploads
+      - directus_extensions:/directus/extensions
+    networks:
+      - saas-network
+
+  # Lago - Billing & Subscription Management (All-in-One)
+  # This single container includes API (port 3000 internal) and Frontend (port 80 internal)
+  lago:
+    image: getlago/lago:latest
+    container_name: saas-lago
+    restart: unless-stopped
+    ports:
+      - "${LAGO_API_PORT:-3100}:3000" # API exposed on 3100 to avoid conflict with Nuxt
+      - "${LAGO_FRONT_PORT:-3001}:80" # Frontend Dashboard
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      # Database
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: lago_db
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_POOL: 20
+
+      # Redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+
+      # API Configuration (external URLs for browser access)
+      LAGO_API_URL: ${LAGO_API_URL:-http://localhost:3100}
+      API_URL: ${LAGO_API_URL:-http://localhost:3100}
+      LAGO_FRONT_URL: ${LAGO_FRONT_URL:-http://localhost:3001}
+      API_PORT: 3000
+      FRONT_PORT: 80
+
+      # Security Keys (CHANGE IN PRODUCTION!)
+      SECRET_KEY_BASE: ${LAGO_SECRET_KEY_BASE:-your-secret-key-base-change-me-min-64-chars}
+      LAGO_RSA_PRIVATE_KEY: ${LAGO_RSA_PRIVATE_KEY:-}
+      LAGO_ENCRYPTION_PRIMARY_KEY: ${LAGO_ENCRYPTION_PRIMARY_KEY:-your-encryption-primary-key-32-chars}
+      LAGO_ENCRYPTION_DETERMINISTIC_KEY: ${LAGO_ENCRYPTION_DETERMINISTIC_KEY:-your-deterministic-key-32-chars}
+      LAGO_ENCRYPTION_KEY_DERIVATION_SALT: ${LAGO_ENCRYPTION_KEY_DERIVATION_SALT:-your-derivation-salt-32-chars}
+
+      # Payment Providers (configure as needed)
+      STRIPE_API_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
+
+      # Email (optional)
+      LAGO_FROM_EMAIL: ${LAGO_FROM_EMAIL:-noreply@example.com}
+      LAGO_SMTP_ADDRESS: ${LAGO_SMTP_ADDRESS:-}
+      LAGO_SMTP_PORT: ${LAGO_SMTP_PORT:-}
+      LAGO_SMTP_USERNAME: ${LAGO_SMTP_USERNAME:-}
+      LAGO_SMTP_PASSWORD: ${LAGO_SMTP_PASSWORD:-}
+
+      # Logs
+      LAGO_RAILS_STDOUT: true
+    networks:
+      - saas-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # AdonisJS Backend - API Gateway
+  backend:
+    build:
+      context: .
+      dockerfile: ./apps/backend/Dockerfile
+    container_name: saas-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-3333}:3333"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      directus:
+        condition: service_started
+      lago:
+        condition: service_healthy
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3333
+      HOST: 0.0.0.0
+      APP_KEY: ${APP_KEY}
+      SESSION_DRIVER: redis
+
+      # Database
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      DB_DATABASE: adonis_db
+
+      # Redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+      # Directus
+      DIRECTUS_URL: http://directus:8055
+      DIRECTUS_ADMIN_EMAIL: ${DIRECTUS_ADMIN_EMAIL:-admin@example.com}
+      DIRECTUS_ADMIN_PASSWORD: ${DIRECTUS_ADMIN_PASSWORD:-admin}
+      DIRECTUS_STATIC_TOKEN: ${DIRECTUS_STATIC_TOKEN}
+
+      # Lago Billing
+      LAGO_API_URL: http://lago:3000
+      LAGO_API_KEY: ${LAGO_API_KEY:-}
+
+      # Payment Providers
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+    volumes:
+      # Mount entire monorepo to preserve workspace structure
+      - .:/app
+      # Preserve node_modules at root level (workspace hoisting)
+      - /app/node_modules
+      # Preserve backend-specific node_modules
+      - /app/apps/backend/node_modules
+    working_dir: /app/apps/backend
+    networks:
+      - saas-network
+    command: pnpm dev
+
+  # Nuxt Frontend
+  web:
+    build:
+      context: .
+      dockerfile: ./apps/web/Dockerfile
+    container_name: saas-web
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+    depends_on:
+      - backend
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      NUXT_PUBLIC_SITE_URL: ${NUXT_PUBLIC_SITE_URL:-http://localhost:3000}
+      NUXT_PUBLIC_API_URL: ${NUXT_PUBLIC_API_URL:-http://localhost:3333}
+    volumes:
+      # Mount entire monorepo to preserve workspace structure
+      - .:/app
+      # Preserve node_modules at root level (workspace hoisting)
+      - /app/node_modules
+      # Preserve web-specific node_modules
+      - /app/apps/web/node_modules
+      # Preserve Nuxt build artifacts
+      - /app/apps/web/.nuxt
+    working_dir: /app/apps/web
+    networks:
+      - saas-network
+    command: pnpm dev
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: saas-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+      - web
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+    networks:
+      - saas-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  directus_uploads:
+    driver: local
+  directus_extensions:
+    driver: local
+
+networks:
+  saas-network:
+    driver: bridge
