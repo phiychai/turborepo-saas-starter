@@ -100,13 +100,25 @@ export default defineNuxtConfig({
   },
 
   security: {
+    enabled: process.env.NODE_ENV === 'production',
     headers: {
-      contentSecurityPolicy: {
-        'img-src': ["'self'", 'data:', '*'],
-        'script-src': ["'self'", "'unsafe-inline'", '*'],
-        'connect-src': ["'self'", 'http://localhost:3333', 'http://localhost:8055'],
-        'frame-ancestors': ["'self'", 'http://localhost:8055'],
-      },
+      contentSecurityPolicy:
+        process.env.NODE_ENV === 'production'
+          ? {
+              'img-src': ["'self'", 'data:', '*'],
+              'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+              'script-src-attr': ["'unsafe-inline'"],
+              'style-src': ["'self'", "'unsafe-inline'"],
+              'connect-src': [
+                "'self'",
+                'http://localhost:8055',
+                'http://localhost:3333',
+                process.env.DIRECTUS_URL || '',
+                process.env.NUXT_PUBLIC_API_URL || '',
+              ],
+              'frame-ancestors': ["'self'", 'http://localhost:8055'],
+            }
+          : false, // Disable CSP in development
     },
   },
 });

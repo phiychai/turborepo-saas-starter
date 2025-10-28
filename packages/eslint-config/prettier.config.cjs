@@ -58,6 +58,8 @@ module.exports = {
   // Vue-specific settings
   vueIndentScriptAndStyle: false,
 
+  plugins: ['prettier-plugin-organize-imports'],
+
   // Plugin-specific overrides
   overrides: [
     {
@@ -75,4 +77,3 @@ module.exports = {
     },
   ],
 };
-
