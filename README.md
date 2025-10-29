@@ -2,7 +2,10 @@
 
 # 🚀 Turborepo SaaS Starter
 
-**Production-ready monorepo for building modern SaaS applications**
+> **⚠️ NOT PRODUCTION READY YET**
+> This project is currently under active development and is not recommended for production use. Features may be incomplete, breaking changes may occur, and documentation is still being finalized.
+
+**Monorepo for building modern SaaS applications**
 
 [![Turborepo](https://img.shields.io/badge/Built%20with-Turborepo-EF4444?style=for-the-badge&logo=turborepo&logoColor=white)](https://turbo.build)
 [![Nuxt](https://img.shields.io/badge/Nuxt-4.0-00DC82?style=for-the-badge&logo=nuxt&logoColor=white)](https://nuxt.com)
