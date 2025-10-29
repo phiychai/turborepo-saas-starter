@@ -11,14 +11,14 @@ export default defineNuxtConfig({
   modules: [
     '@nuxt/eslint',
     '@nuxt/image',
-    '@nuxt/ui-pro',
-    '@nuxt/content', // Must be before @nuxtjs/seo for proper integration
+    '@nuxt/ui',
+    '@nuxt/content',
     '@vueuse/nuxt',
     'nuxt-og-image',
     'nuxt-security',
-    '@nuxtjs/seo', // Includes sitemap functionality, no need for separate @nuxtjs/sitemap
     '@nuxt/scripts',
     '@nuxtjs/mdc',
+    '@nuxtjs/seo',
   ],
 
   devtools: {
@@ -94,9 +94,9 @@ export default defineNuxtConfig({
   // Nuxt Content configuration
   content: {
     // Prevent sitemap auto-detection issues
-    experimental: {
-      search: false,
-    },
+    // experimental: {
+    //   search: false,
+    // },
   },
 
   security: {

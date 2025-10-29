@@ -76,7 +76,7 @@ useSeoMeta({
 				:data-directus="setAttr({ collection: 'posts', item: post.id, fields: ['title', 'slug'], mode: 'popover' })"
 			/>
 
-			<Separator class="h-[1px] bg-gray-300 my-8" />
+			<USeparator class="h-[1px] bg-gray-300 my-8" />
 
 			<div class="grid grid-cols-1 lg:grid-cols-[minmax(0,_2fr)_400px] gap-12">
 				<main class="text-left">

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
- * BaseFormField - Migrated to Nuxt UI
- * Uses UFormGroup with UInput, UTextarea, and custom field components
+ * BaseFormField - Migrated to Nuxt UI v4
+ * Uses UFormField with UInput, UTextarea, and custom field components
  */
 import type { FormField } from '@turborepo-saas-starter/shared-types/schema';
 import { useField } from 'vee-validate';
@@ -48,14 +48,14 @@ const getComponentProps = (field: FormField) => {
 
 <template>
 	<div v-if="props.field.type !== 'hidden'" :class="`field-width-${field.width ?? '100'}`">
-		<UFormGroup
+		<UFormField
 			:label="field.type !== 'checkbox' ? (field.label ?? '') : undefined"
 			:required="field.required ?? false"
 			:error="errorMessage"
 			:help="field.help ?? undefined"
 		>
 			<component :is="getFieldComponent()" v-bind="getComponentProps(field)" />
-		</UFormGroup>
+		</UFormField>
 	</div>
 </template>
 

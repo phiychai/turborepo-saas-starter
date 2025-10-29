@@ -47,6 +47,9 @@
     "unimport": "4.1.1"
   },
   "pnpm": {
+    "overrides": {
+      "@nuxtjs/mdc": "^0.17.2"
+    },
     "onlyBuiltDependencies": [
       "@parcel/watcher",
       "@scarf/scarf",

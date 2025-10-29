@@ -75,7 +75,7 @@ defineProps<PricingProps>();
          <UPricingPlans scale>
         <UPricingPlan
           v-for="card in data.pricing_cards"
-          :key="index"
+          :key="card.id"
           v-bind="card"
           :price="card.price"
           :billing-cycle="card.billing_cycle"
