@@ -12,6 +12,15 @@ useSeoMeta({
 })
 
 const toast = useToast()
+const router = useRouter()
+const { login, isAuthenticated } = useAuth()
+
+// Redirect if already authenticated
+onMounted(() => {
+  if (isAuthenticated.value) {
+    router.push('/dashboard')
+  }
+})
 
 const fields = [{
   name: 'email',
@@ -34,13 +43,13 @@ const providers = [{
   label: 'Google',
   icon: 'i-simple-icons-google',
   onClick: () => {
-    toast.add({ title: 'Google', description: 'Login with Google' })
+    toast.add({ title: 'Google', description: 'Login with Google - Coming soon' })
   }
 }, {
   label: 'GitHub',
   icon: 'i-simple-icons-github',
   onClick: () => {
-    toast.add({ title: 'GitHub', description: 'Login with GitHub' })
+    toast.add({ title: 'GitHub', description: 'Login with GitHub - Coming soon' })
   }
 }]
 
@@ -51,8 +60,23 @@ const schema = z.object({
 
 type Schema = z.output<typeof schema>
 
-function onSubmit(payload: FormSubmitEvent<Schema>) {
-  console.log('Submitted', payload)
+async function onSubmit(payload: FormSubmitEvent<Schema>) {
+  const result = await login(payload.data.email, payload.data.password)
+
+  if (result.success) {
+    toast.add({
+      title: 'Success',
+      description: 'Login successful!',
+      color: 'green'
+    })
+    router.push('/dashboard')
+  } else {
+    toast.add({
+      title: 'Error',
+      description: result.error || 'Login failed',
+      color: 'red'
+    })
+  }
 }
 </script>
 

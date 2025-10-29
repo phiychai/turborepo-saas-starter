@@ -101,6 +101,7 @@ const groups = computed(() => [{
       v-model:open="open"
       collapsible
       resizable
+     :style="{ minHeight: 'calc(100vh - 64px)'}"
       class="bg-elevated/25"
       :ui="{ footer: 'lg:border-t lg:border-default' }"
     >

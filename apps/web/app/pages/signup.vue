@@ -12,6 +12,15 @@ useSeoMeta({
 })
 
 const toast = useToast()
+const router = useRouter()
+const { register, login, isAuthenticated } = useAuth()
+
+// Redirect if already authenticated
+onMounted(() => {
+  if (isAuthenticated.value) {
+    router.push('/dashboard')
+  }
+})
 
 const fields = [{
   name: 'name',
@@ -34,13 +43,13 @@ const providers = [{
   label: 'Google',
   icon: 'i-simple-icons-google',
   onClick: () => {
-    toast.add({ title: 'Google', description: 'Login with Google' })
+    toast.add({ title: 'Google', description: 'Sign up with Google - Coming soon' })
   }
 }, {
   label: 'GitHub',
   icon: 'i-simple-icons-github',
   onClick: () => {
-    toast.add({ title: 'GitHub', description: 'Login with GitHub' })
+    toast.add({ title: 'GitHub', description: 'Sign up with GitHub - Coming soon' })
   }
 }]
 
@@ -52,8 +61,32 @@ const schema = z.object({
 
 type Schema = z.output<typeof schema>
 
-function onSubmit(payload: FormSubmitEvent<Schema>) {
-  console.log('Submitted', payload)
+async function onSubmit(payload: FormSubmitEvent<Schema>) {
+  const result = await register({
+    email: payload.data.email,
+    password: payload.data.password,
+    fullName: payload.data.name
+  })
+
+  if (result.success) {
+    toast.add({
+      title: 'Success',
+      description: 'Account created successfully! Logging you in...',
+      color: 'green'
+    })
+
+    // Auto-login after successful registration
+    const loginResult = await login(payload.data.email, payload.data.password)
+    if (loginResult.success) {
+      router.push('/dashboard')
+    }
+  } else {
+    toast.add({
+      title: 'Error',
+      description: result.error || 'Registration failed',
+      color: 'red'
+    })
+  }
 }
 </script>
 

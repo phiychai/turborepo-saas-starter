@@ -546,15 +546,6 @@ Built with amazing open-source technologies:
 
 ---
 
-## 💬 Support
-
-- 📧 Email: support@example.com
-- 💬 Discord: [Join our community](https://discord.gg/example)
-- 🐦 Twitter: [@yourusername](https://twitter.com/yourusername)
-- 📖 Documentation: [docs.example.com](https://docs.example.com)
-
----
-
 <div align="center">
 
 **[⬆ back to top](#-turborepo-saas-starter)**
