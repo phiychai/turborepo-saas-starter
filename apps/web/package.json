@@ -40,7 +40,6 @@
     "nuxt": "^4.2.0",
     "nuxt-og-image": "^5.1.9",
     "nuxt-security": "^2.2.0",
-    "radix-vue": "^1.9.17",
     "unhead": "^2.0.19",
     "vee-validate": "^4.15.1",
     "zod": "^3.25.76"
