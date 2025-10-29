@@ -15,7 +15,7 @@
 
 *A fully-featured, enterprise-grade monorepo with frontend, backend, CMS, and shared packages*
 
-[Features](#-features) • [Quick Start](#-quick-start) • [Architecture](#-architecture) • [Documentation](#-documentation)
+[Features](#-features) • [Quick Start](#-quick-start) • [Architecture](#-architecture) • [Testing](./TESTING.md) • [Documentation](#-documentation)
 
 </div>
 
@@ -56,6 +56,7 @@
 - **TypeScript Project References** - Fast incremental builds
 - **Hot Module Replacement** - Lightning-fast development workflow
 - **Docker** - Containerized development and deployment
+- **Testing** - Vitest for unit tests, Playwright for E2E tests
 
 ### 🔒 **Production Ready**
 - **Type-safe APIs** - End-to-end type safety with TypeScript
@@ -190,7 +191,12 @@ pnpm format          # Format code with Prettier
 pnpm type-check      # Type check with TypeScript
 
 # Testing
-pnpm test            # Run all tests
+pnpm test            # Run unit tests (Vitest)
+cd apps/web && pnpm test:ui # Unit tests with UI
+pnpm test:e2e        # Run E2E tests (Playwright)
+pnpm test:e2e:ui     # E2E tests with UI
+
+# See TESTING.md for full testing documentation
 
 # Docker
 pnpm docker:up       # Start Docker services

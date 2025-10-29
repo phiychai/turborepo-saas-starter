@@ -34,6 +34,14 @@ coverage/
 # nyc test coverage
 .nyc_output
 
+# Playwright
+/playwright-report/
+/playwright/.cache/
+/test-results/
+
+# Vitest
+/apps/web/coverage/
+
 # Dependency directories
 jspm_packages/
 
