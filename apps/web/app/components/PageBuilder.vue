@@ -14,9 +14,17 @@ const validBlocks = computed(() =>
 </script>
 
 <template>
-	<div v-for="block in validBlocks" :key="block.id" :data-background="block.background" class="py-16">
-		<Container>
-			<BaseBlock :block="block" />
-		</Container>
-	</div>
+  <div v-for="block in validBlocks" :key="block.id" :data-background="block.background">
+    <!-- Multiple full-width blocks -->
+    <BaseBlock
+      :block="block"
+      v-if="['block_hero', 'block_cta', 'block_testimonials'].includes(block.collection)"
+
+    />
+
+    <!-- Everything else in container -->
+    <Container v-else>
+      <BaseBlock :block="block" />
+    </Container>
+  </div>
 </template>

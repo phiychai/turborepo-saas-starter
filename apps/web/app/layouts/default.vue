@@ -53,12 +53,6 @@ onMounted(() => {
 
 <template>
   <div>
-    <!-- <NavigationBar
-			v-if="siteData?.headerNavigation"
-			ref="navigationRef"
-			:navigation="siteData.headerNavigation"
-			:globals="siteData.globals"
-		/> -->
     <AppHeader />
 
     <UMain>

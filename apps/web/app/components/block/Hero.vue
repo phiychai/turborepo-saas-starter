@@ -30,6 +30,27 @@ defineProps<HeroProps>();
 </script>
 
 <template>
+  <div v-if="data">
+    <UPageHero>
+      <template #top>
+        <HeroBackground />
+      </template>
+
+      <template #title>
+        <span :data-directus="setAttr({ collection: 'block_hero', item: data.id, fields: 'headline', mode: 'popover' })">
+          <MDC :value="data.headline" unwrap="p" />
+        </span>
+      </template>
+
+      <template #description>
+        <span :data-directus="setAttr({ collection: 'block_hero', item: data.id, fields: 'description', mode: 'popover' })">
+          <MDC :value="data.description" unwrap="p" />
+        </span>
+      </template>
+
+      <PromotionalVideo />
+    </UPageHero>
+  </div>
 	<section
 		class="relative w-full mx-auto flex flex-col gap-6 md:gap-12"
 		:class="{
@@ -64,12 +85,12 @@ defineProps<HeroProps>();
 				class="mt-6"
 				:class="{ 'flex justify-center': data.layout === 'image_center' }"
 			>
-				<ButtonGroup
-					:buttons="data.button_group.buttons"
+				<!-- <UButtonGroup
+					:buttons="data.description"
 					:data-directus="
 						setAttr({ collection: 'block_button_group', item: data.button_group?.id, fields: 'buttons', mode: 'modal' })
 					"
-				/>
+				/> -->
 			</div>
 		</div>
 
