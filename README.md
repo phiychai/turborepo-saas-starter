@@ -38,7 +38,7 @@
 ### ⚡ **Powerful Backend**
 - **AdonisJS 6** - Elegant Node.js framework with full TypeScript support
 - **SQLite/PostgreSQL** - Flexible database options with Lucid ORM
-- **Authentication** - Built-in auth system with session management
+- **Better Auth** - Modern authentication with email/password and OAuth (Google, GitHub)
 - **API Documentation** - Auto-generated Swagger/OpenAPI docs
 
 ### 💳 **Billing & Subscriptions**
@@ -160,6 +160,16 @@ NODE_ENV=development
 APP_KEY=your-secret-key-here
 SESSION_DRIVER=cookie
 
+# Better Auth Configuration
+BETTER_AUTH_SECRET=your-32-char-secret-key
+BETTER_AUTH_URL=http://localhost:3333
+
+# OAuth (optional)
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+GITHUB_CLIENT_ID=your-github-client-id
+GITHUB_CLIENT_SECRET=your-github-client-secret
+
 # Lago Billing Configuration
 LAGO_API_URL=http://localhost:3100
 LAGO_API_KEY=your-lago-api-key
@@ -168,6 +178,27 @@ LAGO_API_KEY=your-lago-api-key
 STRIPE_SECRET_KEY=sk_test_your_stripe_key
 STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_key
 ```
+
+### OAuth Setup (Optional)
+
+To enable Google or GitHub authentication:
+
+#### Google OAuth
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select existing one
+3. Enable Google+ API
+4. Go to "Credentials" → "Create Credentials" → "OAuth 2.0 Client ID"
+5. Set authorized redirect URI: `http://localhost:3333/api/auth/callback/google`
+6. Copy Client ID and Client Secret to your `.env`
+
+#### GitHub OAuth
+
+1. Go to [GitHub Developer Settings](https://github.com/settings/developers)
+2. Click "New OAuth App"
+3. Set Authorization callback URL: `http://localhost:3333/api/auth/callback/github`
+4. Copy Client ID and generate Client Secret
+5. Add them to your `.env`
 
 ---
 
@@ -257,6 +288,7 @@ pnpm install
 ```typescript
 Nuxt 4 + Vue 3
 ├── Nuxt UI Pro          // Component library
+├── Pinia                // State management
 ├── Radix Vue            // Headless UI primitives
 ├── Tailwind CSS         // Utility-first CSS
 ├── VeeValidate + Zod    // Form validation
@@ -268,10 +300,10 @@ Nuxt 4 + Vue 3
 ```typescript
 AdonisJS 6
 ├── Lucid ORM           // Database ORM
-├── Auth Module         // Authentication
+├── Better Auth         // Modern authentication with OAuth
 ├── Validator (Vine)    // Request validation
 ├── Swagger             // API documentation
-└── Better-SQLite3      // Database driver
+└── PostgreSQL/SQLite   // Database options
 ```
 
 #### CMS (Directus)
@@ -403,15 +435,42 @@ See [**LAGO_INTEGRATION.md**](./LAGO_INTEGRATION.md) for complete setup and usag
 
 ## 📚 Documentation
 
+> **📖 Documentation System:** All documentation lives in `docs/` and syncs to Nuxt Content.
+> See [**Documentation Guide**](./DOCUMENTATION_GUIDE.md) for how to create and manage docs.
+
 ### Core Documentation
-- [**Tooling Setup**](./docs/TOOLING_SETUP.md) - ESLint, Prettier, TypeScript configuration
-- [**Package Fixes**](./docs/PACKAGE_FIXES.md) - Package configuration and best practices
-- [**Package Structure**](./docs/PACKAGE_STRUCTURE.md) - Monorepo organization guide
+- [**Quick Start**](./docs/getting-started/QUICK_START.md) - Get up and running quickly
+- [**Authentication**](./docs/authentication/AUTHENTICATION.md) - Complete guide to Better Auth integration
+- [**Better Auth Architecture**](./docs/authentication/BETTER_AUTH_ARCHITECTURE.md) - Quick reference with flow diagrams
+- [**Testing**](./docs/testing/TESTING.md) - Vitest and Playwright testing setup
+
+### Architecture
+- [**Architecture Overview**](./docs/architecture/ARCHITECTURE.md) - System architecture and design
+- [**Implementation Summary**](./docs/architecture/IMPLEMENTATION_SUMMARY.md) - Key implementation details
+- [**Package Structure**](./docs/architecture/PACKAGE_STRUCTURE.md) - Monorepo organization
+- [**Pinia State Management**](./docs/architecture/PINIA_STATE_MANAGEMENT.md) - State management with Pinia stores
+- [**Smart Routing System**](./docs/architecture/ROUTING_SYSTEM.md) - Dynamic routing based on auth status and roles
+- [**Migration Progress**](./docs/architecture/MIGRATION_PROGRESS.md) - Development migration notes
+
+### Tooling
+- [**ESLint & Prettier Setup**](./docs/tooling/ESLINT_PRETTIER_SETUP.md) - Code formatting and linting
+- [**Config Files**](./docs/tooling/CONFIG_FILES.md) - Configuration file documentation
+- [**Module Types**](./docs/tooling/MODULE_TYPES.md) - Module system documentation
+
+### Integration Guides
+- [**Better Auth Integration**](./docs/authentication/BETTER_AUTH_INTEGRATION.md) - Technical implementation details
+- [**Lago Setup & Configuration**](./docs/integrations/LAGO_SETUP.md) - Complete Lago billing setup guide
+- [**Lago Integration**](./docs/integrations/LAGO_INTEGRATION.md) - Billing and subscription management API
+- [**Directus CMS Upgrade**](./docs/integrations/DIRECTUS_UPGRADE.md) - How to safely upgrade Directus
+
+### Deployment
+- [**Production Deployment**](./docs/deployment/PRODUCTION_DEPLOYMENT.md) - Complete deployment guide
 
 ### Framework Documentation
 - [Turborepo Docs](https://turbo.build/repo/docs)
 - [Nuxt Documentation](https://nuxt.com/docs)
 - [AdonisJS Documentation](https://docs.adonisjs.com)
+- [Better Auth Documentation](https://www.better-auth.com/docs)
 - [Directus Documentation](https://docs.directus.io)
 - [Lago Documentation](https://docs.getlago.com)
 
