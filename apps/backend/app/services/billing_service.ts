@@ -404,7 +404,7 @@ class BillingService {
 
   /**
    * COMPATIBILITY METHODS
-   * (to match previous Kill Bill / Vendure interface)
+   * (to match previous Lago / Vendure interface)
    */
 
   /**

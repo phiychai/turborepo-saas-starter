@@ -9,6 +9,9 @@
 
 import router from "@adonisjs/core/services/router";
 import AutoSwagger from "adonis-autoswagger";
+
+import { auth } from "#config/better_auth";
+import { toWebRequest, fromWebResponse } from "#utils/better_auth_helpers";
 import swagger from "#config/swagger";
 import { middleware } from "#start/kernel";
 
@@ -18,42 +21,55 @@ const CmsProxyController = () => import("#controllers/cms_proxy_controller");
 const BillingController = () => import("#controllers/billing_controller");
 
 // Swagger documentation
-router.get("/swagger", async () => {
-  return AutoSwagger.default.docs(router.toJSON(), swagger);
-});
+router.get("/swagger", async () => AutoSwagger.default.docs(router.toJSON(), swagger));
 
-router.get("/docs", async () => {
-  return AutoSwagger.default.ui("/swagger", swagger);
-});
+router.get("/docs", async () => AutoSwagger.default.ui("/swagger", swagger));
 
 // Health check
-router.get("/health", async () => {
-  return { status: "ok", timestamp: new Date().toISOString() };
-});
+router.get("/health", async () => ({ status: "ok", timestamp: new Date().toISOString() }));
 
 // Root endpoint
-router.get("/", async () => {
-  return {
-    name: "Turborepo SaaS Starter API",
-    version: "1.0.0",
-    status: "running",
-  };
+router.get("/", async () => ({
+  name: "Turborepo SaaS Starter API",
+  version: "1.0.0",
+  status: "running",
+}));
+
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes (Better Auth)
+|--------------------------------------------------------------------------
+*/
+// Better Auth direct handler (recommended pattern)
+// Converts AdonisJS Request/Response to Web Standard Request/Response
+router.any("/api/auth/*", async ({ request, response }) => {
+  try {
+    const webRequest = await toWebRequest(request);
+    const authResponse = await auth.handler(webRequest);
+    return await fromWebResponse(authResponse, response);
+  } catch (error) {
+    console.error("Better Auth handler error:", error);
+    return response.status(500).send({
+      error: "Authentication failed",
+      message: error.message,
+    });
+  }
 });
 
 /*
 |--------------------------------------------------------------------------
-| Authentication Routes
+| Legacy Authentication Routes (deprecated, kept for reference)
 |--------------------------------------------------------------------------
 */
-router
-  .group(() => {
-    router.post("/register", [AuthController, "register"]);
-    router.post("/login", [AuthController, "login"]);
-    router.post("/logout", [AuthController, "logout"]).use(middleware.auth());
-    router.get("/me", [AuthController, "me"]).use(middleware.auth());
-    router.post("/change-password", [AuthController, "changePassword"]).use(middleware.auth());
-  })
-  .prefix("/api/auth");
+// router
+//   .group(() => {
+//     router.post("/register", [AuthController, "register"]);
+//     router.post("/login", [AuthController, "login"]);
+//     router.post("/logout", [AuthController, "logout"]).use(middleware.auth());
+//     router.get("/me", [AuthController, "me"]).use(middleware.auth());
+//     router.post("/change-password", [AuthController, "changePassword"]).use(middleware.auth());
+//   })
+//   .prefix("/api/auth");
 
 /*
 |--------------------------------------------------------------------------
@@ -91,7 +107,7 @@ router
 
 /*
 |--------------------------------------------------------------------------
-| Billing Routes (Kill Bill)
+| Billing Routes (Lago)
 |--------------------------------------------------------------------------
 */
 router

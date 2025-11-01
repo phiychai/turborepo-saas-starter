@@ -3,7 +3,7 @@ import billingService from "#services/billing_service";
 
 export default class BillingController {
   /**
-   * Get or create Kill Bill account for the current user
+   * Get or create Lago account for the current user
    */
   async getOrCreateAccount({ response, auth }: HttpContext) {
     try {
@@ -40,7 +40,7 @@ export default class BillingController {
     try {
       const user = auth.user!;
 
-      // Get the Kill Bill account
+      // Get the Lago account
       const account = await billingService.getAccountByEmail(user.email);
 
       if (!account || !account.accountId) {

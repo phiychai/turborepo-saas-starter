@@ -84,4 +84,23 @@ export default await Env.create(new URL("../", import.meta.url), {
   PAYPAL_CLIENT_ID: Env.schema.string.optional(),
   PAYPAL_CLIENT_SECRET: Env.schema.string.optional(),
   PAYPAL_MODE: Env.schema.enum.optional(["sandbox", "production"] as const),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for Better Auth
+  |----------------------------------------------------------
+  */
+  BETTER_AUTH_SECRET: Env.schema.string.optional(),
+  BETTER_AUTH_URL: Env.schema.string.optional(),
+  NUXT_PUBLIC_SITE_URL: Env.schema.string.optional(),
+
+  /*
+  |----------------------------------------------------------
+  | OAuth Provider Credentials
+  |----------------------------------------------------------
+  */
+  GOOGLE_CLIENT_ID: Env.schema.string.optional(),
+  GOOGLE_CLIENT_SECRET: Env.schema.string.optional(),
+  GITHUB_CLIENT_ID: Env.schema.string.optional(),
+  GITHUB_CLIENT_SECRET: Env.schema.string.optional(),
 });

@@ -51,8 +51,6 @@ watch(() => props.content, async () => {
 </script>
 
 <template>
-
-{{ mdcKey }}
    <MDC
     v-if="isReady"
     :key="mdcKey"
