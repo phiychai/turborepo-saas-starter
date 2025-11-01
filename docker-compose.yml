@@ -43,7 +43,7 @@ services:
 
   # Directus CMS
   directus:
-    image: directus/directus:11.10.2
+    image: directus/directus:11.12.0
     container_name: saas-directus
     restart: unless-stopped
     ports:

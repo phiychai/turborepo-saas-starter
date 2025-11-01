@@ -29,7 +29,9 @@
     "docker:logs": "docker-compose logs -f",
     "docker:restart": "docker-compose restart",
     "docker:prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d",
-    "docker:prod:build": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d"
+    "docker:prod:build": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d",
+    "docs:sync": "bash scripts/sync-docs.sh",
+    "docs:prepare": "bash scripts/add-frontmatter.sh && bash scripts/sync-docs.sh"
   },
   "keywords": [
     "monorepo",
