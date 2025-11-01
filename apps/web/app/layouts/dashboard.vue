@@ -19,67 +19,76 @@ onMounted(async () => {
 })
 
 const links = [[{
-  label: 'Dashboard',
+  label: 'Home',
   icon: 'i-lucide-house',
   to: '/dashboard',
   onSelect: () => {
     open.value = false
   }
 }, {
-  label: 'Inbox',
-  icon: 'i-lucide-inbox',
-  to: '/dashboard/inbox',
-  badge: '0',
+  label: 'Browse',
+  icon: 'i-lucide-folder-open',
+  to: '/dashboard/browse',
   onSelect: () => {
     open.value = false
   }
 }, {
-  label: 'Customers',
-  icon: 'i-lucide-users',
-  to: '/dashboard/customers',
+  label: 'Favorites',
+  icon: 'i-lucide-heart',
+  to: '/dashboard/favorites',
   onSelect: () => {
     open.value = false
   }
 }, {
+  label: 'Notes',
+  icon: 'i-lucide-notebook',
+  to: '/dashboard/favorites',
+  onSelect: () => {
+    open.value = false
+  }
+}], [{
   label: 'Settings',
   to: '/dashboard/settings',
   icon: 'i-lucide-settings',
-  defaultOpen: true,
+  defaultOpen: false,
   type: 'trigger',
-  children: [{
-    label: 'General',
-    to: '/dashboard/settings',
-    exact: true,
-    onSelect: () => {
-      open.value = false
-    }
-  }, {
-    label: 'Members',
-    to: '/dashboard/settings/members',
-    onSelect: () => {
-      open.value = false
-    }
-  }, {
-    label: 'Notifications',
-    to: '/dashboard/settings/notifications',
-    onSelect: () => {
-      open.value = false
-    }
-  }, {
-    label: 'Security',
-    to: '/dashboard/settings/security',
-    onSelect: () => {
-      open.value = false
-    }
-  }]
-}], [{
-  label: 'Back to Site',
-  icon: 'i-lucide-arrow-left',
-  to: '/',
+  // children: [{
+  //   label: 'General',
+  //   to: '/dashboard/settings',
+  //   exact: true,
+  //   onSelect: () => {
+  //     open.value = false
+  //   }
+  // }, {
+  //   label: 'Members',
+  //   to: '/dashboard/settings/members',
+  //   onSelect: () => {
+  //     open.value = false
+  //   }
+  // }, {
+  //   label: 'Notifications',
+  //   to: '/dashboard/settings/notifications',
+  //   onSelect: () => {
+  //     open.value = false
+  //   }
+  // }, {
+  //   label: 'Security',
+  //   to: '/dashboard/settings/security',
+  //   onSelect: () => {
+  //     open.value = false
+  //   }
+  // }]
+},
+   {
+  label: 'Help',
+  icon: 'i-lucide-help-circle',
+  to: '/dashboard/favorites',
   onSelect: () => {
     open.value = false
   }
-}]] satisfies NavigationMenuItem[][]
+}
+
+  ]] satisfies NavigationMenuItem[][]
 
 const groups = computed(() => [{
   id: 'links',
@@ -93,8 +102,6 @@ const groups = computed(() => [{
 
     <AppHeader />
   <UDashboardGroup unit="rem" style="margin-top: 64px">
-
-
 
     <UDashboardSidebar
       id="default"
@@ -110,7 +117,7 @@ const groups = computed(() => [{
       </template> -->
 
       <template #default="{ collapsed }">
-        <UDashboardSearchButton :collapsed="collapsed" class="bg-transparent ring-default" />
+        <!-- <UDashboardSearchButton :collapsed="collapsed" class="bg-transparent ring-default" /> -->
 
         <UNavigationMenu
           :collapsed="collapsed"
@@ -134,7 +141,7 @@ const groups = computed(() => [{
       </template>
     </UDashboardSidebar>
 
-    <UDashboardSearch :groups="groups" />
+    <!-- <UDashboardSearch :groups="groups" /> -->
 
     <slot />
 

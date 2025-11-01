@@ -18,7 +18,7 @@ const { login, isAuthenticated } = useAuth()
 // Redirect if already authenticated
 onMounted(() => {
   if (isAuthenticated.value) {
-    router.push('/dashboard')
+    router.push('/')
   }
 })
 
@@ -67,14 +67,16 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
     toast.add({
       title: 'Success',
       description: 'Login successful!',
-      color: 'green'
+      color: 'success'
     })
-    router.push('/dashboard')
+    // Redirect to / - it will show dashboard for authenticated users
+    // or /admin for admin users
+    router.push('/')
   } else {
     toast.add({
       title: 'Error',
       description: result.error || 'Login failed',
-      color: 'red'
+      color: 'error'
     })
   }
 }
@@ -87,7 +89,7 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
     :providers="providers"
     title="Welcome back"
     icon="i-lucide-lock"
-    @submit="onSubmit"
+    @submit.prevent="onSubmit"
   >
     <template #description>
       Don't have an account? <ULink

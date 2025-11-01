@@ -18,7 +18,7 @@ const { register, login, isAuthenticated } = useAuth()
 // Redirect if already authenticated
 onMounted(() => {
   if (isAuthenticated.value) {
-    router.push('/dashboard')
+    router.push('/')
   }
 })
 
@@ -78,7 +78,8 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
     // Auto-login after successful registration
     const loginResult = await login(payload.data.email, payload.data.password)
     if (loginResult.success) {
-      router.push('/dashboard')
+      // Redirect to / - it will show dashboard for authenticated users
+      router.push('/')
     }
   } else {
     toast.add({
@@ -97,7 +98,7 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
     :providers="providers"
     title="Create an account"
     :submit="{ label: 'Create account' }"
-    @submit="onSubmit"
+    @submit.prevent="onSubmit"
   >
     <template #description>
       Already have an account? <ULink

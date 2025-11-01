@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const route = useRoute()
+const { isAuthenticated } = useAuth()
 
 const items = computed(() => [{
   label: 'Docs',
@@ -19,10 +20,19 @@ const items = computed(() => [{
     color: 'primary' as const
   }
 }])
+
+const headerUI = computed(() => {
+  if (isAuthenticated.value) {
+    return {
+      container: 'max-w-none flex items-center justify-between gap-3 h-full'
+    }
+  }
+  return undefined
+})
 </script>
 
 <template>
-  <UHeader toggle-side="left">
+  <UHeader toggle-side="left" :ui="headerUI">
     <template #left>
       <NuxtLink to="/">
         <LogoPro class="w-auto h-6 shrink-0" />
@@ -61,6 +71,7 @@ const items = computed(() => [{
         class="hidden lg:inline-flex"
         to="/signup"
       />
+        <UserMenu :collapsed="true" />
     </template>
 
     <template #body>
@@ -86,6 +97,7 @@ const items = computed(() => [{
         to="/signup"
         block
       />
+
     </template>
   </UHeader>
 </template>
