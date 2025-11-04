@@ -7,32 +7,31 @@
 |
 */
 
-import router from "@adonisjs/core/services/router";
-import AutoSwagger from "adonis-autoswagger";
+import router from '@adonisjs/core/services/router';
+import AutoSwagger from 'adonis-autoswagger';
 
-import { auth } from "#config/better_auth";
-import { toWebRequest, fromWebResponse } from "#utils/better_auth_helpers";
-import swagger from "#config/swagger";
-import { middleware } from "#start/kernel";
+import { auth } from '#config/better_auth';
+import swagger from '#config/swagger';
+import { middleware } from '#start/kernel';
+import { toWebRequest, fromWebResponse } from '#utils/better_auth_helpers';
 
-const AuthController = () => import("#controllers/auth_controller");
-const UserController = () => import("#controllers/user_controller");
-const CmsProxyController = () => import("#controllers/cms_proxy_controller");
-const BillingController = () => import("#controllers/billing_controller");
+const UserController = () => import('#controllers/user_controller');
+const CmsProxyController = () => import('#controllers/cms_proxy_controller');
+const BillingController = () => import('#controllers/billing_controller');
 
 // Swagger documentation
-router.get("/swagger", async () => AutoSwagger.default.docs(router.toJSON(), swagger));
+router.get('/swagger', async () => AutoSwagger.default.docs(router.toJSON(), swagger));
 
-router.get("/docs", async () => AutoSwagger.default.ui("/swagger", swagger));
+router.get('/docs', async () => AutoSwagger.default.ui('/swagger', swagger));
 
 // Health check
-router.get("/health", async () => ({ status: "ok", timestamp: new Date().toISOString() }));
+router.get('/health', async () => ({ status: 'ok', timestamp: new Date().toISOString() }));
 
 // Root endpoint
-router.get("/", async () => ({
-  name: "Turborepo SaaS Starter API",
-  version: "1.0.0",
-  status: "running",
+router.get('/', async () => ({
+  name: 'Turborepo SaaS Starter API',
+  version: '1.0.0',
+  status: 'running',
 }));
 
 /*
@@ -42,34 +41,19 @@ router.get("/", async () => ({
 */
 // Better Auth direct handler (recommended pattern)
 // Converts AdonisJS Request/Response to Web Standard Request/Response
-router.any("/api/auth/*", async ({ request, response }) => {
+router.any('/api/auth/*', async ({ request, response }) => {
   try {
     const webRequest = await toWebRequest(request);
     const authResponse = await auth.handler(webRequest);
     return await fromWebResponse(authResponse, response);
   } catch (error) {
-    console.error("Better Auth handler error:", error);
+    console.error('Better Auth handler error:', error);
     return response.status(500).send({
-      error: "Authentication failed",
+      error: 'Authentication failed',
       message: error.message,
     });
   }
 });
-
-/*
-|--------------------------------------------------------------------------
-| Legacy Authentication Routes (deprecated, kept for reference)
-|--------------------------------------------------------------------------
-*/
-// router
-//   .group(() => {
-//     router.post("/register", [AuthController, "register"]);
-//     router.post("/login", [AuthController, "login"]);
-//     router.post("/logout", [AuthController, "logout"]).use(middleware.auth());
-//     router.get("/me", [AuthController, "me"]).use(middleware.auth());
-//     router.post("/change-password", [AuthController, "changePassword"]).use(middleware.auth());
-//   })
-//   .prefix("/api/auth");
 
 /*
 |--------------------------------------------------------------------------
@@ -78,12 +62,13 @@ router.any("/api/auth/*", async ({ request, response }) => {
 */
 router
   .group(() => {
-    router.get("/profile", [UserController, "profile"]);
-    router.patch("/profile", [UserController, "updateProfile"]);
-    router.get("/users", [UserController, "index"]); // Admin only
-    router.patch("/users/:id/toggle-status", [UserController, "toggleStatus"]); // Admin only
+    router.get('/me', [UserController, 'me']); // New endpoint - merged profile
+    router.get('/profile', [UserController, 'profile']); // Keep existing for backward compatibility
+    router.patch('/profile', [UserController, 'updateProfile']);
+    router.get('/users', [UserController, 'index']); // Admin only
+    router.patch('/users/:id/toggle-status', [UserController, 'toggleStatus']); // Admin only
   })
-  .prefix("/api/user")
+  .prefix('/api/user')
   .use(middleware.auth());
 
 /*
@@ -94,16 +79,16 @@ router
 router
   .group(() => {
     // Collection shortcuts
-    router.get("/collections/:collection", [CmsProxyController, "getCollection"]);
-    router.get("/collections/:collection/:id", [CmsProxyController, "getItem"]);
+    router.get('/collections/:collection', [CmsProxyController, 'getCollection']);
+    router.get('/collections/:collection/:id', [CmsProxyController, 'getItem']);
 
     // Generic proxy routes
-    router.get("/*", [CmsProxyController, "get"]);
-    router.post("/*", [CmsProxyController, "post"]);
-    router.patch("/*", [CmsProxyController, "patch"]);
-    router.delete("/*", [CmsProxyController, "delete"]);
+    router.get('/*', [CmsProxyController, 'get']);
+    router.post('/*', [CmsProxyController, 'post']);
+    router.patch('/*', [CmsProxyController, 'patch']);
+    router.delete('/*', [CmsProxyController, 'delete']);
   })
-  .prefix("/api/cms");
+  .prefix('/api/cms');
 
 /*
 |--------------------------------------------------------------------------
@@ -113,22 +98,22 @@ router
 router
   .group(() => {
     // Account management
-    router.get("/account", [BillingController, "getOrCreateAccount"]);
+    router.get('/account', [BillingController, 'getOrCreateAccount']);
 
     // Subscriptions
-    router.get("/subscriptions", [BillingController, "getSubscriptions"]);
-    router.post("/subscriptions", [BillingController, "createSubscription"]);
-    router.delete("/subscriptions/:id", [BillingController, "cancelSubscription"]);
+    router.get('/subscriptions', [BillingController, 'getSubscriptions']);
+    router.post('/subscriptions', [BillingController, 'createSubscription']);
+    router.delete('/subscriptions/:id', [BillingController, 'cancelSubscription']);
 
     // Invoices
-    router.get("/invoices", [BillingController, "getInvoices"]);
+    router.get('/invoices', [BillingController, 'getInvoices']);
 
     // Payment methods
-    router.get("/payment-methods", [BillingController, "getPaymentMethods"]);
-    router.post("/payment-methods", [BillingController, "addPaymentMethod"]);
+    router.get('/payment-methods', [BillingController, 'getPaymentMethods']);
+    router.post('/payment-methods', [BillingController, 'addPaymentMethod']);
 
     // Plans (public)
-    router.get("/plans", [BillingController, "getPlans"]);
+    router.get('/plans', [BillingController, 'getPlans']);
   })
-  .prefix("/api/billing")
+  .prefix('/api/billing')
   .use(middleware.auth());

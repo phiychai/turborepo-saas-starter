@@ -7,7 +7,7 @@ declare module "@adonisjs/core/types/http" {
       user: User;
     };
     // bouncer is declared in initialize_bouncer_middleware.ts
-    betterAuthUser?: unknown;
-    betterAuthSession?: unknown;
+    betterAuthUser?: any;
+    betterAuthSession?: any;
   }
 }

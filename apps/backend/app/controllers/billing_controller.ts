@@ -1,5 +1,6 @@
-import type { HttpContext } from "@adonisjs/core/http";
-import billingService from "#services/billing_service";
+import type { HttpContext } from '@adonisjs/core/http';
+
+import billingService from '#services/billing_service';
 
 export default class BillingController {
   /**
@@ -18,7 +19,7 @@ export default class BillingController {
         account = await billingService.createAccount({
           name: user.fullName || user.email,
           email: user.email,
-          currency: "USD",
+          currency: 'USD',
         });
       }
 
@@ -27,7 +28,7 @@ export default class BillingController {
       });
     } catch (error) {
       return response.internalServerError({
-        message: "Failed to get or create billing account",
+        message: 'Failed to get or create billing account',
         error: error.message,
       });
     }
@@ -56,7 +57,7 @@ export default class BillingController {
       });
     } catch (error) {
       return response.internalServerError({
-        message: "Failed to fetch subscriptions",
+        message: 'Failed to fetch subscriptions',
         error: error.message,
       });
     }
@@ -72,7 +73,7 @@ export default class BillingController {
 
       if (!planName) {
         return response.badRequest({
-          message: "Plan name is required",
+          message: 'Plan name is required',
         });
       }
 
@@ -84,7 +85,7 @@ export default class BillingController {
         account = await billingService.createAccount({
           name: user.fullName || user.email,
           email: user.email,
-          currency: "USD",
+          currency: 'USD',
         });
       }
 
@@ -95,12 +96,12 @@ export default class BillingController {
       });
 
       return response.created({
-        message: "Subscription created successfully",
+        message: 'Subscription created successfully',
         subscription,
       });
     } catch (error) {
       return response.internalServerError({
-        message: "Failed to create subscription",
+        message: 'Failed to create subscription',
         error: error.message,
       });
     }
@@ -118,11 +119,11 @@ export default class BillingController {
       await billingService.cancelSubscription(subscriptionId, requestedDate);
 
       return response.ok({
-        message: "Subscription cancelled successfully",
+        message: 'Subscription cancelled successfully',
       });
     } catch (error) {
       return response.internalServerError({
-        message: "Failed to cancel subscription",
+        message: 'Failed to cancel subscription',
         error: error.message,
       });
     }
@@ -150,7 +151,7 @@ export default class BillingController {
       });
     } catch (error) {
       return response.internalServerError({
-        message: "Failed to fetch invoices",
+        message: 'Failed to fetch invoices',
         error: error.message,
       });
     }
@@ -168,7 +169,7 @@ export default class BillingController {
       });
     } catch (error) {
       return response.internalServerError({
-        message: "Failed to fetch plans",
+        message: 'Failed to fetch plans',
         error: error.message,
       });
     }
@@ -184,7 +185,7 @@ export default class BillingController {
 
       if (!pluginName || !pluginInfo) {
         return response.badRequest({
-          message: "Plugin name and info are required",
+          message: 'Plugin name and info are required',
         });
       }
 
@@ -197,12 +198,12 @@ export default class BillingController {
       });
 
       return response.created({
-        message: "Payment method added successfully",
+        message: 'Payment method added successfully',
         paymentMethod,
       });
     } catch (error) {
       return response.internalServerError({
-        message: "Failed to add payment method",
+        message: 'Failed to add payment method',
         error: error.message,
       });
     }
@@ -230,7 +231,7 @@ export default class BillingController {
       });
     } catch (error) {
       return response.internalServerError({
-        message: "Failed to fetch payment methods",
+        message: 'Failed to fetch payment methods',
         error: error.message,
       });
     }

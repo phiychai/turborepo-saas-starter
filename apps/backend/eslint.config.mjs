@@ -1,7 +1,6 @@
 import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
-// @ts-expect-error - ESLint config doesn't provide types
 import nodeConfig from "@turborepo-saas-starter/eslint-config/node";
 
 const __filename = fileURLToPath(import.meta.url);

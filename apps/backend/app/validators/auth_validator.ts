@@ -34,6 +34,8 @@ export const loginValidator = vine.compile(
  */
 export const updateProfileValidator = vine.compile(
   vine.object({
+    firstName: vine.string().trim().minLength(1).maxLength(100).optional(),
+    lastName: vine.string().trim().minLength(1).maxLength(100).optional(),
     fullName: vine.string().trim().minLength(2).maxLength(100).optional(),
     email: vine
       .string()
@@ -49,6 +51,8 @@ export const updateProfileValidator = vine.compile(
         return !user;
       })
       .optional(),
+    avatarUrl: vine.string().url().optional(),
+    preferences: vine.any().optional(),
   })
 );
 
@@ -61,4 +65,3 @@ export const changePasswordValidator = vine.compile(
     newPassword: vine.string().minLength(8).maxLength(100),
   })
 );
-

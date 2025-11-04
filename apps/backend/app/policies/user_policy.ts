@@ -1,12 +1,13 @@
-import { BasePolicy } from '@adonisjs/bouncer'
-import User from '#models/user'
+import { BasePolicy } from "@adonisjs/bouncer";
+
+import type User from "#models/user";
 
 export default class UserPolicy extends BasePolicy {
   /**
    * Check if user can view the user list
    */
   viewList(user: User) {
-    return user.role === 'admin'
+    return user.role === "admin";
   }
 
   /**
@@ -14,7 +15,7 @@ export default class UserPolicy extends BasePolicy {
    */
   view(user: User, targetUser: User) {
     // Admins can view anyone, users can view themselves
-    return user.role === 'admin' || user.id === targetUser.id
+    return user.role === "admin" || user.id === targetUser.id;
   }
 
   /**
@@ -22,7 +23,7 @@ export default class UserPolicy extends BasePolicy {
    */
   update(user: User, targetUser: User) {
     // Admins can update anyone, users can update themselves
-    return user.role === 'admin' || user.id === targetUser.id
+    return user.role === "admin" || user.id === targetUser.id;
   }
 
   /**
@@ -30,7 +31,7 @@ export default class UserPolicy extends BasePolicy {
    */
   delete(user: User, targetUser: User) {
     // Only admins can delete users, and cannot delete themselves
-    return user.role === 'admin' && user.id !== targetUser.id
+    return user.role === "admin" && user.id !== targetUser.id;
   }
 
   /**
@@ -38,7 +39,6 @@ export default class UserPolicy extends BasePolicy {
    */
   toggleStatus(user: User, targetUser: User) {
     // Only admins can toggle status, and cannot toggle their own
-    return user.role === 'admin' && user.id !== targetUser.id
+    return user.role === "admin" && user.id !== targetUser.id;
   }
 }
-

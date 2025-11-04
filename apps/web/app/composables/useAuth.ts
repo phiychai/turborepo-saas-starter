@@ -18,7 +18,12 @@ export const useAuth = () => {
   const user = computed(() => authStore.user);
   const loading = computed(() => authStore.loading);
   const isAuthenticated = computed(() => authStore.isAuthenticated);
-  const isAdmin = computed(() => user.value?.role === 'admin');
+  const isAdmin = computed(() => authStore.isAdmin);
+
+  // Auth metadata
+  const authProvider = computed(() => authStore.authProvider);
+  const isEmailVerified = computed(() => authStore.isEmailVerified);
+  const isMfaEnabled = computed(() => authStore.isMfaEnabled);
 
   return {
     // State (as computed refs for reactivity)
@@ -26,6 +31,11 @@ export const useAuth = () => {
     loading,
     isAuthenticated,
     isAdmin,
+
+    // Auth metadata
+    authProvider,
+    isEmailVerified,
+    isMfaEnabled,
 
     // Actions (direct references to store actions)
     login: authStore.login,

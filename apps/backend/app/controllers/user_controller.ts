@@ -1,30 +1,48 @@
-import type { HttpContext } from "@adonisjs/core/http";
-import User from "#models/user";
-import { updateProfileValidator } from "#validators/auth_validator";
-import { bouncer } from "@adonisjs/bouncer";
-import * as abilities from "#abilities/main";
-import UserPolicy from "#policies/user_policy";
+import { UserProfileDTOBuilder, type UserProfileDTO } from '../dto/user_profile_dto.js';
+
+import type { HttpContext } from '@adonisjs/core/http';
+
+import * as abilities from '#abilities/main';
+import User from '#models/user';
+import UserPolicy from '#policies/user_policy';
+import { updateProfileValidator } from '#validators/auth_validator';
 
 export default class UserController {
   /**
-   * Get current user profile
+   * Get current user profile (merged from Adonis + Better Auth)
+   * GET /api/user/me
+   */
+  async me({ auth, betterAuthUser, betterAuthSession, response }: HttpContext): Promise<void> {
+    // Build DTO from Adonis User and Better Auth data
+    const profile: UserProfileDTO = UserProfileDTOBuilder.build(
+      auth.user!,
+      betterAuthUser,
+      betterAuthSession
+    );
+
+    return response.json(profile);
+  }
+
+  /**
+   * Get current user profile (legacy endpoint - kept for backward compatibility)
    */
   async profile({ auth, response }: HttpContext) {
     // User is already authenticated (via middleware)
     // No authorization needed - users can always view their own profile
+    const user = auth.user!;
     return response.ok({
-      id: auth.user.id,
-      email: auth.user.email,
-      firstName: auth.user.firstName,
-      lastName: auth.user.lastName,
-      username: auth.user.username,
-      avatarUrl: auth.user.avatarUrl,
-      fullName: auth.user.fullName,
-      role: auth.user.role,
-      isActive: auth.user.isActive,
-      preferences: auth.user.preferences,
-      createdAt: auth.user.createdAt,
-      updatedAt: auth.user.updatedAt,
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      username: user.username,
+      avatarUrl: user.avatarUrl,
+      fullName: user.fullName,
+      role: user.role,
+      isActive: user.isActive,
+      preferences: user.preferences,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     });
   }
 
@@ -33,48 +51,49 @@ export default class UserController {
    */
   async updateProfile({ auth, request, response }: HttpContext) {
     try {
+      const user = auth.user!;
       // User can always update their own profile
       const data = await request.validateUsing(updateProfileValidator, {
-        meta: { userId: auth.user.id },
+        meta: { userId: user.id },
       });
 
       // Update fields
       if (data.firstName !== undefined) {
-        auth.user.firstName = data.firstName;
+        user.firstName = data.firstName;
       }
       if (data.lastName !== undefined) {
-        auth.user.lastName = data.lastName;
+        user.lastName = data.lastName;
       }
       if (data.fullName !== undefined) {
-        auth.user.fullName = data.fullName;
+        user.fullName = data.fullName;
       }
       if (data.email !== undefined) {
-        auth.user.email = data.email;
+        user.email = data.email;
       }
       if (data.avatarUrl !== undefined) {
-        auth.user.avatarUrl = data.avatarUrl;
+        user.avatarUrl = data.avatarUrl;
       }
       if (data.preferences !== undefined) {
-        auth.user.preferences = data.preferences;
+        user.preferences = data.preferences;
       }
 
-      await auth.user.save();
+      await user.save();
 
       return response.ok({
-        message: "Profile updated successfully",
+        message: 'Profile updated successfully',
         user: {
-          id: auth.user.id,
-          email: auth.user.email,
-          firstName: auth.user.firstName,
-          lastName: auth.user.lastName,
-          fullName: auth.user.fullName,
-          role: auth.user.role,
+          id: user.id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          fullName: user.fullName,
+          role: user.role,
         },
       });
     } catch (error) {
       if (error.messages) {
         return response.badRequest({
-          message: "Validation failed",
+          message: 'Validation failed',
           errors: error.messages,
         });
       }
@@ -87,11 +106,11 @@ export default class UserController {
    */
   async index({ auth, response }: HttpContext) {
     // Check if user can view user list
-    await abilities.viewUsers(auth.user);
+    await abilities.viewUsers.execute(auth.user!);
 
     const users = await User.query()
-      .select("id", "email", "firstName", "lastName", "username", "role", "isActive", "createdAt")
-      .orderBy("createdAt", "desc");
+      .select('id', 'email', 'firstName', 'lastName', 'username', 'role', 'isActive', 'createdAt')
+      .orderBy('createdAt', 'desc');
 
     return response.ok({
       users,
@@ -101,17 +120,18 @@ export default class UserController {
   /**
    * Toggle user status (admin only)
    */
-  async toggleStatus({ auth, params, response }: HttpContext) {
+  async toggleStatus({ bouncer, params, response }: HttpContext) {
     const targetUser = await User.findOrFail(params.id);
 
     // Check if user can toggle status using policy
-    await bouncer.with(UserPolicy).authorize("toggleStatus", auth.user, targetUser);
+    // authorize method: user is already set on bouncer, so we only pass action and remaining args
+    await bouncer.with(UserPolicy).authorize('toggleStatus', targetUser);
 
     targetUser.isActive = !targetUser.isActive;
     await targetUser.save();
 
     return response.ok({
-      message: `User ${targetUser.isActive ? "activated" : "deactivated"} successfully`,
+      message: `User ${targetUser.isActive ? 'activated' : 'deactivated'} successfully`,
       user: {
         id: targetUser.id,
         email: targetUser.email,
@@ -120,4 +140,3 @@ export default class UserController {
     });
   }
 }
-

@@ -1,9 +1,9 @@
 import { defineStore } from 'pinia';
-import { signIn, signUp, signOut, getSession } from '~/lib/auth-client';
-import type { User } from '~/types';
+import { signIn, signUp, signOut } from '~/lib/auth-client';
+import type { UserProfile } from '~/types';
 
 export interface AuthState {
-  user: User | null;
+  user: UserProfile | null;
   loading: boolean;
   initialized: boolean;
 }
@@ -16,9 +16,14 @@ export const useAuthStore = defineStore('auth', {
   }),
 
   getters: {
-    isAuthenticated: (state) => !!state.user,
+    isAuthenticated: (state) => !!state.user && state.user.isActive,
     currentUser: (state) => state.user,
     isLoading: (state) => state.loading,
+    isAdmin: (state) => state.user?.role === 'admin',
+    // Auth metadata getters
+    authProvider: (state) => state.user?.auth?.provider || null,
+    isEmailVerified: (state) => state.user?.auth?.emailVerified || false,
+    isMfaEnabled: (state) => state.user?.auth?.mfaEnabled || false,
   },
 
   actions: {
@@ -66,7 +71,7 @@ export const useAuthStore = defineStore('auth', {
         const result = await signUp.email({
           email: data.email,
           password: data.password,
-          name: data.fullName,
+          name: data.fullName || undefined,
         });
 
         if (result.error) {
@@ -102,7 +107,7 @@ export const useAuthStore = defineStore('auth', {
 
       try {
         await signOut();
-        this.user = null;
+        this.clearAuth();
         await navigateTo('/');
 
         return { success: true };
@@ -118,39 +123,43 @@ export const useAuthStore = defineStore('auth', {
     },
 
     /**
-     * Fetch current user session
+     * Fetch current user profile from /me endpoint
+     * This returns merged data from Adonis + Better Auth
      */
     async fetchUser() {
       this.loading = true;
 
       try {
-        const session = await getSession();
+        // Use useRequestFetch for SSR cookie forwarding, $fetch for client
+        // See: https://nuxt.com/docs/4.x/api/utils/dollarfetch#passing-headers-and-cookies
+        const requestFetch = useRequestFetch();
 
-        // Better Auth returns user in session.user or session.data.user
-        const userData = session?.user || session?.data?.user;
+        const profile = await requestFetch<UserProfile>('/api/user/me', {
+          credentials: 'include', // Include cookies for session
+        });
 
-        if (userData) {
-          this.user = userData as any;
-          this.initialized = true;
-          return {
-            success: true,
-            user: this.user,
-          };
-        }
-
-        this.user = null;
+        this.user = profile;
         this.initialized = true;
+
         return {
-          success: false,
-          user: null,
+          success: true,
+          user: this.user,
         };
       } catch (error: any) {
         console.error('Fetch user error:', error);
-        this.user = null;
-        this.initialized = true;
+
+        // If 401/403, user is not authenticated
+        if (error.statusCode === 401 || error.statusCode === 403) {
+          this.user = null;
+          this.initialized = true;
+        } else {
+          // Other errors - keep existing user if available
+          this.initialized = true;
+        }
+
         return {
           success: false,
-          user: null,
+          user: this.user,
         };
       } finally {
         this.loading = false;
@@ -160,19 +169,21 @@ export const useAuthStore = defineStore('auth', {
     /**
      * Update user profile
      */
-    async updateProfile(data: Partial<User>) {
+    async updateProfile(data: Partial<UserProfile>) {
       this.loading = true;
 
       try {
-        const { $fetch } = useNuxtApp();
+        // Use useRequestFetch for SSR cookie forwarding
+        const requestFetch = useRequestFetch();
 
-        const response = await $fetch('/api/user/profile', {
+        const response = await requestFetch<{ user: UserProfile }>('/api/user/profile', {
           method: 'PATCH',
           body: data,
         });
 
-        if (this.user) {
-          this.user = { ...this.user, ...response };
+        // Update local state
+        if (this.user && response.user) {
+          this.user = { ...this.user, ...response.user };
         }
 
         return {
@@ -197,9 +208,10 @@ export const useAuthStore = defineStore('auth', {
       this.loading = true;
 
       try {
-        const { $fetch } = useNuxtApp();
+        // Use useRequestFetch for SSR cookie forwarding
+        const requestFetch = useRequestFetch();
 
-        await $fetch('/api/auth/change-password', {
+        await requestFetch('/api/auth/change-password', {
           method: 'POST',
           body: { oldPassword, newPassword },
         });
@@ -222,6 +234,27 @@ export const useAuthStore = defineStore('auth', {
     clearAuth() {
       this.user = null;
       this.initialized = false;
+
+      // Explicitly clear persisted state from localStorage
+      // pinia-plugin-persistedstate uses store ID as key (usually 'auth')
+      if (process.client && typeof window !== 'undefined') {
+        try {
+          // Clear common localStorage key formats for this store
+          const keysToRemove = ['auth', 'pinia-auth', 'pinia/auth'];
+          keysToRemove.forEach((key) => {
+            localStorage.removeItem(key);
+          });
+
+          // Also check for exact match keys that might be used by the plugin
+          // The plugin typically uses just the store ID as the key
+          const storeId = 'auth';
+          if (localStorage.getItem(storeId)) {
+            localStorage.removeItem(storeId);
+          }
+        } catch (error) {
+          console.error('Failed to clear auth from localStorage:', error);
+        }
+      }
     },
   },
 
