@@ -1,6 +1,6 @@
-import { compose } from "@adonisjs/core/helpers";
-import { BaseModel, column } from "@adonisjs/lucid/orm";
-import { DateTime } from "luxon";
+import { compose } from '@adonisjs/core/helpers';
+import { BaseModel, column } from '@adonisjs/lucid/orm';
+import { DateTime } from 'luxon';
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -28,7 +28,7 @@ export default class User extends BaseModel {
 
   // Authorization
   @column()
-  declare role: "user" | "admin";
+  declare role: 'user' | 'admin';
 
   @column()
   declare isActive: boolean;
@@ -43,7 +43,7 @@ export default class User extends BaseModel {
   // Preferences
   @column({
     prepare: (value) => JSON.stringify(value),
-    consume: (value) => (typeof value === "string" ? JSON.parse(value) : value),
+    consume: (value) => (typeof value === 'string' ? JSON.parse(value) : value),
   })
   declare preferences: Record<string, any> | null;
 
@@ -63,7 +63,7 @@ export default class User extends BaseModel {
   // Computed properties
   get fullNameComputed(): string | null {
     if (this.firstName || this.lastName) {
-      return [this.firstName, this.lastName].filter(Boolean).join(" ") || null;
+      return [this.firstName, this.lastName].filter(Boolean).join(' ') || null;
     }
     return null;
   }

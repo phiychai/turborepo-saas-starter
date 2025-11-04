@@ -1,8 +1,7 @@
 import User from "#models/user";
-import AuthSyncError from "#models/auth_sync_error";
+import { AuthErrorLogger } from "#services/auth_error_logger";
 import logger from "@adonisjs/core/services/logger";
 import db from "@adonisjs/lucid/services/db";
-import hash from "@adonisjs/core/services/hash";
 
 export interface BetterAuthUser {
   id: string;
@@ -121,14 +120,14 @@ export class UserSyncService {
       return user;
     } catch (error: any) {
       // Log error to auth_sync_errors table (with security measures)
-      await this.logSyncError({
+      await AuthErrorLogger.logError({
         eventType: "upsert_failed",
         provider: provider || "email",
         externalUserId: betterAuthUser.id,
-        email: betterAuthUser.email, // Will be hashed in logSyncError
+        email: betterAuthUser.email, // Will be hashed in AuthErrorLogger
         adonisUserId: null,
         requestPath,
-        clientIp, // Will be hashed in logSyncError
+        clientIp, // Will be hashed in AuthErrorLogger
         error: error.message,
         payload: {
           betterAuthUserId: betterAuthUser.id,
@@ -170,101 +169,5 @@ export class UserSyncService {
     }
   }
 
-  /**
-   * Sanitize payload by redacting sensitive fields
-   */
-  private static sanitizePayload(payload: Record<string, any>): Record<string, any> {
-    const sensitiveKeys = [
-      "password",
-      "token",
-      "apiKey",
-      "secret",
-      "creditCard",
-      "ssn",
-      "api_key",
-      "access_token",
-      "refresh_token",
-    ];
-    const sanitized = { ...payload };
-
-    for (const key of Object.keys(sanitized)) {
-      const lowerKey = key.toLowerCase();
-      if (sensitiveKeys.some((sk) => lowerKey.includes(sk))) {
-        sanitized[key] = "[REDACTED]";
-      }
-      // Also sanitize nested objects
-      if (
-        typeof sanitized[key] === "object" &&
-        sanitized[key] !== null &&
-        !Array.isArray(sanitized[key])
-      ) {
-        sanitized[key] = this.sanitizePayload(sanitized[key]);
-      }
-    }
-
-    return sanitized;
-  }
-
-  /**
-   * Hash email address for privacy (one-way hash)
-   */
-  private static async hashEmail(email: string | null): Promise<string | null> {
-    if (!email) return null;
-    return await hash.make(email);
-  }
-
-  /**
-   * Hash IP address for GDPR compliance (one-way hash)
-   */
-  private static async hashIp(ip: string | null): Promise<string | null> {
-    if (!ip) return null;
-    return await hash.make(ip);
-  }
-
-  /**
-   * Log sync error to database with security measures
-   */
-  private static async logSyncError(data: {
-    eventType: "upsert_failed" | "missing_mapping" | "token_inconsistency" | "sync_failed";
-    provider?: string | null;
-    externalUserId?: string | null;
-    email?: string | null;
-    adonisUserId?: number | null;
-    requestPath?: string | null;
-    clientIp?: string | null;
-    error: string;
-    payload?: Record<string, any> | null;
-  }): Promise<void> {
-    try {
-      // Hash sensitive data before storing
-      const emailHash = await this.hashEmail(data.email);
-      const ipHash = await this.hashIp(data.clientIp);
-
-      // Sanitize payload to remove sensitive fields
-      const sanitizedPayload = data.payload ? this.sanitizePayload(data.payload) : null;
-
-      // Set expiration date (90 days for GDPR compliance)
-      const expiresAt = new Date();
-      expiresAt.setDate(expiresAt.getDate() + 90);
-
-      await AuthSyncError.create({
-        eventType: data.eventType,
-        provider: data.provider,
-        externalUserId: data.externalUserId,
-        emailHash: emailHash, // Store hash instead of plain email
-        adonisUserId: data.adonisUserId,
-        requestPath: data.requestPath,
-        clientIpHash: ipHash, // Store hash instead of plain IP
-        error: data.error,
-        payload: sanitizedPayload, // Sanitized payload
-        retryCount: 0,
-        handled: false,
-        expiresAt: expiresAt,
-      });
-    } catch (logError: any) {
-      // If logging fails, at least log to console (but don't include sensitive data)
-      logger.error(`Failed to log sync error: ${logError.message}`);
-    }
-  }
 }
 

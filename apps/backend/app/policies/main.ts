@@ -1,4 +1,4 @@
-import UserPolicy from "#policies/user_policy";
+import UserPolicy from '#policies/user_policy';
 
 /**
  * Export all policies

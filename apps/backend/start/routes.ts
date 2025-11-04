@@ -18,6 +18,7 @@ import { toWebRequest, fromWebResponse } from '#utils/better_auth_helpers';
 const UserController = () => import('#controllers/user_controller');
 const CmsProxyController = () => import('#controllers/cms_proxy_controller');
 const BillingController = () => import('#controllers/billing_controller');
+const AuthErrorsController = () => import('#controllers/admin/auth_errors_controller');
 
 // Swagger documentation
 router.get('/swagger', async () => AutoSwagger.default.docs(router.toJSON(), swagger));
@@ -89,6 +90,22 @@ router
     router.delete('/*', [CmsProxyController, 'delete']);
   })
   .prefix('/api/cms');
+
+/*
+|--------------------------------------------------------------------------
+| Admin Routes
+|--------------------------------------------------------------------------
+*/
+router
+  .group(() => {
+    // Auth error management
+    router.get('/auth-errors', [AuthErrorsController, 'index']);
+    router.get('/auth-errors/stats', [AuthErrorsController, 'stats']);
+    router.patch('/auth-errors/:id/handle', [AuthErrorsController, 'handle']);
+    router.post('/auth-errors/reconcile', [AuthErrorsController, 'reconcile']);
+  })
+  .prefix('/api/admin')
+  .use(middleware.auth());
 
 /*
 |--------------------------------------------------------------------------
