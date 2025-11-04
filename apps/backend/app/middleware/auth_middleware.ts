@@ -51,38 +51,34 @@ export default class AuthMiddleware {
         }
       }
 
-      // If still not found, try to sync user (background - don't block request)
+      // If still not found, try to sync user (await to ensure user exists before proceeding)
       // This ensures Adonis user exists even if hooks didn't fire
       if (!adonisUser) {
-        // Attempt to sync user in background
-        UserSyncService.syncUser({
+        // Attempt to sync user - await it to avoid race conditions
+        const syncedUser = await UserSyncService.syncUser({
           betterAuthUser: session.user,
-          provider: null, // Will be determined from account if needed
+          provider: undefined, // Will be determined from account if needed
           requestPath: ctx.request.url(),
           clientIp: ctx.request.ip(),
-        })
-          .then((syncedUser) => {
-            if (syncedUser) {
-              logger.info(`Background user sync successful: ${syncedUser.id}`);
-            }
-          })
-          .catch((error) => {
-            // Error logged in sync service
-            logger.error('Background user sync in middleware failed:', error);
+        });
+
+        if (syncedUser) {
+          logger.info(`User sync successful in middleware: ${syncedUser.id}`);
+          adonisUser = syncedUser;
+        } else {
+          // Sync failed - log missing mapping error
+          await this.logMissingMapping({
+            sessionId: session.session?.id,
+            betterAuthUserId: session.user.id,
+            email: session.user.email || null,
+            requestPath: ctx.request.url(),
+            clientIp: ctx.request.ip(),
           });
 
-        // Log missing mapping error
-        await this.logMissingMapping({
-          sessionId: session.session?.id,
-          betterAuthUserId: session.user.id,
-          email: session.user.email || null,
-          requestPath: ctx.request.url(),
-          clientIp: ctx.request.ip(),
-        });
-
-        return ctx.response.unauthorized({
-          message: 'User account not properly configured. Please contact support.',
-        });
+          return ctx.response.unauthorized({
+            message: 'User account not properly configured. Please contact support.',
+          });
+        }
       }
 
       // Verify user is active

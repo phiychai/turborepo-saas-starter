@@ -62,9 +62,48 @@ export const useAuthStore = defineStore('auth', {
     },
 
     /**
+     * Login with username and password (Better Auth Username Plugin)
+     */
+    async loginWithUsername(username: string, password: string) {
+      this.loading = true;
+
+      try {
+        const result = await signIn.username({ username, password });
+
+        if (result.error) {
+          return {
+            success: false,
+            error: result.error.message || 'Login failed',
+          };
+        }
+
+        // Fetch user data after successful login
+        await this.fetchUser();
+
+        return {
+          success: true,
+          user: this.user,
+        };
+      } catch (error: any) {
+        console.error('Login error:', error);
+        return {
+          success: false,
+          error: error.message || 'Login failed',
+        };
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    /**
      * Register a new user
      */
-    async register(data: { email: string; password: string; fullName?: string }) {
+    async register(data: {
+      email: string;
+      password: string;
+      fullName?: string;
+      username?: string;
+    }) {
       this.loading = true;
 
       try {
@@ -72,6 +111,7 @@ export const useAuthStore = defineStore('auth', {
           email: data.email,
           password: data.password,
           name: data.fullName || undefined,
+          username: data.username || undefined, // Better Auth Username Plugin accepts username here
         });
 
         if (result.error) {
@@ -146,14 +186,15 @@ export const useAuthStore = defineStore('auth', {
           user: this.user,
         };
       } catch (error: any) {
-        console.error('Fetch user error:', error);
-
-        // If 401/403, user is not authenticated
+        // Silently handle 401/403 - user is not authenticated (expected)
+        // Don't log to console as this is normal when user is not logged in
         if (error.statusCode === 401 || error.statusCode === 403) {
           this.user = null;
           this.initialized = true;
         } else {
-          // Other errors - keep existing user if available
+          // Log other errors (network issues, server errors, etc.)
+          console.error('Fetch user error:', error);
+          // Keep existing user if available (might be transient error)
           this.initialized = true;
         }
 
@@ -168,6 +209,7 @@ export const useAuthStore = defineStore('auth', {
 
     /**
      * Update user profile
+     * Note: Username updates should use updateUsername() method instead
      */
     async updateProfile(data: Partial<UserProfile>) {
       this.loading = true;
@@ -176,9 +218,12 @@ export const useAuthStore = defineStore('auth', {
         // Use useRequestFetch for SSR cookie forwarding
         const requestFetch = useRequestFetch();
 
+        // Remove username from data - it should be updated via Better Auth updateUser
+        const { username, ...profileData } = data;
+
         const response = await requestFetch<{ user: UserProfile }>('/api/user/profile', {
           method: 'PATCH',
-          body: data,
+          body: profileData,
         });
 
         // Update local state
@@ -195,6 +240,41 @@ export const useAuthStore = defineStore('auth', {
         return {
           success: false,
           error: error.message || 'Update failed',
+        };
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    /**
+     * Update username (Better Auth Username Plugin)
+     */
+    async updateUsername(username: string) {
+      this.loading = true;
+
+      try {
+        const authClient = (await import('~/lib/auth-client')).authClient;
+        const result = await authClient.updateUser({ username });
+
+        if (result.error) {
+          return {
+            success: false,
+            error: result.error.message || 'Username update failed',
+          };
+        }
+
+        // Fetch updated user data
+        await this.fetchUser();
+
+        return {
+          success: true,
+          user: this.user,
+        };
+      } catch (error: any) {
+        console.error('Update username error:', error);
+        return {
+          success: false,
+          error: error.message || 'Username update failed',
         };
       } finally {
         this.loading = false;

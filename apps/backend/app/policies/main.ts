@@ -5,4 +5,6 @@ import UserPolicy from '#policies/user_policy';
  */
 export const policies = {
   UserPolicy,
+} as {
+  UserPolicy: typeof UserPolicy;
 };

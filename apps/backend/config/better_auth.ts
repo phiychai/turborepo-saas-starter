@@ -1,13 +1,14 @@
-import app from "@adonisjs/core/services/app";
-import { betterAuth } from "better-auth";
-import { username } from "better-auth/plugins";
-import Database from "better-sqlite3";
-import { Pool } from "pg";
+import app from '@adonisjs/core/services/app';
+import { betterAuth } from 'better-auth';
+import { username, emailOTP } from 'better-auth/plugins';
+import Database from 'better-sqlite3';
+import { DateTime } from 'luxon';
+import { Pool } from 'pg';
 
-import env from "#start/env";
-import { UserSyncService } from "#services/user_sync_service";
-import User from "#models/user";
-import { DateTime } from "luxon";
+import User from '#models/user';
+import { EmailService } from '#services/email_service';
+import { UserSyncService } from '#services/user_sync_service';
+import env from '#start/env';
 
 /**
  * Better Auth Configuration
@@ -17,22 +18,22 @@ import { DateTime } from "luxon";
  */
 
 // Determine database connection
-const dbConnection = env.get("DB_CONNECTION", "sqlite");
+const dbConnection = env.get('DB_CONNECTION', 'sqlite');
 
 let database;
-if (dbConnection === "postgres") {
+if (dbConnection === 'postgres') {
   // PostgreSQL: Pass Pool instance directly
   database = new Pool({
-    host: env.get("DB_HOST", "localhost"),
-    port: env.get("DB_PORT", 5432),
-    user: env.get("DB_USER", "postgres"),
-    password: env.get("DB_PASSWORD", ""),
-    database: env.get("DB_DATABASE", "adonis_db"),
+    host: env.get('DB_HOST', 'localhost'),
+    port: env.get('DB_PORT', 5432),
+    user: env.get('DB_USER', 'postgres'),
+    password: env.get('DB_PASSWORD', ''),
+    database: env.get('DB_DATABASE', 'adonis_db'),
     max: 10,
   });
 } else {
   // SQLite: Pass Database instance directly
-  database = new Database(app.tmpPath("db.sqlite3"));
+  database = new Database(app.tmpPath('db.sqlite3'));
 }
 
 // Initialize Better Auth instance (direct export, no wrapper)
@@ -47,67 +48,114 @@ export const auth = betterAuth({
 
       // Custom validator - only lowercase, numbers, underscores
       usernameValidator: (username) => {
+        // Check reserved usernames
+        const reserved = [
+          'admin',
+          'administrator',
+          'root',
+          'system',
+          'api',
+          'www',
+          'mail',
+          'ftp',
+          'localhost',
+          'test',
+          'demo',
+          'support',
+          'help',
+          'info',
+          'contact',
+          'about',
+          'terms',
+          'privacy',
+          'settings',
+          'account',
+          'profile',
+          'dashboard',
+          'login',
+          'logout',
+          'signup',
+          'register',
+        ];
+
+        if (reserved.includes(username.toLowerCase())) {
+          return false;
+        }
+
         // Must match your validation rules
         const valid =
           /^[a-z0-9_]+$/.test(username) &&
-          !username.startsWith("_") &&
-          !username.endsWith("_") &&
-          !username.includes("__");
+          !username.startsWith('_') &&
+          !username.endsWith('_') &&
+          !username.includes('__');
         return valid;
       },
 
-      // Reserved usernames (align with your requirements)
-      reservedUsernames: [
-        "admin",
-        "administrator",
-        "root",
-        "system",
-        "api",
-        "www",
-        "mail",
-        "ftp",
-        "localhost",
-        "test",
-        "demo",
-        "support",
-        "help",
-        "info",
-        "contact",
-        "about",
-        "terms",
-        "privacy",
-        "settings",
-        "account",
-        "profile",
-        "dashboard",
-        "login",
-        "logout",
-        "signup",
-        "register",
-      ],
+      // Username normalization (lowercase, trim)
+      // Better Auth stores normalized username and original in displayUsername
+      usernameNormalization: (username) => username.toLowerCase().trim(),
 
-      // Normalize username (lowercase, trim)
-      normalize: (username) => username.toLowerCase().trim(),
+      // Display username normalization (optional - keep original case)
+      // If not provided, displayUsername will be set to original username before normalization
+      displayUsernameNormalization: false, // Keep original case for display
+
+      // Optional: Validate display username separately
+      // displayUsernameValidator: (displayUsername) => {
+      //   // Custom validation if needed
+      //   return true;
+      // },
+    }),
+    emailOTP({
+      /**
+       * Send OTP via email
+       * Better Auth handles OTP generation, validation, and expiration
+       */
+      async sendVerificationOTP({ email, otp, type }) {
+        try {
+          await EmailService.sendOTP({
+            to: email,
+            otp,
+            type: type as 'email-verification' | 'sign-in' | 'password-reset',
+          });
+        } catch (error: any) {
+          console.error('Failed to send OTP:', error);
+          throw new Error('Failed to send verification code. Please try again.');
+        }
+      },
+
+      // OTP configuration
+      otpLength: 6, // 6-digit OTP
+
+      // Override default email verification to use OTP instead of link
+      overrideDefaultEmailVerification: true,
     }),
   ],
 
   // Email & Password authentication
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: false, // TODO: Enable with email provider
+    requireEmailVerification: true, // Require email verification before account activation
+  },
+
+  // Email verification configuration
+  // When using emailOTP plugin with overrideDefaultEmailVerification: true,
+  // this still controls auto-sign-in behavior
+  emailVerification: {
+    autoSignInAfterVerification: true, // Auto sign in user after email verification
+    sendOnSignUp: true, // Send verification email automatically after sign up
   },
 
   // OAuth providers
   socialProviders: {
     google: {
-      clientId: env.get("GOOGLE_CLIENT_ID", ""),
-      clientSecret: env.get("GOOGLE_CLIENT_SECRET", ""),
-      enabled: !!(env.get("GOOGLE_CLIENT_ID") && env.get("GOOGLE_CLIENT_SECRET")),
+      clientId: env.get('GOOGLE_CLIENT_ID', ''),
+      clientSecret: env.get('GOOGLE_CLIENT_SECRET', ''),
+      enabled: !!(env.get('GOOGLE_CLIENT_ID') && env.get('GOOGLE_CLIENT_SECRET')),
     },
     github: {
-      clientId: env.get("GITHUB_CLIENT_ID", ""),
-      clientSecret: env.get("GITHUB_CLIENT_SECRET", ""),
-      enabled: !!(env.get("GITHUB_CLIENT_ID") && env.get("GITHUB_CLIENT_SECRET")),
+      clientId: env.get('GITHUB_CLIENT_ID', ''),
+      clientSecret: env.get('GITHUB_CLIENT_SECRET', ''),
+      enabled: !!(env.get('GITHUB_CLIENT_ID') && env.get('GITHUB_CLIENT_SECRET')),
     },
   },
 
@@ -122,21 +170,21 @@ export const auth = betterAuth({
 
   // Advanced settings
   advanced: {
-    cookiePrefix: "better_auth",
-    useSecureCookies: env.get("NODE_ENV") === "production",
+    cookiePrefix: 'better_auth',
+    useSecureCookies: env.get('NODE_ENV') === 'production',
     defaultCookieAttributes: {
-      sameSite: "lax",
+      sameSite: 'lax',
     },
   },
 
   // Security
   trustedOrigins: [
-    "http://localhost:3000", // Nuxt dev
-    env.get("NUXT_PUBLIC_SITE_URL", "http://localhost:3000"),
+    'http://localhost:3000', // Nuxt dev
+    env.get('NUXT_PUBLIC_SITE_URL', 'http://localhost:3000'),
   ],
 
-  secret: env.get("BETTER_AUTH_SECRET", env.get("APP_KEY")),
-  baseURL: env.get("BETTER_AUTH_URL", "http://localhost:3333"),
+  secret: env.get('BETTER_AUTH_SECRET', env.get('APP_KEY')),
+  baseURL: env.get('BETTER_AUTH_URL', 'http://localhost:3333'),
 
   // Use Better Auth's standard hooks to sync users and handle account lockout
   // These hooks are called by Better Auth automatically - we don't modify Better Auth
@@ -150,8 +198,8 @@ export const auth = betterAuth({
         // Extract request context if available
         const request = (account as any)?.request;
         const clientIp =
-          request?.headers?.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-          request?.headers?.get("x-real-ip") ||
+          request?.headers?.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+          request?.headers?.get('x-real-ip') ||
           null;
         const requestPath = request?.url || null;
 
@@ -159,7 +207,7 @@ export const auth = betterAuth({
         // This stores the mapping in our database (users.better_auth_user_id)
         await UserSyncService.syncUser({
           betterAuthUser: user,
-          provider: account?.providerId || "email",
+          provider: account?.providerId || 'email',
           requestPath,
           clientIp,
         });
@@ -169,7 +217,7 @@ export const auth = betterAuth({
         return user;
       } catch (error) {
         // Log error but don't break Better Auth flow
-        console.error("Error syncing user after sign-up:", error);
+        console.error('Error syncing user after sign-up:', error);
         return user; // Always return original user unchanged
       }
     },
@@ -183,15 +231,15 @@ export const auth = betterAuth({
       try {
         const request = (account as any)?.request;
         const clientIp =
-          request?.headers?.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-          request?.headers?.get("x-real-ip") ||
+          request?.headers?.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+          request?.headers?.get('x-real-ip') ||
           null;
         const requestPath = request?.url || null;
 
         // Upsert Adonis User record (updates if exists, creates if new)
         const adonisUser = await UserSyncService.syncUser({
           betterAuthUser: user,
-          provider: account?.providerId || "email",
+          provider: account?.providerId || 'email',
           requestPath,
           clientIp,
         });
@@ -209,7 +257,7 @@ export const auth = betterAuth({
         // Return user unchanged - Better Auth continues with its flow
         return user;
       } catch (error) {
-        console.error("Error syncing user after sign-in:", error);
+        console.error('Error syncing user after sign-in:', error);
         return user; // Always return original user unchanged
       }
     },
@@ -223,7 +271,7 @@ export const auth = betterAuth({
         if (!user?.id) return;
 
         // Find Adonis user by better_auth_user_id
-        const adonisUser = await User.findBy("better_auth_user_id", user.id);
+        const adonisUser = await User.findBy('better_auth_user_id', user.id);
         if (!adonisUser) return;
 
         // Increment failed attempts
@@ -239,7 +287,7 @@ export const auth = betterAuth({
 
         await adonisUser.save();
       } catch (error) {
-        console.error("Error tracking failed sign-in attempt:", error);
+        console.error('Error tracking failed sign-in attempt:', error);
         // Don't throw - let Better Auth continue its error flow
       }
     },
@@ -249,25 +297,20 @@ export const auth = betterAuth({
      * Check if account is locked
      */
     beforeSignIn: async ({ user }) => {
-      try {
-        if (!user?.id) return;
+      if (!user?.id) return;
 
-        const adonisUser = await User.findBy("better_auth_user_id", user.id);
-        if (!adonisUser) return;
+      const adonisUser = await User.findBy('better_auth_user_id', user.id);
+      if (!adonisUser) return;
 
-        // Check if account is locked
-        if (adonisUser.lockedUntil) {
-          const lockDate = adonisUser.lockedUntil.toJSDate();
-          if (lockDate > new Date()) {
-            const minutesLeft = Math.ceil((lockDate.getTime() - Date.now()) / 60000);
-            throw new Error(
-              `Account is temporarily locked due to multiple failed login attempts. Try again in ${minutesLeft} minute(s).`
-            );
-          }
+      // Check if account is locked
+      if (adonisUser.lockedUntil) {
+        const lockDate = adonisUser.lockedUntil.toJSDate();
+        if (lockDate > new Date()) {
+          const minutesLeft = Math.ceil((lockDate.getTime() - Date.now()) / 60000);
+          throw new Error(
+            `Account is temporarily locked due to multiple failed login attempts. Try again in ${minutesLeft} minute(s).`
+          );
         }
-      } catch (error: any) {
-        // Re-throw to prevent sign-in
-        throw error;
       }
     },
   },

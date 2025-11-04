@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
+import UsernameChecker from '~/components/auth/UsernameChecker.vue'
+import { authClient } from '~/lib/auth-client'
 
 definePageMeta({
   layout: 'auth'
@@ -13,7 +15,7 @@ useSeoMeta({
 
 const toast = useToast()
 const router = useRouter()
-const { register, login, isAuthenticated } = useAuth()
+const { register, isAuthenticated } = useAuth()
 
 // Redirect if already authenticated
 onMounted(() => {
@@ -21,6 +23,8 @@ onMounted(() => {
     router.push('/')
   }
 })
+
+const username = ref('')
 
 const fields = [{
   name: 'name',
@@ -65,22 +69,24 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
   const result = await register({
     email: payload.data.email,
     password: payload.data.password,
-    fullName: payload.data.name
+    fullName: payload.data.name,
+    username: username.value.trim() || undefined
   })
 
   if (result.success) {
+    // Better Auth automatically sends verification OTP when sendOnSignUp: true
+    // No need to manually send it here
     toast.add({
-      title: 'Success',
-      description: 'Account created successfully! Logging you in...',
-      color: 'green'
-    })
+      title: 'Account Created',
+      description: 'Please check your email for a verification code',
+      color: 'blue'
+    });
 
-    // Auto-login after successful registration
-    const loginResult = await login(payload.data.email, payload.data.password)
-    if (loginResult.success) {
-      // Redirect to / - it will show dashboard for authenticated users
-      router.push('/')
-    }
+    // Redirect to verification page
+    router.push({
+      path: '/verify-email',
+      query: { email: payload.data.email },
+    });
   } else {
     toast.add({
       title: 'Error',
@@ -105,6 +111,22 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
         to="/login"
         class="text-primary font-medium"
       >Login</ULink>.
+    </template>
+
+    <!-- Username field (optional) -->
+    <template #after-fields>
+      <div class="space-y-2">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+          Username <span class="text-gray-500 text-xs">(optional)</span>
+        </label>
+        <UsernameChecker
+          v-model="username"
+          placeholder="Choose a username"
+        />
+        <p class="text-xs text-gray-500 dark:text-gray-400">
+          Lowercase letters, numbers, and underscores only. 3-30 characters.
+        </p>
+      </div>
     </template>
 
     <template #footer>

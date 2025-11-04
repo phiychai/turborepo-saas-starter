@@ -39,10 +39,12 @@ export const useAuth = () => {
 
     // Actions (direct references to store actions)
     login: authStore.login,
+    loginWithUsername: authStore.loginWithUsername,
     register: authStore.register,
     logout: authStore.logout,
     fetchUser: authStore.fetchUser,
     updateProfile: authStore.updateProfile,
+    updateUsername: authStore.updateUsername,
     changePassword: authStore.changePassword,
   };
 };

@@ -13,12 +13,25 @@ useSeoMeta({
 
 const toast = useToast()
 const router = useRouter()
+const route = useRoute()
 const { login, isAuthenticated } = useAuth()
 
 // Redirect if already authenticated
 onMounted(() => {
   if (isAuthenticated.value) {
     router.push('/')
+    return
+  }
+
+  // Show success message if coming from email verification
+  if (route.query.verified === 'true') {
+    toast.add({
+      title: 'Email Verified',
+      description: 'Your email has been verified successfully. Please login to continue.',
+      color: 'green',
+    })
+    // Clean up query param
+    router.replace({ query: {} })
   }
 })
 

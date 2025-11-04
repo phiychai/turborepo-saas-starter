@@ -1,7 +1,7 @@
-import "@adonisjs/core/types/http";
-import type User from "#models/user";
+import '@adonisjs/core/http';
+import type User from '#models/user';
 
-declare module "@adonisjs/core/types/http" {
+declare module '@adonisjs/core/http' {
   interface HttpContext {
     auth: {
       user: User;

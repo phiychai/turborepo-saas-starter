@@ -97,9 +97,19 @@ async function checkUsername(username: string) {
 
   try {
     // Use Better Auth's username availability check
-    const result = await authClient.username.isAvailable(username);
+    // According to Better Auth docs: authClient.isUsernameAvailable({ username })
+    const result = await authClient.isUsernameAvailable({ username });
 
-    available.value = result;
+    if (result.error) {
+      available.value = false;
+      valid.value = false;
+      errorMessage.value = result.error.message || "Username is not available";
+      checked.value = true;
+      return;
+    }
+
+    // result.data contains { available: boolean }
+    available.value = result.data?.available || false;
     valid.value = true; // Better Auth handles validation
     checked.value = true;
   } catch (error: any) {

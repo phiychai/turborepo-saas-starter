@@ -1,7 +1,8 @@
-import User from "#models/user";
-import { AuthErrorLogger } from "#services/auth_error_logger";
-import logger from "@adonisjs/core/services/logger";
-import db from "@adonisjs/lucid/services/db";
+import logger from '@adonisjs/core/services/logger';
+import db from '@adonisjs/lucid/services/db';
+
+import User from '#models/user';
+import { AuthErrorLogger } from '#services/auth_error_logger';
 
 export interface BetterAuthUser {
   id: string;
@@ -24,22 +25,22 @@ export class UserSyncService {
    * Validate Better Auth user data before processing
    */
   private static validateBetterAuthUser(user: BetterAuthUser): void {
-    if (!user.id || typeof user.id !== "string" || user.id.length > 255) {
-      throw new Error("Invalid Better Auth user ID");
+    if (!user.id || typeof user.id !== 'string' || user.id.length > 255) {
+      throw new Error('Invalid Better Auth user ID');
     }
-    if (!user.email || typeof user.email !== "string" || user.email.length > 255) {
-      throw new Error("Invalid email address");
+    if (!user.email || typeof user.email !== 'string' || user.email.length > 255) {
+      throw new Error('Invalid email address');
     }
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(user.email)) {
-      throw new Error("Invalid email format");
+      throw new Error('Invalid email format');
     }
     if (user.name && user.name.length > 255) {
-      throw new Error("Name too long");
+      throw new Error('Name too long');
     }
-    if (user.image && (user.image.length > 2048 || !user.image.startsWith("http"))) {
-      throw new Error("Invalid image URL");
+    if (user.image && (user.image.length > 2048 || !user.image.startsWith('http'))) {
+      throw new Error('Invalid image URL');
     }
   }
 
@@ -60,9 +61,9 @@ export class UserSyncService {
       // Use transaction with row locking to prevent race conditions
       const user = await db.transaction(async (trx) => {
         // Use SELECT FOR UPDATE to lock rows during sync
-        let existingUser = await User.query({ client: trx })
-          .where("better_auth_user_id", betterAuthUser.id)
-          .orWhere("email", betterAuthUser.email)
+        const existingUser = await User.query({ client: trx })
+          .where('better_auth_user_id', betterAuthUser.id)
+          .orWhere('email', betterAuthUser.email)
           .forUpdate()
           .first();
 
@@ -81,7 +82,7 @@ export class UserSyncService {
 
           // Set default role if not set
           if (!existingUser.role) {
-            existingUser.role = "user";
+            existingUser.role = 'user';
           }
 
           // Set default isActive if not set
@@ -94,7 +95,7 @@ export class UserSyncService {
         } else {
           // Create new user (ensure email is always set - OAuth providers should return email)
           if (!betterAuthUser.email) {
-            throw new Error("Email is required for user creation");
+            throw new Error('Email is required for user creation');
           }
 
           // Create new user
@@ -106,7 +107,7 @@ export class UserSyncService {
             lastName: nameParts.lastName,
             username: (betterAuthUser as any).username || null, // Sync username from Better Auth if available
             avatarUrl: betterAuthUser.image,
-            role: "user",
+            role: 'user',
             isActive: true,
             failedAttempts: 0,
             lockedUntil: null,
@@ -121,8 +122,8 @@ export class UserSyncService {
     } catch (error: any) {
       // Log error to auth_sync_errors table (with security measures)
       await AuthErrorLogger.logError({
-        eventType: "upsert_failed",
-        provider: provider || "email",
+        eventType: 'upsert_failed',
+        provider: provider || 'email',
         externalUserId: betterAuthUser.id,
         email: betterAuthUser.email, // Will be hashed in AuthErrorLogger
         adonisUserId: null,
@@ -164,10 +165,8 @@ export class UserSyncService {
       // Multiple words: first word is first name, rest is last name
       return {
         firstName: parts[0],
-        lastName: parts.slice(1).join(" "),
+        lastName: parts.slice(1).join(' '),
       };
     }
   }
-
 }
-

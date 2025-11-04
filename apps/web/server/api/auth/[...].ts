@@ -37,6 +37,8 @@ export default defineEventHandler(async (event) => {
       method: event.method,
       headers,
       body: body ? JSON.stringify(body) : undefined,
+      // Add timeout and better error handling
+      signal: AbortSignal.timeout(10000), // 10 second timeout
     });
 
     // Forward response headers (especially Set-Cookie)
@@ -68,10 +70,34 @@ export default defineEventHandler(async (event) => {
     return responseText;
   } catch (error: any) {
     console.error('❌ Auth proxy error:', error);
+    console.error(`   Backend URL: ${backendUrl}`);
+    console.error(`   Target URL: ${fullUrl}`);
+
+    // Provide more helpful error messages
+    let errorMessage = 'Authentication service unavailable';
+    let statusCode = 503; // Service Unavailable
+
+    if (error.name === 'AbortError' || error.message?.includes('timeout')) {
+      errorMessage =
+        'Authentication service timeout. Please check if the backend server is running.';
+    } else if (error.message?.includes('ECONNREFUSED') || error.message?.includes('connect')) {
+      errorMessage = `Cannot connect to backend server at ${backendUrl}. Please ensure the backend is running on port 3333.`;
+      statusCode = 503;
+    } else if (error.message?.includes('ENOTFOUND')) {
+      errorMessage = `Backend server not found at ${backendUrl}. Please check your configuration.`;
+      statusCode = 503;
+    } else {
+      errorMessage = error.message || 'Authentication proxy error';
+    }
+
     throw createError({
-      statusCode: 500,
-      statusMessage: 'Authentication proxy error',
-      data: error.message,
+      statusCode,
+      statusMessage: errorMessage,
+      data: {
+        message: errorMessage,
+        backendUrl,
+        originalError: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      },
     });
   }
 });
