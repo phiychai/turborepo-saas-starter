@@ -1,14 +1,19 @@
 import type { HttpContext } from "@adonisjs/core/http";
 import type { NextFn } from "@adonisjs/core/types/http";
 import { auth } from "#config/better_auth";
+import User from "#models/user";
+import AuthSyncError from "#models/auth_sync_error";
+import { UserSyncService } from "#services/user_sync_service";
+import logger from "@adonisjs/core/services/logger";
+import hash from "@adonisjs/core/services/hash";
+import { DateTime } from "luxon";
 
 /**
- * Auth middleware is used authenticate HTTP requests using Better Auth
- * and deny access to unauthenticated users.
+ * Auth middleware validates Better Auth sessions and loads Adonis User model
  */
 export default class AuthMiddleware {
   /**
-   * The URL to redirect to, when authentication fails
+   * The URL to redirect to when authentication fails
    */
   redirectTo = "/login";
 
@@ -31,17 +36,118 @@ export default class AuthMiddleware {
         });
       }
 
-      // Attach user to context for use in controllers
-      // @ts-ignore - Adding Better Auth user to context
+      // Find Adonis User by better_auth_user_id
+      // This is the primary mapping method (stored in our Adonis users table)
+      let adonisUser = await User.findBy("better_auth_user_id", session.user.id);
+
+      // Fallback: If not found by better_auth_user_id, try email lookup
+      if (!adonisUser && session.user.email) {
+        adonisUser = await User.findBy("email", session.user.email);
+
+        // If found by email, update better_auth_user_id to establish the mapping
+        if (adonisUser) {
+          adonisUser.betterAuthUserId = session.user.id;
+          await adonisUser.save();
+        }
+      }
+
+      // If still not found, try to sync user (background - don't block request)
+      // This ensures Adonis user exists even if hooks didn't fire
+      if (!adonisUser) {
+        // Attempt to sync user in background
+        UserSyncService.syncUser({
+          betterAuthUser: session.user,
+          provider: null, // Will be determined from account if needed
+          requestPath: ctx.request.url(),
+          clientIp: ctx.request.ip(),
+        })
+          .then((syncedUser) => {
+            if (syncedUser) {
+              logger.info(`Background user sync successful: ${syncedUser.id}`);
+            }
+          })
+          .catch((error) => {
+            // Error logged in sync service
+            logger.error("Background user sync in middleware failed:", error);
+          });
+
+        // Log missing mapping error
+        await this.logMissingMapping({
+          sessionId: session.session?.id,
+          betterAuthUserId: session.user.id,
+          email: session.user.email || null,
+          requestPath: ctx.request.url(),
+          clientIp: ctx.request.ip(),
+        });
+
+        return ctx.response.unauthorized({
+          message: "User account not properly configured. Please contact support.",
+        });
+      }
+
+      // Verify user is active
+      if (!adonisUser.isActive) {
+        return ctx.response.forbidden({
+          message: "Account is disabled. Please contact support.",
+        });
+      }
+
+      // Attach Adonis User to context
+      ctx.auth = {
+        user: adonisUser,
+      } as any;
+
+      // Also attach Better Auth user/session for reference (optional)
       ctx.betterAuthUser = session.user;
-      // @ts-ignore - Adding Better Auth session to context
       ctx.betterAuthSession = session.session;
 
       return next();
     } catch (error) {
+      logger.error("Auth middleware error:", error);
       return ctx.response.unauthorized({
         message: "Authentication failed",
       });
+    }
+  }
+
+  /**
+   * Log missing mapping error
+   */
+  private async logMissingMapping(data: {
+    sessionId?: string;
+    betterAuthUserId: string;
+    email: string | null;
+    adonisUserId?: number | null;
+    requestPath: string;
+    clientIp: string;
+  }): Promise<void> {
+    try {
+      // Hash sensitive data before storing
+      const emailHash = data.email ? await hash.make(data.email) : null;
+      const ipHash = data.clientIp ? await hash.make(data.clientIp) : null;
+
+      // Set expiration date (90 days for GDPR compliance)
+      const expiresAt = DateTime.now().plus({ days: 90 });
+
+      await AuthSyncError.create({
+        eventType: "missing_mapping",
+        provider: null,
+        externalUserId: data.betterAuthUserId,
+        emailHash: emailHash,
+        adonisUserId: data.adonisUserId || null,
+        requestPath: data.requestPath,
+        clientIpHash: ipHash,
+        error: `Missing mapping between Better Auth user (${data.betterAuthUserId}) and Adonis user`,
+        payload: {
+          sessionId: data.sessionId,
+          betterAuthUserId: data.betterAuthUserId,
+        },
+        expiresAt: expiresAt,
+        retryCount: 0,
+        handled: false,
+      });
+    } catch (error) {
+      logger.error("Failed to log missing mapping error:", error);
     }
   }
 }
