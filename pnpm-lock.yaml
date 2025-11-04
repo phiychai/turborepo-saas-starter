@@ -36,6 +36,9 @@ importers:
       '@adonisjs/auth':
         specifier: ^9.4.0
         version: 9.4.2(413edde56b6c954a6a08b24e308b6f44)
+      '@adonisjs/bouncer':
+        specifier: ^3.1.6
+        version: 3.1.6(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.8.3))(@vinejs/vine@3.0.1)(bcrypt@5.1.1))
       '@adonisjs/core':
         specifier: ^6.18.0
         version: 6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.8.3))(@vinejs/vine@3.0.1)(bcrypt@5.1.1)
@@ -393,6 +396,21 @@ packages:
     engines: {node: '>=18.16.0'}
     peerDependencies:
       '@adonisjs/http-server': ^7.4.0
+
+  '@adonisjs/bouncer@3.1.6':
+    resolution: {integrity: sha512-vBTaiY3JpQaVo8ZnrRH4km1mBxc1SlAmjAzuYDF9zX9rl9nIxDPKWIDojBpYQXr13SvmOS+BKfACtV55l8g6Cw==}
+    engines: {node: '>=18.16.0'}
+    peerDependencies:
+      '@adonisjs/core': ^6.17.1
+      '@adonisjs/i18n': ^2.2.0
+      edge.js: ^6.2.1
+    peerDependenciesMeta:
+      '@adonisjs/core':
+        optional: true
+      '@adonisjs/i18n':
+        optional: true
+      edge.js:
+        optional: true
 
   '@adonisjs/config@5.0.3':
     resolution: {integrity: sha512-dO7gkYxZsrsnR8n7d5KUpyi+Q5c6BnV2rmFDqEmEjz5AkOZLLzJJJbeHgMb+M27le7ifEUoa8MRu6RED8NMsJg==}
@@ -9838,6 +9856,12 @@ snapshots:
       raw-body: 3.0.1
     transitivePeerDependencies:
       - supports-color
+
+  '@adonisjs/bouncer@3.1.6(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.8.3))(@vinejs/vine@3.0.1)(bcrypt@5.1.1))':
+    dependencies:
+      '@poppinss/utils': 6.10.1
+    optionalDependencies:
+      '@adonisjs/core': 6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.8.3))(@vinejs/vine@3.0.1)(bcrypt@5.1.1)
 
   '@adonisjs/config@5.0.3':
     dependencies:

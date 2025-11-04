@@ -1,13 +1,13 @@
 import "@adonisjs/core/types/http";
-import User from "#models/user";
+import type User from "#models/user";
 
 declare module "@adonisjs/core/types/http" {
   interface HttpContext {
     auth: {
       user: User;
     };
-    betterAuthUser?: any;
-    betterAuthSession?: any;
+    // bouncer is declared in initialize_bouncer_middleware.ts
+    betterAuthUser?: unknown;
+    betterAuthSession?: unknown;
   }
 }
-
