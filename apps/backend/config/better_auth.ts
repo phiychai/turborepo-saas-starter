@@ -1,8 +1,10 @@
+import app from "@adonisjs/core/services/app";
 import { betterAuth } from "better-auth";
+import { username } from "better-auth/plugins";
 import Database from "better-sqlite3";
 import { Pool } from "pg";
+
 import env from "#start/env";
-import app from "@adonisjs/core/services/app";
 
 /**
  * Better Auth Configuration
@@ -33,6 +35,58 @@ if (dbConnection === "postgres") {
 // Initialize Better Auth instance (direct export, no wrapper)
 export const auth = betterAuth({
   database,
+
+  plugins: [
+    username({
+      // Username validation rules
+      minUsernameLength: 3,
+      maxUsernameLength: 30,
+
+      // Custom validator - only lowercase, numbers, underscores
+      usernameValidator: (username) => {
+        // Must match your validation rules
+        const valid =
+          /^[a-z0-9_]+$/.test(username) &&
+          !username.startsWith("_") &&
+          !username.endsWith("_") &&
+          !username.includes("__");
+        return valid;
+      },
+
+      // Reserved usernames (align with your requirements)
+      reservedUsernames: [
+        "admin",
+        "administrator",
+        "root",
+        "system",
+        "api",
+        "www",
+        "mail",
+        "ftp",
+        "localhost",
+        "test",
+        "demo",
+        "support",
+        "help",
+        "info",
+        "contact",
+        "about",
+        "terms",
+        "privacy",
+        "settings",
+        "account",
+        "profile",
+        "dashboard",
+        "login",
+        "logout",
+        "signup",
+        "register",
+      ],
+
+      // Normalize username (lowercase, trim)
+      normalize: (username) => username.toLowerCase().trim(),
+    }),
+  ],
 
   // Email & Password authentication
   emailAndPassword: {

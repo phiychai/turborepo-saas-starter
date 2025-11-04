@@ -1,4 +1,5 @@
 import { createAuthClient } from 'better-auth/client';
+import { usernameClient } from 'better-auth/client/plugins';
 
 // Create auth client
 // Always use relative URLs to go through the Nuxt server proxy
@@ -7,7 +8,7 @@ export const authClient = createAuthClient({
   // Don't set baseURL - use relative URLs (same origin)
   // This makes all requests go to the same origin as the frontend
   baseURL: undefined,
-  plugins: [],
+  plugins: [usernameClient()],
   fetchOptions: {
     // Include credentials for cookie-based auth
     credentials: 'include',
