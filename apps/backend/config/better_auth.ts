@@ -5,6 +5,9 @@ import Database from "better-sqlite3";
 import { Pool } from "pg";
 
 import env from "#start/env";
+import { UserSyncService } from "#services/user_sync_service";
+import User from "#models/user";
+import { DateTime } from "luxon";
 
 /**
  * Better Auth Configuration
@@ -134,6 +137,140 @@ export const auth = betterAuth({
 
   secret: env.get("BETTER_AUTH_SECRET", env.get("APP_KEY")),
   baseURL: env.get("BETTER_AUTH_URL", "http://localhost:3333"),
+
+  // Use Better Auth's standard hooks to sync users and handle account lockout
+  // These hooks are called by Better Auth automatically - we don't modify Better Auth
+  hooks: {
+    /**
+     * Called after user signs up via Better Auth
+     * We sync the user to our Adonis users table
+     */
+    onAfterSignUp: async ({ user, account }) => {
+      try {
+        // Extract request context if available
+        const request = (account as any)?.request;
+        const clientIp =
+          request?.headers?.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+          request?.headers?.get("x-real-ip") ||
+          null;
+        const requestPath = request?.url || null;
+
+        // Upsert Adonis User record
+        // This stores the mapping in our database (users.better_auth_user_id)
+        await UserSyncService.syncUser({
+          betterAuthUser: user,
+          provider: account?.providerId || "email",
+          requestPath,
+          clientIp,
+        });
+
+        // Return user unchanged - Better Auth continues with its flow
+        // We don't modify Better Auth's user object or session metadata
+        return user;
+      } catch (error) {
+        // Log error but don't break Better Auth flow
+        console.error("Error syncing user after sign-up:", error);
+        return user; // Always return original user unchanged
+      }
+    },
+
+    /**
+     * Called after user signs in via Better Auth
+     * We sync/update the user in our Adonis users table
+     * This handles profile updates from OAuth providers
+     */
+    onAfterSignIn: async ({ user, account }) => {
+      try {
+        const request = (account as any)?.request;
+        const clientIp =
+          request?.headers?.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+          request?.headers?.get("x-real-ip") ||
+          null;
+        const requestPath = request?.url || null;
+
+        // Upsert Adonis User record (updates if exists, creates if new)
+        const adonisUser = await UserSyncService.syncUser({
+          betterAuthUser: user,
+          provider: account?.providerId || "email",
+          requestPath,
+          clientIp,
+        });
+
+        // Reset failed attempts on successful login
+        if (adonisUser) {
+          adonisUser.failedAttempts = 0;
+          adonisUser.lockedUntil = null;
+          if (!adonisUser.isActive) {
+            adonisUser.isActive = true; // Reactivate if was locked
+          }
+          await adonisUser.save();
+        }
+
+        // Return user unchanged - Better Auth continues with its flow
+        return user;
+      } catch (error) {
+        console.error("Error syncing user after sign-in:", error);
+        return user; // Always return original user unchanged
+      }
+    },
+
+    /**
+     * Called after a failed sign-in attempt
+     * Track failed attempts and lock account after threshold
+     */
+    afterFailedSignIn: async ({ user, account }) => {
+      try {
+        if (!user?.id) return;
+
+        // Find Adonis user by better_auth_user_id
+        const adonisUser = await User.findBy("better_auth_user_id", user.id);
+        if (!adonisUser) return;
+
+        // Increment failed attempts
+        const failedAttempts = (adonisUser.failedAttempts || 0) + 1;
+        adonisUser.failedAttempts = failedAttempts;
+
+        // Lock account after 5 failed attempts (15 minute lockout)
+        if (failedAttempts >= 5) {
+          const lockUntil = DateTime.now().plus({ minutes: 15 });
+          adonisUser.lockedUntil = lockUntil;
+          adonisUser.isActive = false; // Or you can use lockedUntil field only
+        }
+
+        await adonisUser.save();
+      } catch (error) {
+        console.error("Error tracking failed sign-in attempt:", error);
+        // Don't throw - let Better Auth continue its error flow
+      }
+    },
+
+    /**
+     * Called before sign-in attempt
+     * Check if account is locked
+     */
+    beforeSignIn: async ({ user }) => {
+      try {
+        if (!user?.id) return;
+
+        const adonisUser = await User.findBy("better_auth_user_id", user.id);
+        if (!adonisUser) return;
+
+        // Check if account is locked
+        if (adonisUser.lockedUntil) {
+          const lockDate = adonisUser.lockedUntil.toJSDate();
+          if (lockDate > new Date()) {
+            const minutesLeft = Math.ceil((lockDate.getTime() - Date.now()) / 60000);
+            throw new Error(
+              `Account is temporarily locked due to multiple failed login attempts. Try again in ${minutesLeft} minute(s).`
+            );
+          }
+        }
+      } catch (error: any) {
+        // Re-throw to prevent sign-in
+        throw error;
+      }
+    },
+  },
 
   // Email sender (placeholder for future implementation)
   // emailAndPassword: {
