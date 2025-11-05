@@ -19,6 +19,8 @@ const UserController = () => import('#controllers/user_controller');
 const CmsProxyController = () => import('#controllers/cms_proxy_controller');
 const BillingController = () => import('#controllers/billing_controller');
 const AuthErrorsController = () => import('#controllers/admin/auth_errors_controller');
+const AdminController = () => import('#controllers/admin/admin_controller');
+const AdminSessionsController = () => import('#controllers/admin/admin_sessions_controller');
 
 // Swagger documentation
 router.get('/swagger', async () => AutoSwagger.default.docs(router.toJSON(), swagger));
@@ -103,6 +105,18 @@ router
     router.get('/auth-errors/stats', [AuthErrorsController, 'stats']);
     router.patch('/auth-errors/:id/handle', [AuthErrorsController, 'handle']);
     router.post('/auth-errors/reconcile', [AuthErrorsController, 'reconcile']);
+
+    // User management (admin only)
+    router.get('/users', [AdminController, 'listUsers']);
+    router.get('/users/:id', [AdminController, 'getUser']);
+    router.patch('/users/:id', [AdminController, 'updateUser']);
+    router.delete('/users/:id', [AdminController, 'deleteUser']);
+    router.patch('/users/:id/toggle-status', [AdminController, 'toggleStatus']);
+
+    // Session management (Better Auth Admin plugin)
+    router.get('/users/:id/sessions', [AdminSessionsController, 'listUserSessions']);
+    router.delete('/users/:id/sessions', [AdminSessionsController, 'revokeAllSessions']);
+    router.delete('/sessions/:sessionToken', [AdminSessionsController, 'revokeSession']);
   })
   .prefix('/api/admin')
   .use(middleware.auth());

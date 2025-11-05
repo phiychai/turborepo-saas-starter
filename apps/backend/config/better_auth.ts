@@ -1,6 +1,6 @@
 import app from '@adonisjs/core/services/app';
 import { betterAuth } from 'better-auth';
-import { username, emailOTP, haveIBeenPwned } from 'better-auth/plugins';
+import { username, emailOTP, haveIBeenPwned, admin } from 'better-auth/plugins';
 import Database from 'better-sqlite3';
 import { DateTime } from 'luxon';
 import { Pool } from 'pg';
@@ -134,6 +134,20 @@ export const auth = betterAuth({
       // Customize error message (optional)
       customPasswordCompromisedMessage:
         'This password has been exposed in a data breach. Please choose a different password.',
+    }),
+    admin({
+      // Only use for session management and impersonation
+      // Don't use for user CRUD or role management (AdonisJS is canonical)
+      defaultRole: 'user', // Default role (but AdonisJS is canonical)
+
+      // Admin roles - align with AdonisJS roles
+      adminRoles: ['admin'],
+
+      // Optional: Allow specific user IDs to be admin (for initial setup)
+      adminUserIds: [],
+
+      // Impersonation settings
+      impersonationSessionDuration: 60 * 60, // 1 hour
     }),
   ],
 
@@ -343,7 +357,7 @@ export const auth = betterAuth({
      * Called before sign-in attempt
      * Check if account is locked
      */
-    beforeSignIn: async ({ user }) => {
+    beforeSignIn: async ({ user }: any) => {
       if (!user?.id) return;
 
       const adonisUser = await User.findBy('better_auth_user_id', user.id);
