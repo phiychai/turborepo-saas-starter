@@ -1,12 +1,13 @@
 import app from '@adonisjs/core/services/app';
 import { betterAuth } from 'better-auth';
-import { username, emailOTP } from 'better-auth/plugins';
+import { username, emailOTP, haveIBeenPwned } from 'better-auth/plugins';
 import Database from 'better-sqlite3';
 import { DateTime } from 'luxon';
 import { Pool } from 'pg';
 
 import User from '#models/user';
 import { EmailService } from '#services/email_service';
+import { PasswordValidatorService } from '#services/password_validator_service';
 import { UserSyncService } from '#services/user_sync_service';
 import env from '#start/env';
 
@@ -129,6 +130,11 @@ export const auth = betterAuth({
       // Override default email verification to use OTP instead of link
       overrideDefaultEmailVerification: true,
     }),
+    haveIBeenPwned({
+      // Customize error message (optional)
+      customPasswordCompromisedMessage:
+        'This password has been exposed in a data breach. Please choose a different password.',
+    }),
   ],
 
   // Email & Password authentication
@@ -189,6 +195,47 @@ export const auth = betterAuth({
   // Use Better Auth's standard hooks to sync users and handle account lockout
   // These hooks are called by Better Auth automatically - we don't modify Better Auth
   hooks: {
+    /**
+     * Validate password strength on sign-up
+     * Note: Better Auth Have I Been Pwned plugin runs automatically before this hook
+     */
+    // @ts-expect-error - Better Auth hook types may not include all hooks
+    beforeSignUp: async ({ input }: any) => {
+      const { password } = input as any;
+
+      if (password) {
+        const validation = PasswordValidatorService.validate(password);
+        if (!validation.isValid) {
+          // Combine errors with feedback
+          const errorMessage = [...validation.errors, ...validation.feedback.suggestions].join(
+            '. '
+          );
+
+          throw new Error(errorMessage);
+        }
+      }
+    },
+
+    /**
+     * Validate password strength on password change
+     * Note: Better Auth Have I Been Pwned plugin runs automatically before this hook
+     */
+    // @ts-expect-error - Better Auth hook types may not include all hooks
+    beforePasswordUpdate: async ({ input }: any) => {
+      const { newPassword } = input as any;
+
+      if (newPassword) {
+        const validation = PasswordValidatorService.validate(newPassword);
+        if (!validation.isValid) {
+          const errorMessage = [...validation.errors, ...validation.feedback.suggestions].join(
+            '. '
+          );
+
+          throw new Error(errorMessage);
+        }
+      }
+    },
+
     /**
      * Called after user signs up via Better Auth
      * We sync the user to our Adonis users table

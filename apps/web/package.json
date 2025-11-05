@@ -49,7 +49,8 @@
     "pinia": "^3.0.3",
     "unhead": "^2.0.19",
     "vee-validate": "^4.15.1",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76",
+    "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
     "@directus/types": "13.1.1",

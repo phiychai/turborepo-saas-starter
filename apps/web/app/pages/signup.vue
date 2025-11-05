@@ -2,6 +2,8 @@
 import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 import UsernameChecker from '~/components/auth/UsernameChecker.vue'
+import PasswordStrengthMeter from '~/components/PasswordStrengthMeter.vue'
+import { usePasswordValidation } from '~/composables/usePasswordValidation'
 import { authClient } from '~/lib/auth-client'
 
 definePageMeta({
@@ -25,6 +27,13 @@ onMounted(() => {
 })
 
 const username = ref('')
+const passwordValue = ref('')
+const { score, feedback, validatePassword } = usePasswordValidation()
+
+// Watch password changes for real-time validation
+watch(passwordValue, (value) => {
+  validatePassword(value)
+})
 
 const fields = [{
   name: 'name',
@@ -66,6 +75,10 @@ const schema = z.object({
 type Schema = z.output<typeof schema>
 
 async function onSubmit(payload: FormSubmitEvent<Schema>) {
+  // Validate password strength before submitting
+  validatePassword(payload.data.password)
+  passwordValue.value = payload.data.password
+
   const result = await register({
     email: payload.data.email,
     password: payload.data.password,
@@ -88,9 +101,19 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
       query: { email: payload.data.email },
     });
   } else {
+    // Handle Better Auth errors
+    let errorMessage = result.error || 'Registration failed'
+
+    // Check for password-related errors
+    if (result.error?.includes('PASSWORD_COMPROMISED') || result.error?.includes('data breach')) {
+      errorMessage = 'This password has been exposed in a data breach. Please choose a different password.'
+    } else if (result.error?.includes('too weak') || result.error?.includes('strength')) {
+      errorMessage = result.error || 'Password is too weak. Please use a stronger password.'
+    }
+
     toast.add({
       title: 'Error',
-      description: result.error || 'Registration failed',
+      description: errorMessage,
       color: 'red'
     })
   }
@@ -105,12 +128,24 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
     title="Create an account"
     :submit="{ label: 'Create account' }"
     @submit.prevent="onSubmit"
+    @update:password="passwordValue = $event"
   >
     <template #description>
       Already have an account? <ULink
         to="/login"
         class="text-primary font-medium"
       >Login</ULink>.
+    </template>
+
+    <!-- Password strength meter (shown after password field) -->
+    <template #password-hint>
+      <div v-if="passwordValue" class="mt-2">
+        <PasswordStrengthMeter
+          :password="passwordValue"
+          :score="score"
+          :feedback="feedback"
+        />
+      </div>
     </template>
 
     <!-- Username field (optional) -->
