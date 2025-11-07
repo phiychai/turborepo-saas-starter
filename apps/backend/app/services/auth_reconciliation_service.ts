@@ -129,10 +129,77 @@ export class AuthReconciliationService {
   }
 
   /**
+   * Sync all Better Auth users that don't exist in AdonisJS
+   * Useful for syncing users that were created before sync hooks were set up
+   */
+  static async syncAllMissingUsers(): Promise<{
+    synced: number;
+    failed: number;
+    skipped: number;
+  }> {
+    try {
+      // Get all Better Auth users
+      const betterAuthUsers = await db.from('user').select('*');
+
+      let synced = 0;
+      let failed = 0;
+      let skipped = 0;
+
+      for (const baUser of betterAuthUsers) {
+        try {
+          // Check if user already exists in AdonisJS
+          const existingUser = await User.query()
+            .where('better_auth_user_id', baUser.id)
+            .orWhere('email', baUser.email)
+            .first();
+
+          if (existingUser) {
+            skipped++;
+            continue;
+          }
+
+          // Map Better Auth user format
+          const betterAuthUser = {
+            id: baUser.id,
+            email: baUser.email,
+            name: baUser.name || null,
+            image: baUser.image || null,
+            emailVerified: baUser.emailVerified || false,
+            username: baUser.username || null,
+          };
+
+          // Sync user
+          const adonisUser = await UserSyncService.syncUser({
+            betterAuthUser,
+            provider: 'email',
+            requestPath: null,
+            clientIp: null,
+          });
+
+          if (adonisUser) {
+            synced++;
+            logger.info(`Synced missing user: ${adonisUser.email}`);
+          } else {
+            failed++;
+          }
+        } catch (err: any) {
+          logger.error(`Failed to sync user ${baUser.email}: ${err.message}`);
+          failed++;
+        }
+      }
+
+      return { synced, failed, skipped };
+    } catch (err: any) {
+      logger.error(`Error syncing all users: ${err.message}`);
+      throw err;
+    }
+  }
+
+  /**
    * Get Better Auth user from Better Auth database
    * Note: Better Auth uses its own database tables
    */
-  private static async getBetterAuthUser(betterAuthUserId: string): Promise<any | null> {
+  static async getBetterAuthUser(betterAuthUserId: string): Promise<any | null> {
     try {
       // Better Auth stores users in its own database
       // The table name depends on Better Auth configuration
@@ -157,6 +224,31 @@ export class AuthReconciliationService {
       };
     } catch (err: any) {
       logger.error(`Error fetching Better Auth user: ${err.message}`);
+      return null;
+    }
+  }
+
+  /**
+   * Get Better Auth user from Better Auth database by email
+   */
+  static async getBetterAuthUserByEmail(email: string): Promise<any | null> {
+    try {
+      const result = await db.from('user').where('email', email).first();
+
+      if (!result) {
+        return null;
+      }
+
+      return {
+        id: result.id,
+        email: result.email,
+        name: result.name || null,
+        image: result.image || null,
+        emailVerified: result.emailVerified || false,
+        username: result.username || null,
+      };
+    } catch (err: any) {
+      logger.error(`Error fetching Better Auth user by email: ${err.message}`);
       return null;
     }
   }

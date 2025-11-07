@@ -112,6 +112,8 @@ router
     router.patch('/users/:id', [AdminController, 'updateUser']);
     router.delete('/users/:id', [AdminController, 'deleteUser']);
     router.patch('/users/:id/toggle-status', [AdminController, 'toggleStatus']);
+    router.post('/users/sync-all', [AdminController, 'syncAllUsers']);
+    router.post('/users/sync', [AdminController, 'syncUser']);
 
     // Session management (Better Auth Admin plugin)
     router.get('/users/:id/sessions', [AdminSessionsController, 'listUserSessions']);

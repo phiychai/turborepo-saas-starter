@@ -24,7 +24,7 @@ export default class AuthMiddleware {
 
       const fetchRequest = new Request(url, {
         method: ctx.request.method(),
-        headers: ctx.request.headers() as HeadersInit,
+        headers: ctx.request.headers() as Record<string, string>,
       });
 
       // Validate session using Better Auth
@@ -91,7 +91,7 @@ export default class AuthMiddleware {
       // Attach Adonis User to context
       ctx.auth = {
         user: adonisUser,
-      } as any;
+      } as HttpContext['auth'];
 
       // Also attach Better Auth user/session for reference (optional)
       ctx.betterAuthUser = session.user;

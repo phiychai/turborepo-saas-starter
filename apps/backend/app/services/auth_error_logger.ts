@@ -1,7 +1,8 @@
-import AuthSyncError from '#models/auth_sync_error';
-import logger from '@adonisjs/core/services/logger';
 import hash from '@adonisjs/core/services/hash';
+import logger from '@adonisjs/core/services/logger';
 import { DateTime } from 'luxon';
+
+import AuthSyncError from '#models/auth_sync_error';
 
 export type AuthSyncErrorType =
   | 'upsert_failed'
@@ -27,13 +28,10 @@ export class AuthErrorLogger {
    * Log an authentication sync error
    */
   static async logError(options: LogErrorOptions): Promise<AuthSyncError> {
-    const errorMessage =
-      options.error instanceof Error ? options.error.message : options.error;
+    const errorMessage = options.error instanceof Error ? options.error.message : options.error;
 
     // Truncate and sanitize payload to avoid bloating database
-    const truncatedPayload = options.payload
-      ? this.truncatePayload(options.payload)
-      : null;
+    const truncatedPayload = options.payload ? this.truncatePayload(options.payload) : null;
 
     // Hash sensitive data before storing
     const emailHash = options.email ? await hash.make(options.email) : null;
@@ -47,7 +45,7 @@ export class AuthErrorLogger {
         eventType: options.eventType,
         provider: options.provider,
         externalUserId: options.externalUserId,
-        emailHash: emailHash,
+        emailHash,
         adonisUserId: options.adonisUserId,
         requestPath: options.requestPath,
         clientIpHash: ipHash,
@@ -55,7 +53,7 @@ export class AuthErrorLogger {
         payload: truncatedPayload,
         retryCount: 0,
         handled: false,
-        expiresAt: expiresAt,
+        expiresAt,
       });
 
       logger.error(`Auth sync error logged: ${options.eventType}`, {
@@ -96,10 +94,7 @@ export class AuthErrorLogger {
    * Get unhandled errors
    */
   static async getUnhandledErrors(limit: number = 100): Promise<AuthSyncError[]> {
-    return AuthSyncError.query()
-      .where('handled', false)
-      .orderBy('createdAt', 'desc')
-      .limit(limit);
+    return AuthSyncError.query().where('handled', false).orderBy('createdAt', 'desc').limit(limit);
   }
 
   /**
@@ -130,11 +125,7 @@ export class AuthErrorLogger {
 
     const [total, unhandled, byType, recent] = await Promise.all([
       db.default.from('auth_sync_errors').count('* as total').first(),
-      db.default
-        .from('auth_sync_errors')
-        .where('handled', false)
-        .count('* as total')
-        .first(),
+      db.default.from('auth_sync_errors').where('handled', false).count('* as total').first(),
       db.default
         .from('auth_sync_errors')
         .where('handled', false)
@@ -161,4 +152,3 @@ export class AuthErrorLogger {
     };
   }
 }
-

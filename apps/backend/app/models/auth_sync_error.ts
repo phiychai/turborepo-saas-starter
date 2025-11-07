@@ -1,12 +1,12 @@
-import { BaseModel, column } from "@adonisjs/lucid/orm";
-import { DateTime } from "luxon";
+import { BaseModel, column } from '@adonisjs/lucid/orm';
+import { DateTime } from 'luxon';
 
 export type AuthSyncErrorType =
-  | "upsert_failed"
-  | "missing_mapping"
-  | "token_inconsistency"
-  | "sync_failed"
-  | "reconciliation_failed";
+  | 'upsert_failed'
+  | 'missing_mapping'
+  | 'token_inconsistency'
+  | 'sync_failed'
+  | 'reconciliation_failed';
 
 export default class AuthSyncError extends BaseModel {
   @column({ isPrimary: true })
@@ -49,7 +49,7 @@ export default class AuthSyncError extends BaseModel {
     },
     consume: (value) => {
       if (!value) return null;
-      return typeof value === "string" ? JSON.parse(value) : value;
+      return typeof value === 'string' ? JSON.parse(value) : value;
     },
   })
   declare payload: Record<string, any> | null;
@@ -59,26 +59,26 @@ export default class AuthSyncError extends BaseModel {
    */
   static sanitizePayload(payload: Record<string, any>): Record<string, any> {
     const sensitiveKeys = [
-      "password",
-      "token",
-      "apiKey",
-      "secret",
-      "creditCard",
-      "ssn",
-      "api_key",
-      "access_token",
-      "refresh_token",
+      'password',
+      'token',
+      'apiKey',
+      'secret',
+      'creditCard',
+      'ssn',
+      'api_key',
+      'access_token',
+      'refresh_token',
     ];
     const sanitized = { ...payload };
 
     for (const key of Object.keys(sanitized)) {
       const lowerKey = key.toLowerCase();
       if (sensitiveKeys.some((sk) => lowerKey.includes(sk))) {
-        sanitized[key] = "[REDACTED]";
+        sanitized[key] = '[REDACTED]';
       }
       // Also sanitize nested objects
       if (
-        typeof sanitized[key] === "object" &&
+        typeof sanitized[key] === 'object' &&
         sanitized[key] !== null &&
         !Array.isArray(sanitized[key])
       ) {

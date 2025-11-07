@@ -1,10 +1,13 @@
+import logger from '@adonisjs/core/services/logger';
+
 import type { HttpContext } from '@adonisjs/core/http';
 
 import * as abilities from '#abilities/main';
 import User from '#models/user';
 import UserPolicy from '#policies/user_policy';
 import { BetterAuthSyncService } from '#services/better_auth_sync_service';
-import logger from '@adonisjs/core/services/logger';
+import { AuthReconciliationService } from '#services/auth_reconciliation_service';
+import { UserSyncService } from '#services/user_sync_service';
 
 export default class AdminController {
   /**
@@ -42,9 +45,7 @@ export default class AdminController {
     }
 
     // Pagination
-    const users = await query
-      .orderBy('createdAt', 'desc')
-      .paginate(page, limit);
+    const users = await query.orderBy('createdAt', 'desc').paginate(page, limit);
 
     return response.ok({
       users: users.serialize(),
@@ -155,5 +156,89 @@ export default class AdminController {
       user: user.serialize(),
     });
   }
-}
 
+  /**
+   * Sync all Better Auth users that are missing from AdonisJS (admin only)
+   * POST /api/admin/users/sync-all
+   */
+  async syncAllUsers({ response, auth, bouncer }: HttpContext) {
+    await abilities.manageUsers.execute(auth.user!);
+
+    try {
+      const result = await AuthReconciliationService.syncAllMissingUsers();
+
+      return response.ok({
+        message: 'User sync completed',
+        ...result,
+      });
+    } catch (error: any) {
+      logger.error('Failed to sync all users:', error);
+      return response.internalServerError({
+        message: 'Failed to sync users',
+        error: error.message,
+      });
+    }
+  }
+
+  /**
+   * Sync a specific user by email (admin only)
+   * POST /api/admin/users/sync
+   */
+  async syncUser({ request, response, auth, bouncer }: HttpContext) {
+    await abilities.manageUsers.execute(auth.user!);
+
+    const { email } = request.only(['email']);
+
+    if (!email) {
+      return response.badRequest({
+        message: 'Email is required',
+      });
+    }
+
+    try {
+      // Check if user already exists in AdonisJS
+      const existingUser = await User.findBy('email', email);
+
+      if (existingUser) {
+        return response.ok({
+          message: 'User already exists in AdonisJS',
+          user: existingUser.serialize(),
+        });
+      }
+
+      // Get Better Auth user by email
+      const betterAuthUser = await AuthReconciliationService.getBetterAuthUserByEmail(email);
+
+      if (!betterAuthUser) {
+        return response.notFound({
+          message: 'User not found in Better Auth',
+        });
+      }
+
+      // Sync user
+      const adonisUser = await UserSyncService.syncUser({
+        betterAuthUser,
+        provider: 'email',
+        requestPath: null,
+        clientIp: null,
+      });
+
+      if (!adonisUser) {
+        return response.internalServerError({
+          message: 'Failed to sync user',
+        });
+      }
+
+      return response.ok({
+        message: 'User synced successfully',
+        user: adonisUser.serialize(),
+      });
+    } catch (error: any) {
+      logger.error('Failed to sync user:', error);
+      return response.internalServerError({
+        message: 'Failed to sync user',
+        error: error.message,
+      });
+    }
+  }
+}

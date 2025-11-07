@@ -123,7 +123,7 @@ onMounted(async () => {
             </template>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <NuxtLink to="/admin/users">
+              <NuxtLink to="/admin/customers">
                 <UButton variant="outline" block>
                   <Icon name="lucide:users" class="mr-2" />
                   Manage Users
