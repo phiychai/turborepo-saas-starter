@@ -1,61 +1,63 @@
 export default defineEventHandler(async (event) => {
-  const slug = getRouterParam(event, 'slug')
+  const slug = getRouterParam(event, 'slug');
 
   if (!slug) {
-    throw createError({ statusCode: 400, message: 'Slug is required' })
+    throw createError({ statusCode: 400, message: 'Slug is required' });
   }
 
   // Handle live preview
-  const query = getQuery(event)
-  const { preview, token: rawToken } = query
-  const token = preview === 'true' && rawToken ? String(rawToken) : null
+  const query = getQuery(event);
+  const { preview, token: rawToken } = query;
+  const token = preview === 'true' && rawToken ? String(rawToken) : null;
 
   try {
-    const postsPromise = directusServer.request(
-      withToken(
-        token as string,
-        readItems('posts', {
-          filter: {
-            slug: { _eq: slug }
-          },
-          limit: 1,
-          fields: [
-            'id',
-            'title',
-            'content',
-            'status',
-            'published_at',
-            'image',
-            'description',
-            'seo',
-            {
-              author: ['id', 'first_name', 'last_name', 'avatar']
-            }
-          ]
-        })
-      )
-    )
+    const postQuery = {
+      filter: {
+        slug: { _eq: slug },
+      },
+      limit: 1,
+      fields: [
+        'id',
+        'title',
+        'content',
+        'status',
+        'published_at',
+        'image',
+        'description',
+        'seo',
+        'categories' as any,
+        {
+          author: ['id', 'first_name', 'last_name', 'avatar'],
+        },
+        {
+          categories: ['id', 'title', 'slug'],
+        } as any,
+      ],
+    };
+
+    const postsPromise = token
+      ? directusServer.request(withToken(token, readItems('posts' as any, postQuery)))
+      : directusServer.request(readItems('posts' as any, postQuery));
 
     // This is a really naive implementation of related posts. Just a basic check to ensure we don't return the same post. You might want to do something more sophisticated.
-    const relatedPostsPromise = directusServer.request(
-      withToken(
-        token as string,
-        readItems('posts', {
-          filter: { slug: { _neq: slug } },
-          fields: ['id', 'title', 'image', 'slug'],
-          limit: 2
-        })
-      )
-    )
+    const relatedPostsQuery = {
+      filter: { slug: { _neq: slug } },
+      fields: ['id', 'title', 'image', 'slug'],
+      limit: 2,
+    };
 
-    const [posts, relatedPosts] = await Promise.all([postsPromise, relatedPostsPromise])
+    const relatedPostsPromise = token
+      ? directusServer.request(withToken(token, readItems('posts' as any, relatedPostsQuery)))
+      : directusServer.request(readItems('posts' as any, relatedPostsQuery));
+
+    const [posts, relatedPosts] = await Promise.all([postsPromise, relatedPostsPromise]);
 
     if (!posts.length) {
-      throw createError({ statusCode: 404, message: `Post not found: ${slug}` })
+      throw createError({ statusCode: 404, message: `Post not found: ${slug}` });
     }
 
-    return { post: posts[0], relatedPosts: relatedPosts }
+    return { post: posts[0], relatedPosts: relatedPosts };
   } catch (error) {
-    throw createError({ statusCode: 500, message: `Failed to fetch post: ${slug}`, data: error })
+    throw createError({ statusCode: 500, message: `Failed to fetch post: ${slug}`, data: error });
   }
-})
+});

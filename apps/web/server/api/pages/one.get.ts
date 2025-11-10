@@ -151,7 +151,7 @@ export default defineEventHandler(async (event) => {
           block.item.collection === 'posts'
         ) {
           const blockPost = block.item as BlockPost;
-          const limit = blockPost.limit ?? 6;
+          const limit = blockPost.limit ?? 12;
 
           const posts: Post[] = await directusServer.request(
             readItems('posts', {

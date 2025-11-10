@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const colorMode = useColorMode();
-const toaster = { position: 'top-right', orientation: 'vertical' }
+const toaster = { position: 'bottom-right', orientation: 'vertical' };
 const color = computed(() => (colorMode.value === 'dark' ? '#020618' : 'white'));
 
 useHead({
@@ -58,7 +58,7 @@ provide('navigation', navigation);
 
 <template>
   <UApp :toaster="toaster">
-    <NuxtLoadingIndicator />
+    <NuxtLoadingIndicator color="#ffb900" />
 
     <NuxtLayout>
       <NuxtPage />

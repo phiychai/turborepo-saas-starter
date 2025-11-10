@@ -1,144 +1,187 @@
 <script setup lang="ts">
-import type { DropdownMenuItem } from '@nuxt/ui'
+import type { DropdownMenuItem } from '@nuxt/ui';
 
 defineProps<{
-  collapsed?: boolean
-}>()
+  collapsed?: boolean;
+}>();
 
-const colorMode = useColorMode()
-const appConfig = useAppConfig()
-const router = useRouter()
-const { user: authUser, logout } = useAuth()
+const colorMode = useColorMode();
+const appConfig = useAppConfig();
+const router = useRouter();
+const { user: authUser, logout } = useAuth();
 
-const colors = ['red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose']
-const neutrals = ['slate', 'gray', 'zinc', 'neutral', 'stone']
+const colors = [
+  'red',
+  'orange',
+  'amber',
+  'yellow',
+  'lime',
+  'green',
+  'emerald',
+  'teal',
+  'cyan',
+  'sky',
+  'blue',
+  'indigo',
+  'violet',
+  'purple',
+  'fuchsia',
+  'pink',
+  'rose',
+];
+const neutrals = ['slate', 'gray', 'zinc', 'neutral', 'stone'];
 
 const user = computed(() => ({
   name: authUser.value?.fullName || authUser.value?.email || 'User',
   avatar: {
-    src: `https://ui-avatars.com/api/?name=${encodeURIComponent(authUser.value?.fullName || authUser.value?.email || 'User')}&background=random`,
-    alt: authUser.value?.fullName || 'User'
-  }
-}))
+    src: ``,
+    alt: authUser.value?.firstName || 'User',
+  },
+}));
 
 const handleLogout = async () => {
-  await logout()
-  router.push('/login')
-}
+  await logout();
+  router.push('/');
+};
 
-const items = computed<DropdownMenuItem[][]>(() => ([[{
-  type: 'label',
-  label: user.value.name,
-  avatar: user.value.avatar
-}], [{
-  label: 'Profile',
-  icon: 'i-lucide-user',
-  to: '/dashboard/settings'
-}, {
-  label: 'Billing',
-  icon: 'i-lucide-credit-card',
-  to: '/dashboard/settings'
-}, {
-  label: 'Settings',
-  icon: 'i-lucide-settings',
-  to: '/dashboard/settings'
-}], [{
-  label: 'Theme',
-  icon: 'i-lucide-palette',
-  children: [{
-    label: 'Primary',
-    slot: 'chip',
-    chip: appConfig.ui.colors.primary,
-    content: {
-      align: 'center',
-      collisionPadding: 16
+const items = computed<DropdownMenuItem[][]>(() => [
+  [
+    {
+      type: 'label',
+      label: user.value.name,
+      avatar: user.value.avatar,
     },
-    children: colors.map(color => ({
-      label: color,
-      chip: color,
-      slot: 'chip',
-      checked: appConfig.ui.colors.primary === color,
-      type: 'checkbox',
-      onSelect: (e) => {
-        e.preventDefault()
-
-        appConfig.ui.colors.primary = color
-      }
-    }))
-  }, {
-    label: 'Neutral',
-    slot: 'chip',
-    chip: appConfig.ui.colors.neutral === 'neutral' ? 'old-neutral' : appConfig.ui.colors.neutral,
-    content: {
-      align: 'end',
-      collisionPadding: 16
+  ],
+  [
+    {
+      label: 'Profile',
+      icon: 'i-lucide-user',
+      to: '/profile',
     },
-    children: neutrals.map(color => ({
-      label: color,
-      chip: color === 'neutral' ? 'old-neutral' : color,
-      slot: 'chip',
-      type: 'checkbox',
-      checked: appConfig.ui.colors.neutral === color,
-      onSelect: (e) => {
-        e.preventDefault()
-
-        appConfig.ui.colors.neutral = color
-      }
-    }))
-  }]
-}, {
-  label: 'Appearance',
-  icon: 'i-lucide-sun-moon',
-  children: [{
-    label: 'Light',
-    icon: 'i-lucide-sun',
-    type: 'checkbox',
-    checked: colorMode.value === 'light',
-    onSelect(e: Event) {
-      e.preventDefault()
-
-      colorMode.preference = 'light'
-    }
-  }, {
-    label: 'Dark',
-    icon: 'i-lucide-moon',
-    type: 'checkbox',
-    checked: colorMode.value === 'dark',
-    onUpdateChecked(checked: boolean) {
-      if (checked) {
-        colorMode.preference = 'dark'
-      }
+    {
+      label: 'Billing',
+      icon: 'i-lucide-credit-card',
+      to: '/settings',
     },
-    onSelect(e: Event) {
-      e.preventDefault()
-    }
-  }]
-}], [{
-  label: 'Log out',
-  icon: 'i-lucide-log-out',
-  onSelect: handleLogout
-}]]))
+    {
+      label: 'Settings',
+      icon: 'i-lucide-settings',
+      to: '/settings',
+    },
+  ],
+  [
+    {
+      label: 'Theme',
+      icon: 'i-lucide-palette',
+      children: [
+        {
+          label: 'Primary',
+          slot: 'chip',
+          chip: appConfig.ui.colors.primary,
+          content: {
+            align: 'center',
+            collisionPadding: 16,
+          },
+          children: colors.map((color) => ({
+            label: color,
+            chip: color,
+            slot: 'chip',
+            checked: appConfig.ui.colors.primary === color,
+            type: 'checkbox',
+            onSelect: (e) => {
+              e.preventDefault();
+
+              appConfig.ui.colors.primary = color;
+            },
+          })),
+        },
+        {
+          label: 'Neutral',
+          slot: 'chip',
+          chip:
+            appConfig.ui.colors.neutral === 'neutral' ? 'old-neutral' : appConfig.ui.colors.neutral,
+          content: {
+            align: 'end',
+            collisionPadding: 16,
+          },
+          children: neutrals.map((color) => ({
+            label: color,
+            chip: color === 'neutral' ? 'old-neutral' : color,
+            slot: 'chip',
+            type: 'checkbox',
+            checked: appConfig.ui.colors.neutral === color,
+            onSelect: (e) => {
+              e.preventDefault();
+
+              appConfig.ui.colors.neutral = color;
+            },
+          })),
+        },
+      ],
+    },
+    {
+      label: 'Appearance',
+      icon: 'i-lucide-sun-moon',
+      children: [
+        {
+          label: 'Light',
+          icon: 'i-lucide-sun',
+          type: 'checkbox',
+          checked: colorMode.value === 'light',
+          onSelect(e: Event) {
+            e.preventDefault();
+
+            colorMode.preference = 'light';
+          },
+        },
+        {
+          label: 'Dark',
+          icon: 'i-lucide-moon',
+          type: 'checkbox',
+          checked: colorMode.value === 'dark',
+          onUpdateChecked(checked: boolean) {
+            if (checked) {
+              colorMode.preference = 'dark';
+            }
+          },
+          onSelect(e: Event) {
+            e.preventDefault();
+          },
+        },
+      ],
+    },
+  ],
+  [
+    {
+      label: 'Log out',
+      icon: 'i-lucide-log-out',
+      onSelect: handleLogout,
+    },
+  ],
+]);
 </script>
 
 <template>
   <UDropdownMenu
     :items="items"
-    :content="{ align: 'center', collisionPadding: 12 }"
+    :content="{ align: 'center', collisionPadding: 20 }"
     :ui="{ content: collapsed ? 'w-48' : 'w-(--reka-dropdown-menu-trigger-width)' }"
   >
     <UButton
+      size="2xl"
       v-bind="{
         ...user,
         label: collapsed ? undefined : user?.name,
-        trailingIcon: collapsed ? undefined : 'i-lucide-chevrons-up-down'
+        trailingIcon: collapsed ? undefined : 'i-lucide-chevrons-up-down',
       }"
       color="neutral"
       variant="ghost"
       block
       :square="collapsed"
       class="data-[state=open]:bg-elevated"
+      :class="collapsed ? 'w-auto' : 'w-full'"
       :ui="{
-        trailingIcon: 'text-dimmed'
+        trailingIcon: 'text-dimmed',
       }"
     />
 
@@ -146,7 +189,7 @@ const items = computed<DropdownMenuItem[][]>(() => ([[{
       <span
         :style="{
           '--chip-light': `var(--color-${(item as any).chip}-500)`,
-          '--chip-dark': `var(--color-${(item as any).chip}-400)`
+          '--chip-dark': `var(--color-${(item as any).chip}-400)`,
         }"
         class="ms-0.5 size-2 rounded-full bg-(--chip-light) dark:bg-(--chip-dark)"
       />
