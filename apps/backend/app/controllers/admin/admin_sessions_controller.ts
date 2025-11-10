@@ -5,6 +5,7 @@ import { auth } from '#config/better_auth';
 import User from '#models/user';
 import { toWebRequest } from '#utils/better_auth_helpers';
 import logger from '@adonisjs/core/services/logger';
+import env from '#start/env';
 
 export default class AdminSessionsController {
   /**
@@ -23,25 +24,38 @@ export default class AdminSessionsController {
     }
 
     // Use Better Auth Admin plugin API
-    // Note: Better Auth Admin plugin provides session management endpoints
-    // We'll need to call the Better Auth API directly
     try {
       const webRequest = await toWebRequest(request);
-      const betterAuthRequest = new Request(
-        `${auth.baseURL}/admin/list-user-sessions`,
-        {
-          method: 'POST',
+
+      // Use Better Auth API method if available
+      if (auth.api.listUserSessions) {
+        const sessions = await auth.api.listUserSessions({
+          body: { userId: user.betterAuthUserId },
           headers: webRequest.headers,
-          body: JSON.stringify({ userId: user.betterAuthUserId }),
-        }
-      );
+        });
 
-      const betterAuthResponse = await auth.handler(betterAuthRequest);
-      const sessions = await betterAuthResponse.json();
+        return response.ok({
+          sessions,
+        });
+      } else {
+        // Fallback to handler if API method not available
+        const baseURL = env.get('BETTER_AUTH_URL', 'http://localhost:3333');
+        const betterAuthRequest = new Request(
+          `${baseURL}/api/auth/admin/list-user-sessions`,
+          {
+            method: 'POST',
+            headers: webRequest.headers,
+            body: JSON.stringify({ userId: user.betterAuthUserId }),
+          }
+        );
 
-      return response.ok({
-        sessions,
-      });
+        const betterAuthResponse = await auth.handler(betterAuthRequest);
+        const sessions = await betterAuthResponse.json();
+
+        return response.ok({
+          sessions,
+        });
+      }
     } catch (error) {
       logger.error('Failed to list user sessions:', error);
       return response.internalServerError({
@@ -59,13 +73,24 @@ export default class AdminSessionsController {
 
     try {
       const webRequest = await toWebRequest(request);
-      const betterAuthRequest = new Request(`${auth.baseURL}/admin/revoke-session`, {
-        method: 'POST',
-        headers: webRequest.headers,
-        body: JSON.stringify({ sessionToken: params.sessionToken }),
-      });
 
-      await auth.handler(betterAuthRequest);
+      // Use Better Auth API method if available
+      if (auth.api.revokeUserSession) {
+        await auth.api.revokeUserSession({
+          body: { sessionToken: params.sessionToken },
+          headers: webRequest.headers,
+        });
+      } else {
+        // Fallback to handler if API method not available
+        const baseURL = env.get('BETTER_AUTH_URL', 'http://localhost:3333');
+        const betterAuthRequest = new Request(`${baseURL}/api/auth/admin/revoke-session`, {
+          method: 'POST',
+          headers: webRequest.headers,
+          body: JSON.stringify({ sessionToken: params.sessionToken }),
+        });
+
+        await auth.handler(betterAuthRequest);
+      }
 
       return response.ok({
         message: 'Session revoked successfully',
@@ -95,13 +120,24 @@ export default class AdminSessionsController {
 
     try {
       const webRequest = await toWebRequest(request);
-      const betterAuthRequest = new Request(`${auth.baseURL}/admin/revoke-user-sessions`, {
-        method: 'POST',
-        headers: webRequest.headers,
-        body: JSON.stringify({ userId: user.betterAuthUserId }),
-      });
 
-      await auth.handler(betterAuthRequest);
+      // Use Better Auth API method if available
+      if (auth.api.revokeUserSessions) {
+        await auth.api.revokeUserSessions({
+          body: { userId: user.betterAuthUserId },
+          headers: webRequest.headers,
+        });
+      } else {
+        // Fallback to handler if API method not available
+        const baseURL = env.get('BETTER_AUTH_URL', 'http://localhost:3333');
+        const betterAuthRequest = new Request(`${baseURL}/api/auth/admin/revoke-user-sessions`, {
+          method: 'POST',
+          headers: webRequest.headers,
+          body: JSON.stringify({ userId: user.betterAuthUserId }),
+        });
+
+        await auth.handler(betterAuthRequest);
+      }
 
       return response.ok({
         message: 'All sessions revoked successfully',

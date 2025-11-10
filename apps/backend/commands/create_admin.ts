@@ -48,40 +48,49 @@ export default class CreateAdmin extends BaseCommand {
       // Create user in Better Auth first
       this.logger.info('Creating user in Better Auth...');
 
-      // Get baseURL from environment (same as in better_auth.ts config)
-      const baseURL = env.get('BETTER_AUTH_URL', 'http://localhost:3333');
-      const signUpUrl = `${baseURL}/api/auth/sign-up/email`;
+      // Use Better Auth's API directly (preferred over auth.handler)
+      this.logger.info('Calling Better Auth sign-up API...');
+      let betterAuthUser;
+      let betterAuthUserId;
 
-      // Use Better Auth's sign-up API directly via auth.handler()
-      const betterAuthRequest = new Request(signUpUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: this.email,
-          password: this.password,
-          name:
-            this.firstName && this.lastName
-              ? `${this.firstName} ${this.lastName}`.trim()
-              : this.firstName || this.lastName || undefined,
-          username: this.username || undefined,
-        }),
-      });
-
-      this.logger.info('Calling Better Auth sign-up...');
-      const betterAuthResponse = await auth.handler(betterAuthRequest);
-
-      if (!betterAuthResponse.ok) {
-        const errorText = await betterAuthResponse.text().catch(() => 'Unknown error');
-        let errorMessage = 'Unknown error';
-        try {
-          const errorJson = JSON.parse(errorText);
-          errorMessage = errorJson.message || errorJson.error || errorText;
-        } catch {
-          errorMessage = errorText;
+      try {
+        // Try using signUpEmail API if available
+        if (auth.api.signUpEmail) {
+          const result = await auth.api.signUpEmail({
+            body: {
+              email: this.email,
+              password: this.password,
+              name:
+                this.firstName && this.lastName
+                  ? `${this.firstName} ${this.lastName}`.trim()
+                  : this.firstName || this.lastName || undefined,
+              username: this.username || undefined,
+            },
+          });
+          betterAuthUser = result?.user || result?.data?.user;
+          betterAuthUserId = betterAuthUser?.id;
+        } else {
+          // Fallback to createUser API (admin method)
+          betterAuthUser = await auth.api.createUser({
+            body: {
+              email: this.email,
+              password: this.password,
+              name:
+                this.firstName && this.lastName
+                  ? `${this.firstName} ${this.lastName}`.trim()
+                  : this.firstName || this.lastName || undefined,
+              username: this.username || undefined,
+            },
+          });
+          betterAuthUserId = betterAuthUser?.id;
         }
+      } catch (error: any) {
+        const errorMessage = error?.message || error?.error?.message || 'Unknown error';
         throw new Error(`Better Auth sign-up failed: ${errorMessage}`);
+      }
+
+      if (!betterAuthUserId) {
+        throw new Error('Better Auth user creation succeeded but no user ID returned');
       }
 
       // Better Auth sign-up hook (onAfterSignUp) will create the Adonis user automatically
@@ -102,13 +111,17 @@ export default class CreateAdmin extends BaseCommand {
         // If hook didn't fire, try to get Better Auth user and manually sync
         this.logger.info('Sync hook did not create user, attempting manual sync...');
 
-        // Get the response data to extract user ID
-        const responseData = await betterAuthResponse.json().catch(() => ({}));
-        const betterAuthUserId = responseData?.user?.id || responseData?.data?.user?.id;
-
-        if (betterAuthUserId) {
-          // Manually sync the user
-          const betterAuthUser = {
+        // Manually sync the user using the Better Auth user data we got
+        if (betterAuthUser) {
+          adonisUser = await UserSyncService.syncUser({
+            betterAuthUser: betterAuthUser as any,
+            provider: 'email',
+            requestPath: null,
+            clientIp: null,
+          });
+        } else {
+          // Fallback: construct user object from available data
+          const fallbackUser = {
             id: betterAuthUserId,
             email: this.email,
             name:
@@ -120,7 +133,7 @@ export default class CreateAdmin extends BaseCommand {
           };
 
           adonisUser = await UserSyncService.syncUser({
-            betterAuthUser: betterAuthUser as any,
+            betterAuthUser: fallbackUser as any,
             provider: 'email',
             requestPath: null,
             clientIp: null,
