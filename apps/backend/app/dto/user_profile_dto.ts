@@ -8,6 +8,7 @@ export interface UserProfileDTO {
   lastName: string | null;
   username: string | null;
   avatarUrl: string | null;
+  bio: string | null;
   fullName: string | null;
   displayName: string;
 
@@ -44,6 +45,7 @@ export class UserProfileDTOBuilder {
       lastName: user.lastName,
       username: user.username,
       avatarUrl: user.avatarUrl,
+      bio: user.bio,
       fullName: user.fullName,
       displayName: user.displayName,
 

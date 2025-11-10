@@ -68,6 +68,7 @@ router
     router.get('/me', [UserController, 'me']); // New endpoint - merged profile
     router.get('/profile', [UserController, 'profile']); // Keep existing for backward compatibility
     router.patch('/profile', [UserController, 'updateProfile']);
+    router.post('/avatar', [UserController, 'uploadAvatar']); // Avatar upload
     router.get('/users', [UserController, 'index']); // Admin only
     router.patch('/users/:id/toggle-status', [UserController, 'toggleStatus']); // Admin only
   })

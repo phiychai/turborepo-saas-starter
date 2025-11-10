@@ -26,6 +26,9 @@ export default class User extends BaseModel {
   @column()
   declare avatarUrl: string | null;
 
+  @column()
+  declare bio: string | null;
+
   // Authorization
   @column()
   declare role: 'user' | 'admin';

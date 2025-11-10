@@ -1,10 +1,15 @@
 import { UserProfileDTOBuilder, type UserProfileDTO } from '../dto/user_profile_dto.js';
 
 import type { HttpContext } from '@adonisjs/core/http';
+import app from '@adonisjs/core/services/app';
+import { mkdir } from 'node:fs/promises';
+import { randomBytes } from 'node:crypto';
 
 import * as abilities from '#abilities/main';
+import { auth } from '#config/better_auth';
 import User from '#models/user';
 import UserPolicy from '#policies/user_policy';
+import { toWebRequest } from '#utils/better_auth_helpers';
 import { updateProfileValidator } from '#validators/auth_validator';
 
 export default class UserController {
@@ -37,6 +42,7 @@ export default class UserController {
       lastName: user.lastName,
       username: user.username,
       avatarUrl: user.avatarUrl,
+      bio: user.bio,
       fullName: user.fullName,
       role: user.role,
       isActive: user.isActive,
@@ -49,13 +55,35 @@ export default class UserController {
   /**
    * Update current user profile
    */
-  async updateProfile({ auth, request, response }: HttpContext) {
+  async updateProfile({ auth: authContext, request, response }: HttpContext) {
     try {
-      const user = auth.user!;
+      const user = authContext.user!;
+
+      // Pre-process request data: convert empty strings to undefined for optional fields
+      const requestData = request.body();
+      if (requestData && typeof requestData === 'object') {
+        if ('username' in requestData && requestData.username === '') {
+          requestData.username = undefined; // Skip validation for empty username
+        }
+        if ('bio' in requestData && requestData.bio === '') {
+          requestData.bio = undefined; // Skip validation for empty bio
+        }
+      }
+
       // User can always update their own profile
       const data = await request.validateUsing(updateProfileValidator, {
         meta: { userId: user.id },
       });
+
+      // Handle name splitting if a single "name" field is provided
+      // This is for frontend compatibility where name might come as a single field
+      if ((data as any).name && typeof (data as any).name === 'string') {
+        const nameParts = (data as any).name.trim().split(/\s+/);
+        if (nameParts.length > 0) {
+          data.firstName = nameParts[0] || undefined;
+          data.lastName = nameParts.slice(1).join(' ') || undefined;
+        }
+      }
 
       // Update fields
       if (data.firstName !== undefined) {
@@ -67,11 +95,67 @@ export default class UserController {
       if (data.fullName !== undefined) {
         user.fullName = data.fullName;
       }
-      if (data.email !== undefined) {
+      if (data.email !== undefined && data.email !== user.email) {
+        // Update email in AdonisJS (canonical source)
         user.email = data.email;
+
+        // Note: Better Auth does not allow email updates via updateUser API
+        // This is a security feature - emails require verification before changing
+        // AdonisJS is the canonical source for email, so we update it here
+        // Better Auth will continue using the original email for authentication
+        // If email verification is needed, users should use Better Auth's email change flow
+        // (which typically requires re-verification of the new email)
       }
       if (data.avatarUrl !== undefined) {
         user.avatarUrl = data.avatarUrl;
+      }
+      if ('bio' in request.body() || data.bio !== undefined) {
+        // Get original value from request body (might be empty string)
+        const originalBio = (request.body() as any)?.bio;
+        user.bio = originalBio === '' || originalBio === undefined ? null : (data.bio || null);
+      }
+      // Handle username updates via Better Auth API
+      // Better Auth handles validation, uniqueness, and normalization
+      if ('username' in request.body() || data.username !== undefined) {
+        const originalUsername = (request.body() as any)?.username;
+        const newUsername = originalUsername === '' || originalUsername === undefined ? null : (data.username || null);
+
+        // Check if username actually changed
+        const usernameChanged = newUsername !== user.username;
+
+        if (usernameChanged) {
+          // If user has Better Auth account, sync to Better Auth first
+          if (user.betterAuthUserId && newUsername) {
+            try {
+              // Use Better Auth's API directly
+              const webRequest = await toWebRequest(request);
+
+              // Call Better Auth's updateUser API
+              const result = await auth.api.updateUser({
+                body: {
+                  username: newUsername,
+                },
+                headers: webRequest.headers,
+              });
+
+              // Use normalized username from Better Auth response if available
+              if (result?.user?.username) {
+                user.username = result.user.username;
+              } else {
+                user.username = newUsername;
+              }
+            } catch (error: any) {
+              // Better Auth API throws errors directly
+              console.error('Error updating username in Better Auth:', error);
+              const errorMessage = error?.message || error?.error?.message || 'Failed to update username';
+              throw new Error(`Username update failed: ${errorMessage}`);
+            }
+          } else {
+            // No Better Auth user ID or setting to null - just update AdonisJS
+            user.username = newUsername;
+          }
+        }
+        // If username didn't change, don't update (already correct)
       }
       if (data.preferences !== undefined) {
         user.preferences = data.preferences;
@@ -87,10 +171,13 @@ export default class UserController {
           firstName: user.firstName,
           lastName: user.lastName,
           fullName: user.fullName,
+          username: user.username,
+          avatarUrl: user.avatarUrl,
+          bio: user.bio,
           role: user.role,
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       if (error.messages) {
         return response.badRequest({
           message: 'Validation failed',
@@ -115,6 +202,66 @@ export default class UserController {
     return response.ok({
       users,
     });
+  }
+
+  /**
+   * Upload avatar image
+   * POST /api/user/avatar
+   */
+  async uploadAvatar({ auth: authContext, request, response }: HttpContext) {
+    try {
+      const user = authContext.user!;
+      const avatarFile = request.file('avatar', {
+        size: '1mb',
+        extnames: ['jpg', 'jpeg', 'png', 'gif'],
+      });
+
+      if (!avatarFile) {
+        return response.badRequest({
+          message: 'No avatar file provided',
+        });
+      }
+
+      if (!avatarFile.isValid) {
+        return response.badRequest({
+          message: 'Invalid avatar file',
+          errors: avatarFile.errors,
+        });
+      }
+
+      // Generate unique filename
+      const fileExtension = avatarFile.extname || 'jpg';
+      const uniqueFilename = `${user.id}-${randomBytes(16).toString('hex')}.${fileExtension}`;
+
+      // Create avatars directory if it doesn't exist
+      const avatarsDir = app.publicPath('uploads/avatars');
+      await mkdir(avatarsDir, { recursive: true });
+
+      // Save file
+      await avatarFile.move(avatarsDir, {
+        name: uniqueFilename,
+        overwrite: true,
+      });
+
+      // Generate public URL
+      // In production, this should use your CDN or storage service URL
+      const avatarUrl = `/uploads/avatars/${uniqueFilename}`;
+
+      // Update user's avatar URL
+      user.avatarUrl = avatarUrl;
+      await user.save();
+
+      return response.ok({
+        message: 'Avatar uploaded successfully',
+        avatarUrl,
+      });
+    } catch (error: any) {
+      console.error('Avatar upload error:', error);
+      return response.internalServerError({
+        message: 'Failed to upload avatar',
+        error: error.message,
+      });
+    }
   }
 
   /**

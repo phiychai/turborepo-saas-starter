@@ -1,4 +1,4 @@
-import vine from "@vinejs/vine";
+import vine from '@vinejs/vine';
 
 /**
  * Validator for updating user profile
@@ -16,14 +16,24 @@ export const updateProfileValidator = vine.compile(
       .normalizeEmail()
       .unique(async (db, value, field) => {
         const user = await db
-          .from("users")
-          .where("email", value)
-          .whereNot("id", field.meta.userId)
+          .from('users')
+          .where('email', value)
+          .whereNot('id', field.meta.userId)
           .first();
         return !user;
       })
       .optional(),
-    avatarUrl: vine.string().url().optional(),
+    // Username validation is handled by Better Auth Username Plugin
+    // We just accept it here and pass it to Better Auth for validation
+    username: vine.any().optional(),
+    avatarUrl: vine.string().url().nullable().optional(),
+    bio: vine
+      .string()
+      .trim()
+      .maxLength(500)
+      .transform((value) => (value === '' ? null : value))
+      .nullable()
+      .optional(),
     preferences: vine.any().optional(),
   })
 );

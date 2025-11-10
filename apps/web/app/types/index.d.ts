@@ -27,6 +27,7 @@ export interface UserProfile {
   lastName: string | null;
   username: string | null;
   avatarUrl: string | null;
+  bio: string | null;
   fullName: string | null;
   displayName: string;
 

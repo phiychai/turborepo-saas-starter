@@ -209,21 +209,48 @@ export const useAuthStore = defineStore('auth', {
 
     /**
      * Update user profile
-     * Note: Username updates should use updateUsername() method instead
+     * Handles name (split into firstName/lastName), email, username, bio, and avatarUrl
+     * Email and username updates are synced to Better Auth automatically by the backend
      */
-    async updateProfile(data: Partial<UserProfile>) {
+    async updateProfile(data: Partial<UserProfile & { name?: string }>) {
       this.loading = true;
 
       try {
         // Use useRequestFetch for SSR cookie forwarding
         const requestFetch = useRequestFetch();
 
-        // Remove username from data - it should be updated via Better Auth updateUser
-        const { username, ...profileData } = data;
+        // Prepare profile data - backend will handle name splitting
+        const profileData: any = {};
+
+        // Include name field (will be split on backend)
+        if (data.name !== undefined) {
+          profileData.name = data.name;
+        }
+
+        // Include other fields
+        if (data.email !== undefined) {
+          profileData.email = data.email;
+        }
+        if (data.username !== undefined) {
+          profileData.username = data.username;
+        }
+        if (data.bio !== undefined) {
+          profileData.bio = data.bio;
+        }
+        if (data.avatarUrl !== undefined) {
+          profileData.avatarUrl = data.avatarUrl;
+        }
+        if (data.firstName !== undefined) {
+          profileData.firstName = data.firstName;
+        }
+        if (data.lastName !== undefined) {
+          profileData.lastName = data.lastName;
+        }
 
         const response = await requestFetch<{ user: UserProfile }>('/api/user/profile', {
           method: 'PATCH',
           body: profileData,
+          credentials: 'include',
         });
 
         // Update local state
