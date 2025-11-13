@@ -55,7 +55,7 @@
   },
   "devDependencies": {
     "@directus/types": "13.1.1",
-    "@nuxt/eslint": "^1.5.2",
+    "@nuxt/eslint": "^1.10.0",
     "@nuxt/test-utils": "^3.20.1",
     "@turborepo-saas-starter/eslint-config": "workspace:*",
     "@vitest/ui": "^3.2.0",
