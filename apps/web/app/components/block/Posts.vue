@@ -3,6 +3,7 @@
  * Posts - Migrated to Nuxt UI
  * Uses UPagination for pagination controls
  */
+import { formatDistanceToNow } from 'date-fns';
 import type { Post, DirectusFile, DirectusUser } from '@turborepo-saas-starter/shared-types/schema';
 
 interface PostsProps {
@@ -123,24 +124,29 @@ watch(
   { immediate: true }
 );
 
+// Function to handle category filter clicks
+function handleCategoryClick(categorySlug: string | undefined) {
+  router.push({
+    path: route.path,
+    query: {
+      ...route.query,
+      category: categorySlug,
+      page: 1, // Reset to first page when filtering
+    },
+  });
+}
+
 // Create navigation menu items from categories
 const items = computed(() => {
   const menuItems: Array<{
     label: string;
-    to: { path: string; query: Record<string, string | number | undefined> };
     active: boolean;
+    click: () => void;
   }> = [
     {
       label: 'All',
-      to: {
-        path: route.path,
-        query: {
-          ...route.query,
-          category: undefined,
-          page: 1,
-        },
-      },
       active: !route.query.category,
+      click: () => handleCategoryClick(undefined),
     },
   ];
 
@@ -150,15 +156,8 @@ const items = computed(() => {
   if (categoriesToUse && categoriesToUse.length > 0) {
     const categoryItems = categoriesToUse.map((category) => ({
       label: category.name,
-      to: {
-        path: route.path,
-        query: {
-          ...route.query,
-          category: category.slug,
-          page: 1, // Reset to first page when filtering by category
-        },
-      },
       active: route.query.category === category.slug,
+      click: () => handleCategoryClick(category.slug),
     }));
 
     menuItems.push(...categoryItems);
@@ -211,9 +210,9 @@ const feedOrientation = ref<'vertical' | 'horizontal'>('horizontal');
 </script>
 <template>
   <UDashboardNavbar :ui="{ right: 'gap-3' }" class="border-b-0">
-    <template #default> <UNavigationMenu :items="items" /></template>
+    <template #left> <UNavigationMenu :items="items" color="neutral" /></template>
   </UDashboardNavbar>
-  <UContainer ref="articleContentRef" class="max-w-none overflow-auto pt-1">
+  <UContainer ref="articleContentRef" class="max-w-none overflow-auto pt-4">
     <!-- Show error if posts failed to load -->
     <div v-if="error" class="flex items-center justify-center py-12">
       <UAlert
@@ -243,11 +242,7 @@ const feedOrientation = ref<'vertical' | 'horizontal'>('horizontal');
         :image="post.imageUrl"
         :date="
           post.published_at
-            ? new Date(post.published_at).toLocaleDateString('en', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-              })
+            ? formatDistanceToNow(new Date(post.published_at), { addSuffix: true })
             : undefined
         "
         :authors="
