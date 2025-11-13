@@ -19,6 +19,8 @@
   --color-green-800: #016538;
   --color-green-900: #0a5331;
   --color-green-950: #052e16;
+
+  --ui-header-height: 56px;
 }
 
 .dark {
@@ -26,4 +28,8 @@
   --ui-bg-muted: var(--ui-color-neutral-900);
   --ui-bg-elevated: var(--ui-color-neutral-900);
   --ui-bg-accented: var(--ui-color-neutral-800);
+}
+
+button {
+  cursor: pointer;
 }

@@ -55,7 +55,7 @@ const items = computed<DropdownMenuItem[][]>(() => [
   [
     {
       label: 'Profile',
-      icon: 'i-lucide-user',
+      icon: 'tabler:user',
       to: '/profile',
     },
     {
@@ -70,55 +70,6 @@ const items = computed<DropdownMenuItem[][]>(() => [
     },
   ],
   [
-    {
-      label: 'Theme',
-      icon: 'i-lucide-palette',
-      children: [
-        {
-          label: 'Primary',
-          slot: 'chip',
-          chip: appConfig.ui.colors.primary,
-          content: {
-            align: 'center',
-            collisionPadding: 16,
-          },
-          children: colors.map((color) => ({
-            label: color,
-            chip: color,
-            slot: 'chip',
-            checked: appConfig.ui.colors.primary === color,
-            type: 'checkbox',
-            onSelect: (e) => {
-              e.preventDefault();
-
-              appConfig.ui.colors.primary = color;
-            },
-          })),
-        },
-        {
-          label: 'Neutral',
-          slot: 'chip',
-          chip:
-            appConfig.ui.colors.neutral === 'neutral' ? 'old-neutral' : appConfig.ui.colors.neutral,
-          content: {
-            align: 'end',
-            collisionPadding: 16,
-          },
-          children: neutrals.map((color) => ({
-            label: color,
-            chip: color === 'neutral' ? 'old-neutral' : color,
-            slot: 'chip',
-            type: 'checkbox',
-            checked: appConfig.ui.colors.neutral === color,
-            onSelect: (e) => {
-              e.preventDefault();
-
-              appConfig.ui.colors.neutral = color;
-            },
-          })),
-        },
-      ],
-    },
     {
       label: 'Appearance',
       icon: 'i-lucide-sun-moon',
@@ -153,8 +104,8 @@ const items = computed<DropdownMenuItem[][]>(() => [
   ],
   [
     {
-      label: 'Log out',
-      icon: 'i-lucide-log-out',
+      label: 'Sign out',
+      icon: 'tabler:logout',
       onSelect: handleLogout,
     },
   ],
@@ -168,7 +119,6 @@ const items = computed<DropdownMenuItem[][]>(() => [
     :ui="{ content: collapsed ? 'w-48' : 'w-(--reka-dropdown-menu-trigger-width)' }"
   >
     <UButton
-      size="2xl"
       v-bind="{
         ...user,
         label: collapsed ? undefined : user?.name,
@@ -178,10 +128,10 @@ const items = computed<DropdownMenuItem[][]>(() => [
       variant="ghost"
       block
       :square="collapsed"
-      class="data-[state=open]:bg-elevated"
+      class="data-[state=open]:bg-elevated text-lg rounded-full"
       :class="collapsed ? 'w-auto' : 'w-full'"
       :ui="{
-        trailingIcon: 'text-dimmed',
+        trailingIcon: 'text',
       }"
     />
 
