@@ -45,7 +45,7 @@
     "@turborepo-saas-starter/eslint-config": "workspace:*",
     "@types/better-sqlite3": "^7.6.13",
     "@types/luxon": "^3.7.1",
-    "@types/node": "^22.15.18",
+    "@types/node": "^24.10.1",
     "@types/pg": "^8.15.6",
     "@types/zxcvbn": "^4.4.5",
     "eslint": "^9.26.0",
@@ -53,7 +53,7 @@
     "pino-pretty": "^13.0.0",
     "prettier": "^3.5.3",
     "ts-node-maintained": "^10.9.5",
-    "typescript": "~5.8"
+    "typescript": "~5.9"
   },
   "dependencies": {
     "@adonisjs/auth": "^9.4.0",

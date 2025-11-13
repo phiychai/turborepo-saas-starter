@@ -12,6 +12,6 @@
     "type-check": "echo 'No type-check needed for config package'"
   },
   "devDependencies": {
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.3"
   }
 }
