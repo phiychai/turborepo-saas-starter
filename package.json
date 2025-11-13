@@ -56,13 +56,20 @@
   },
   "pnpm": {
     "overrides": {
-      "@nuxtjs/mdc": "^0.17.2"
+      "@nuxtjs/mdc": "^0.18.2",
+      "magicast": "^0.5.1"
+    },
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "@pinia/nuxt": "0.11.3",
+        "magicast": "0.5.1"
+      }
     },
     "onlyBuiltDependencies": [
       "@parcel/watcher",
       "@scarf/scarf",
-      "@swc/core",
       "@tailwindcss/oxide",
+      "bcrypt",
       "better-sqlite3",
       "esbuild",
       "maplibre-gl",

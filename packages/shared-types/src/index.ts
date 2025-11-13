@@ -1,3 +1,6 @@
+// Re-export schema types
+export type { DirectusFile, DirectusUser, Page, PageBlock, Post } from './schema';
+
 // User-related types
 export interface User {
   id: string;

@@ -22,13 +22,14 @@
     "@directus/visual-editing": "^1.1.0",
     "@iconify-json/lucide": "^1.2.57",
     "@iconify-json/simple-icons": "^1.2.43",
+    "@iconify-json/tabler": "^1.2.23",
     "@nuxt/content": "^3.7.1",
     "@nuxt/image": "^1.10.0",
     "@nuxt/scripts": "^0.11.5",
     "@nuxt/ui": "^4.1.0",
     "@nuxtjs/seo": "3.2.2",
     "@pinia-plugin-persistedstate/nuxt": "^1.2.1",
-    "@pinia/nuxt": "^0.11.2",
+    "@pinia/nuxt": "^0.11.3",
     "@standard-schema/spec": "^1.0.0",
     "@turborepo-saas-starter/shared-types": "workspace:*",
     "@turborepo-saas-starter/shared-utils": "workspace:*",
@@ -43,10 +44,10 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "lucide-vue-next": "^0.487.0",
-    "nuxt": "^4.2.0",
+    "nuxt": "^4.2.1",
     "nuxt-og-image": "^5.1.9",
     "nuxt-security": "^2.2.0",
-    "pinia": "^3.0.3",
+    "pinia": "^3.0.4",
     "unhead": "^2.0.19",
     "vee-validate": "^4.15.1",
     "zod": "^3.25.76",
@@ -57,20 +58,15 @@
     "@nuxt/eslint": "^1.5.2",
     "@nuxt/test-utils": "^3.20.1",
     "@turborepo-saas-starter/eslint-config": "workspace:*",
-    "@vitest/ui": "^4.0.5",
+    "@vitest/ui": "^3.2.0",
     "@vue/test-utils": "^2.4.6",
     "directus-sdk-typegen": "^0.2.0",
     "eslint": "^9.31.0",
     "happy-dom": "^20.0.10",
     "prettier": "3.5.3",
     "typescript": "^5.8.3",
-    "vitest": "^4.0.5",
+    "vitest": "^3.2.0",
     "vue-tsc": "^3.0.1"
-  },
-  "pnpm": {
-    "overrides": {
-      "@nuxtjs/mdc": "^0.17.2"
-    }
   },
   "packageManager": "pnpm@10.13.1"
 }
