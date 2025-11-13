@@ -25,7 +25,7 @@
     "@iconify-json/tabler": "^1.2.23",
     "@nuxt/content": "^3.7.1",
     "@nuxt/image": "^1.10.0",
-    "@nuxt/scripts": "^0.11.5",
+    "@nuxt/scripts": "^0.13.0",
     "@nuxt/ui": "^4.1.0",
     "@nuxtjs/seo": "3.2.2",
     "@pinia-plugin-persistedstate/nuxt": "^1.2.1",
