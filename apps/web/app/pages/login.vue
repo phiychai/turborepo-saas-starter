@@ -1,26 +1,26 @@
 <script setup lang="ts">
-import * as z from 'zod'
-import type { FormSubmitEvent } from '@nuxt/ui'
+import * as z from 'zod';
+import type { FormSubmitEvent } from '@nuxt/ui';
 
 definePageMeta({
-  layout: 'auth'
-})
+  layout: 'auth',
+});
 
 useSeoMeta({
   title: 'Login',
-  description: 'Login to your account to continue'
-})
+  description: 'Login to your account to continue',
+});
 
-const toast = useToast()
-const router = useRouter()
-const route = useRoute()
-const { login, isAuthenticated } = useAuth()
+const toast = useToast();
+const router = useRouter();
+const route = useRoute();
+const { login, isAuthenticated } = useAuth();
 
 // Redirect if already authenticated
 onMounted(() => {
   if (isAuthenticated.value) {
-    router.push('/')
-    return
+    router.push('/');
+    return;
   }
 
   // Show success message if coming from email verification
@@ -29,68 +29,75 @@ onMounted(() => {
       title: 'Email Verified',
       description: 'Your email has been verified successfully. Please login to continue.',
       color: 'green',
-    })
+    });
     // Clean up query param
-    router.replace({ query: {} })
+    router.replace({ query: {} });
   }
-})
+});
 
-const fields = [{
-  name: 'email',
-  type: 'text' as const,
-  label: 'Email',
-  placeholder: 'Enter your email',
-  required: true
-}, {
-  name: 'password',
-  label: 'Password',
-  type: 'password' as const,
-  placeholder: 'Enter your password'
-}, {
-  name: 'remember',
-  label: 'Remember me',
-  type: 'checkbox' as const
-}]
+const fields = [
+  {
+    name: 'email',
+    type: 'text' as const,
+    label: 'Email',
+    placeholder: 'Enter your email',
+    required: true,
+  },
+  {
+    name: 'password',
+    label: 'Password',
+    type: 'password' as const,
+    placeholder: 'Enter your password',
+  },
+  {
+    name: 'remember',
+    label: 'Remember me',
+    type: 'checkbox' as const,
+  },
+];
 
-const providers = [{
-  label: 'Google',
-  icon: 'i-simple-icons-google',
-  onClick: () => {
-    toast.add({ title: 'Google', description: 'Login with Google - Coming soon' })
-  }
-}, {
-  label: 'GitHub',
-  icon: 'i-simple-icons-github',
-  onClick: () => {
-    toast.add({ title: 'GitHub', description: 'Login with GitHub - Coming soon' })
-  }
-}]
+const providers = [
+  {
+    label: 'Google',
+    icon: 'i-simple-icons-google',
+    onClick: () => {
+      toast.add({ title: 'Google', description: 'Login with Google - Coming soon' });
+    },
+  },
+  {
+    label: 'GitHub',
+    icon: 'i-simple-icons-github',
+    onClick: () => {
+      toast.add({ title: 'GitHub', description: 'Login with GitHub - Coming soon' });
+    },
+  },
+];
 
 const schema = z.object({
   email: z.string().email('Invalid email'),
-  password: z.string().min(8, 'Must be at least 8 characters')
-})
+  password: z.string().min(8, 'Must be at least 8 characters'),
+});
 
-type Schema = z.output<typeof schema>
+type Schema = z.output<typeof schema>;
 
 async function onSubmit(payload: FormSubmitEvent<Schema>) {
-  const result = await login(payload.data.email, payload.data.password)
+  const result = await login(payload.data.email, payload.data.password);
 
   if (result.success) {
     toast.add({
       title: 'Success',
       description: 'Login successful!',
-      color: 'success'
-    })
+      color: 'success',
+    });
     // Redirect to / - it will show dashboard for authenticated users
     // or /admin for admin users
-    router.push('/')
+    router.push('/');
   } else {
     toast.add({
       title: 'Error',
       description: result.error || 'Login failed',
-      color: 'error'
-    })
+      color: 'error',
+    });
   }
 }
 </script>
@@ -105,25 +112,16 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
     @submit.prevent="onSubmit"
   >
     <template #description>
-      Don't have an account? <ULink
-        to="/signup"
-        class="text-primary font-medium"
-      >Sign up</ULink>.
+      Don't have an account? <ULink to="/signup" class="text-primary font-medium">Sign up</ULink>.
     </template>
 
     <template #password-hint>
-      <ULink
-        to="/"
-        class="text-primary font-medium"
-        tabindex="-1"
-      >Forgot password?</ULink>
+      <ULink to="/" class="text-primary font-medium" tabindex="-1">Forgot password?</ULink>
     </template>
 
     <template #footer>
-      By signing in, you agree to our <ULink
-        to="/"
-        class="text-primary font-medium"
-      >Terms of Service</ULink>.
+      By signing in, you agree to our
+      <ULink to="/" class="text-primary font-medium">Terms of Service</ULink>.
     </template>
   </UAuthForm>
 </template>

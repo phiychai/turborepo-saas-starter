@@ -32,12 +32,7 @@ onMounted(async () => {
     <UDashboardPanel grow>
       <UDashboardNavbar title="Admin Dashboard">
         <template #right>
-          <UButton
-            label="Back to Site"
-            to="/"
-            variant="ghost"
-            icon="i-heroicons-arrow-left"
-          />
+          <UButton label="Back to Site" to="/" variant="ghost" icon="i-heroicons-arrow-left" />
         </template>
       </UDashboardNavbar>
 
@@ -176,7 +171,9 @@ onMounted(async () => {
 
               <div class="space-y-3">
                 <div class="flex items-center gap-4 py-2 border-b last:border-b-0">
-                  <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
+                  <div
+                    class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold"
+                  >
                     JD
                   </div>
                   <div class="flex-1">
@@ -186,7 +183,9 @@ onMounted(async () => {
                   <span class="text-xs text-gray-500">2h ago</span>
                 </div>
                 <div class="flex items-center gap-4 py-2 border-b last:border-b-0">
-                  <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white font-semibold">
+                  <div
+                    class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white font-semibold"
+                  >
                     JS
                   </div>
                   <div class="flex-1">
@@ -196,7 +195,9 @@ onMounted(async () => {
                   <span class="text-xs text-gray-500">4h ago</span>
                 </div>
                 <div class="flex items-center gap-4 py-2">
-                  <div class="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white font-semibold">
+                  <div
+                    class="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white font-semibold"
+                  >
                     MB
                   </div>
                   <div class="flex-1">
@@ -250,4 +251,3 @@ onMounted(async () => {
     </UDashboardPanel>
   </UDashboardPage>
 </template>
-

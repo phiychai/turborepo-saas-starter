@@ -27,12 +27,7 @@
             clip-rule="evenodd"
           />
         </svg>
-        <svg
-          v-else
-          class="w-5 h-5 text-red-500"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
+        <svg v-else class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
           <path
             fill-rule="evenodd"
             d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -52,7 +47,7 @@
 </template>
 
 <script setup lang="ts">
-import { authClient } from "~/lib/auth-client";
+import { authClient } from '~/lib/auth-client';
 
 interface Props {
   modelValue: string;
@@ -60,30 +55,30 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  placeholder: "Choose a username",
+  placeholder: 'Choose a username',
 });
 
 const emit = defineEmits<{
-  "update:modelValue": [value: string];
+  'update:modelValue': [value: string];
 }>();
 
 const checking = ref(false);
 const checked = ref(false);
 const available = ref(false);
 const valid = ref(false);
-const errorMessage = ref("");
+const errorMessage = ref('');
 
 let debounceTimer: NodeJS.Timeout | null = null;
 
 const statusClass = computed(() => {
-  if (!checked.value) return "";
-  if (available.value && valid.value) return "border-green-500";
-  return "border-red-500";
+  if (!checked.value) return '';
+  if (available.value && valid.value) return 'border-green-500';
+  return 'border-red-500';
 });
 
 const statusTextClass = computed(() => {
-  if (available.value && valid.value) return "text-green-600";
-  return "text-red-600";
+  if (available.value && valid.value) return 'text-green-600';
+  return 'text-red-600';
 });
 
 async function checkUsername(username: string) {
@@ -103,7 +98,7 @@ async function checkUsername(username: string) {
     if (result.error) {
       available.value = false;
       valid.value = false;
-      errorMessage.value = result.error.message || "Username is not available";
+      errorMessage.value = result.error.message || 'Username is not available';
       checked.value = true;
       return;
     }
@@ -116,7 +111,7 @@ async function checkUsername(username: string) {
     // Better Auth will return validation errors
     available.value = false;
     valid.value = false;
-    errorMessage.value = error.message || "Username is not available";
+    errorMessage.value = error.message || 'Username is not available';
     checked.value = true;
   } finally {
     checking.value = false;
@@ -124,13 +119,13 @@ async function checkUsername(username: string) {
 }
 
 function handleInput(value: string) {
-  emit("update:modelValue", value);
+  emit('update:modelValue', value);
 
   // Reset state
   checked.value = false;
   available.value = false;
   valid.value = false;
-  errorMessage.value = "";
+  errorMessage.value = '';
 
   // Debounce username check
   if (debounceTimer) {
@@ -142,4 +137,3 @@ function handleInput(value: string) {
   }, 500);
 }
 </script>
-

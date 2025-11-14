@@ -6,26 +6,18 @@
 import { type ButtonProps } from './BaseButton.vue';
 
 export interface ButtonGroupProps {
-	buttons: Array<ButtonProps>;
-	className?: string;
-	orientation?: 'horizontal' | 'vertical';
+  buttons: Array<ButtonProps>;
+  className?: string;
+  orientation?: 'horizontal' | 'vertical';
 }
 
 const props = withDefaults(defineProps<ButtonGroupProps>(), {
-	orientation: 'horizontal',
+  orientation: 'horizontal',
 });
 </script>
 
 <template>
-	<UButtonGroup
-		v-if="buttons?.length"
-		:orientation="orientation"
-		:class="className"
-	>
-		<BaseButton
-			v-for="(button, index) in buttons"
-			:key="index"
-			v-bind="button"
-		/>
-	</UButtonGroup>
+  <UButtonGroup v-if="buttons?.length" :orientation="orientation" :class="className">
+    <BaseButton v-for="(button, index) in buttons" :key="index" v-bind="button" />
+  </UButtonGroup>
 </template>

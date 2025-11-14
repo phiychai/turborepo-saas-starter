@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineProps<{
-  orientation: 'horizontal' | 'vertical'
-}>()
+  orientation: 'horizontal' | 'vertical';
+}>();
 </script>
 
 <template>

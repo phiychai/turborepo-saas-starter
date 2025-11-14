@@ -7,5 +7,5 @@ const { className = '' } = defineProps<{ className?: string }>();
 </script>
 
 <template>
-	<UColorModeButton :class="className" />
+  <UColorModeButton :class="className" />
 </template>

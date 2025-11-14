@@ -6,32 +6,29 @@
 import type { FormField } from '@turborepo-saas-starter/shared-types/schema';
 
 interface CustomFormData {
-  id: string
-  tagline: string | null
-  headline: string | null
-  form: CustomForm
+  id: string;
+  tagline: string | null;
+  headline: string | null;
+  form: CustomForm;
 }
 interface CustomForm {
-  id: string
-  on_success?: 'redirect' | 'message' | null
-  sort?: number | null
-  submit_label?: string | null
-  success_message?: string | null
-  title?: string | null
-  success_redirect_url?: string | null
-  is_active?: boolean | null
-  fields: FormField[]
+  id: string;
+  on_success?: 'redirect' | 'message' | null;
+  sort?: number | null;
+  submit_label?: string | null;
+  success_message?: string | null;
+  title?: string | null;
+  success_redirect_url?: string | null;
+  is_active?: boolean | null;
+  fields: FormField[];
 }
 
-const { setAttr } = useVisualEditing()
-defineProps<{ data: CustomFormData }>()
+const { setAttr } = useVisualEditing();
+defineProps<{ data: CustomFormData }>();
 </script>
 
 <template>
-  <section
-    v-if="data.form"
-    class="mx-auto"
-  >
+  <section v-if="data.form" class="mx-auto">
     <Tagline
       v-if="data.tagline"
       :tagline="data.tagline"
@@ -40,7 +37,7 @@ defineProps<{ data: CustomFormData }>()
           collection: 'block_form',
           item: data.id,
           fields: 'tagline',
-          mode: 'popover'
+          mode: 'popover',
         })
       "
     />
@@ -53,7 +50,7 @@ defineProps<{ data: CustomFormData }>()
           collection: 'block_form',
           item: data.id,
           fields: 'headline',
-          mode: 'popover'
+          mode: 'popover',
         })
       "
     />
@@ -64,14 +61,11 @@ defineProps<{ data: CustomFormData }>()
           collection: 'block_form',
           item: data.id,
           fields: ['form'],
-          mode: 'popover'
+          mode: 'popover',
         })
       "
     >
-      <FormBuilder
-        :form="data.form"
-        class="mt-8"
-      />
+      <FormBuilder :form="data.form" class="mt-8" />
     </div>
   </section>
 </template>

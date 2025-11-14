@@ -1,69 +1,79 @@
 <script setup lang="ts">
-import type { TableColumn } from '@nuxt/ui'
-import { upperFirst } from 'scule'
-import { getPaginationRowModel } from '@tanstack/table-core'
-import type { Row } from '@tanstack/table-core'
-import type { DashboardUser } from '~/types'
+import type { TableColumn } from '@nuxt/ui';
+import { upperFirst } from 'scule';
+import { getPaginationRowModel } from '@tanstack/table-core';
+import type { Row } from '@tanstack/table-core';
+import type { DashboardUser } from '~/types';
 
 definePageMeta({
   layout: 'dashboard',
-  middleware: 'admin'
-})
+  middleware: 'admin',
+});
 
-const UAvatar = resolveComponent('UAvatar')
-const UButton = resolveComponent('UButton')
-const UBadge = resolveComponent('UBadge')
-const UDropdownMenu = resolveComponent('UDropdownMenu')
-const UCheckbox = resolveComponent('UCheckbox')
+const UAvatar = resolveComponent('UAvatar');
+const UButton = resolveComponent('UButton');
+const UBadge = resolveComponent('UBadge');
+const UDropdownMenu = resolveComponent('UDropdownMenu');
+const UCheckbox = resolveComponent('UCheckbox');
 
-const toast = useToast()
-const table = useTemplateRef('table')
+const toast = useToast();
+const table = useTemplateRef('table');
 
-const columnFilters = ref([{
-  id: 'email',
-  value: ''
-}])
-const columnVisibility = ref()
-const rowSelection = ref({})
+const columnFilters = ref([
+  {
+    id: 'email',
+    value: '',
+  },
+]);
+const columnVisibility = ref();
+const rowSelection = ref({});
 
 // Pagination state
 const pagination = ref({
   pageIndex: 0,
-  pageSize: 25
-})
+  pageSize: 25,
+});
 
 // Fetch users from admin API
-const { data: usersData, status, refresh } = await useFetch<any>('/api/admin/users', {
+const {
+  data: usersData,
+  status,
+  refresh,
+} = await useFetch<any>('/api/admin/users', {
   lazy: true,
   query: {
     page: computed(() => pagination.value.pageIndex + 1),
     limit: computed(() => pagination.value.pageSize),
-    search: computed(() => columnFilters.value.find(f => f.id === 'email')?.value || '')
-  }
-})
+    search: computed(() => columnFilters.value.find((f) => f.id === 'email')?.value || ''),
+  },
+});
 
 // Map backend users to DashboardUser format
 const data = computed<DashboardUser[]>(() => {
-  if (!usersData.value) return []
+  if (!usersData.value) return [];
 
   // Handle different response structures
   // AdonisJS pagination might return users.data or users directly
-  let usersArray: any[] = []
+  let usersArray: any[] = [];
 
   if (Array.isArray(usersData.value.users)) {
-    usersArray = usersData.value.users
+    usersArray = usersData.value.users;
   } else if (usersData.value.users?.data && Array.isArray(usersData.value.users.data)) {
-    usersArray = usersData.value.users.data
+    usersArray = usersData.value.users.data;
   } else if (usersData.value.data && Array.isArray(usersData.value.data)) {
-    usersArray = usersData.value.data
+    usersArray = usersData.value.data;
   }
 
   if (!Array.isArray(usersArray) || usersArray.length === 0) {
-    return []
+    return [];
   }
 
   return usersArray.map((user: any) => {
-    const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ') || user.username || user.email?.split('@')[0] || 'User'
+    const fullName =
+      [user.firstName, user.lastName].filter(Boolean).join(' ') ||
+      user.username ||
+      user.email?.split('@')[0] ||
+      'User';
 
     return {
       id: user.id,
@@ -71,46 +81,46 @@ const data = computed<DashboardUser[]>(() => {
       email: user.email || '',
       avatar: {
         src: user.avatarUrl || `https://i.pravatar.cc/128?u=${user.id}`,
-        alt: fullName
+        alt: fullName,
       },
       status: user.isActive ? 'subscribed' : 'unsubscribed',
       location: '—', // Not available in user model
       role: user.role || 'user',
-      isActive: user.isActive !== false
-    } as DashboardUser & { role: string; isActive: boolean }
-  })
-})
+      isActive: user.isActive !== false,
+    } as DashboardUser & { role: string; isActive: boolean };
+  });
+});
 
 // Selected user for editing
-const selectedUser = ref<DashboardUser | null>(null)
+const selectedUser = ref<DashboardUser | null>(null);
 
 // Sync state
-const syncing = ref(false)
+const syncing = ref(false);
 
 async function syncAllUsers() {
-  syncing.value = true
+  syncing.value = true;
   try {
     const response = await $fetch('/api/admin/users/sync-all', {
       method: 'POST',
-      credentials: 'include'
-    })
+      credentials: 'include',
+    });
 
     toast.add({
       title: 'Sync Complete',
       description: `Synced ${response.synced} users, ${response.skipped} already existed, ${response.failed} failed`,
-      color: 'success'
-    })
+      color: 'success',
+    });
 
     // Refresh the table
-    await refresh()
+    await refresh();
   } catch (error: any) {
     toast.add({
       title: 'Sync Failed',
       description: error.data?.message || 'Failed to sync users',
-      color: 'error'
-    })
+      color: 'error',
+    });
   } finally {
-    syncing.value = false
+    syncing.value = false;
   }
 }
 
@@ -118,67 +128,67 @@ function getRowItems(row: Row<DashboardUser>) {
   return [
     {
       type: 'label',
-      label: 'Actions'
+      label: 'Actions',
     },
     {
       label: 'Edit customer',
       icon: 'i-lucide-edit',
       onSelect() {
-        selectedUser.value = row.original
-      }
+        selectedUser.value = row.original;
+      },
     },
     {
       label: 'Copy customer ID',
       icon: 'i-lucide-copy',
       onSelect() {
-        navigator.clipboard.writeText(row.original.id.toString())
+        navigator.clipboard.writeText(row.original.id.toString());
         toast.add({
           title: 'Copied to clipboard',
-          description: 'Customer ID copied to clipboard'
-        })
-      }
+          description: 'Customer ID copied to clipboard',
+        });
+      },
     },
     {
-      type: 'separator'
+      type: 'separator',
     },
     {
       label: 'Delete customer',
       icon: 'i-lucide-trash',
       color: 'error',
       onSelect() {
-        handleDelete(row.original.id)
-      }
-    }
-  ]
+        handleDelete(row.original.id);
+      },
+    },
+  ];
 }
 
 async function handleDelete(userId: number) {
   try {
     await $fetch(`/api/admin/users/${userId}`, {
       method: 'DELETE',
-      credentials: 'include'
-    })
+      credentials: 'include',
+    });
 
     toast.add({
       title: 'Success',
       description: 'Customer deleted successfully',
-      color: 'success'
-    })
+      color: 'success',
+    });
 
-    await refresh()
+    await refresh();
   } catch (error: any) {
     toast.add({
       title: 'Error',
       description: error.data?.message || 'Failed to delete customer',
-      color: 'error'
-    })
+      color: 'error',
+    });
   }
 }
 
 function handleUserUpdated(updatedUser: DashboardUser) {
   // Refresh the data after update
-  refresh()
-  selectedUser.value = null
+  refresh();
+  selectedUser.value = null;
 }
 
 const columns: TableColumn<DashboardUser>[] = [
@@ -186,23 +196,23 @@ const columns: TableColumn<DashboardUser>[] = [
     id: 'select',
     header: ({ table }) =>
       h(UCheckbox, {
-        'modelValue': table.getIsSomePageRowsSelected()
+        modelValue: table.getIsSomePageRowsSelected()
           ? 'indeterminate'
           : table.getIsAllPageRowsSelected(),
         'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
           table.toggleAllPageRowsSelected(!!value),
-        'ariaLabel': 'Select all'
+        ariaLabel: 'Select all',
       }),
     cell: ({ row }) =>
       h(UCheckbox, {
-        'modelValue': row.getIsSelected(),
+        modelValue: row.getIsSelected(),
         'onUpdate:modelValue': (value: boolean | 'indeterminate') => row.toggleSelected(!!value),
-        'ariaLabel': 'Select row'
-      })
+        ariaLabel: 'Select row',
+      }),
   },
   {
     accessorKey: 'id',
-    header: 'ID'
+    header: 'ID',
   },
   {
     accessorKey: 'name',
@@ -211,19 +221,19 @@ const columns: TableColumn<DashboardUser>[] = [
       return h('div', { class: 'flex items-center gap-3' }, [
         h(UAvatar, {
           ...row.original.avatar,
-          size: 'lg'
+          size: 'lg',
         }),
         h('div', undefined, [
           h('p', { class: 'font-medium text-highlighted' }, row.original.name),
-          h('p', { class: 'text-muted text-sm' }, row.original.email)
-        ])
-      ])
-    }
+          h('p', { class: 'text-muted text-sm' }, row.original.email),
+        ]),
+      ]);
+    },
   },
   {
     accessorKey: 'email',
     header: ({ column }) => {
-      const isSorted = column.getIsSorted()
+      const isSorted = column.getIsSorted();
 
       return h(UButton, {
         color: 'neutral',
@@ -235,19 +245,19 @@ const columns: TableColumn<DashboardUser>[] = [
             : 'i-lucide-arrow-down-wide-narrow'
           : 'i-lucide-arrow-up-down',
         class: '-mx-2.5',
-        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc')
-      })
-    }
+        onClick: () => column.toggleSorting(column.getIsSorted() === 'asc'),
+      });
+    },
   },
   {
     accessorKey: 'role',
     header: 'Role',
     cell: ({ row }) => {
-      const role = (row.original as any).role || 'user'
-      const color = role === 'admin' ? 'primary' : 'neutral'
+      const role = (row.original as any).role || 'user';
+      const color = role === 'admin' ? 'primary' : 'neutral';
 
-      return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () => role)
-    }
+      return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () => role);
+    },
   },
   {
     accessorKey: 'status',
@@ -257,15 +267,17 @@ const columns: TableColumn<DashboardUser>[] = [
       const statusColors: Record<DashboardUser['status'], 'success' | 'error' | 'warning'> = {
         subscribed: 'success',
         unsubscribed: 'error',
-        bounced: 'warning'
-      }
+        bounced: 'warning',
+      };
 
-      const color = statusColors[row.original.status] || 'error'
+      const color = statusColors[row.original.status] || 'error';
 
-      return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () =>
-        row.original.status
-      )
-    }
+      return h(
+        UBadge,
+        { class: 'capitalize', variant: 'subtle', color },
+        () => row.original.status
+      );
+    },
   },
   {
     id: 'actions',
@@ -277,37 +289,40 @@ const columns: TableColumn<DashboardUser>[] = [
           UDropdownMenu,
           {
             content: {
-              align: 'end'
+              align: 'end',
             },
-            items: getRowItems(row)
+            items: getRowItems(row),
           },
           () =>
             h(UButton, {
               icon: 'i-lucide-ellipsis-vertical',
               color: 'neutral',
               variant: 'ghost',
-              class: 'ml-auto'
+              class: 'ml-auto',
             })
         )
-      )
+      );
+    },
+  },
+];
+
+const statusFilter = ref('all');
+
+watch(
+  () => statusFilter.value,
+  (newVal) => {
+    if (!table?.value?.tableApi) return;
+
+    const statusColumn = table.value.tableApi.getColumn('status');
+    if (!statusColumn) return;
+
+    if (newVal === 'all') {
+      statusColumn.setFilterValue(undefined);
+    } else {
+      statusColumn.setFilterValue(newVal);
     }
   }
-]
-
-const statusFilter = ref('all')
-
-watch(() => statusFilter.value, (newVal) => {
-  if (!table?.value?.tableApi) return
-
-  const statusColumn = table.value.tableApi.getColumn('status')
-  if (!statusColumn) return
-
-  if (newVal === 'all') {
-    statusColumn.setFilterValue(undefined)
-  } else {
-    statusColumn.setFilterValue(newVal)
-  }
-})
+);
 </script>
 
 <template>
@@ -337,7 +352,7 @@ watch(() => statusFilter.value, (newVal) => {
     <template #body>
       <div class="flex flex-wrap items-center justify-between gap-1.5">
         <UInput
-          :model-value="(table?.tableApi?.getColumn('email')?.getFilterValue() as string)"
+          :model-value="table?.tableApi?.getColumn('email')?.getFilterValue() as string"
           class="max-w-sm"
           icon="i-lucide-search"
           placeholder="Filter emails..."
@@ -366,9 +381,11 @@ watch(() => statusFilter.value, (newVal) => {
             :options="[
               { label: 'All', value: 'all' },
               { label: 'Active', value: 'subscribed' },
-              { label: 'Inactive', value: 'unsubscribed' }
+              { label: 'Inactive', value: 'unsubscribed' },
             ]"
-            :ui="{ trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200' }"
+            :ui="{
+              trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200',
+            }"
             placeholder="Filter status"
             class="min-w-28"
           />
@@ -382,11 +399,11 @@ watch(() => statusFilter.value, (newVal) => {
                   type: 'checkbox' as const,
                   checked: column.getIsVisible(),
                   onUpdateChecked(checked: boolean) {
-                    table?.tableApi?.getColumn(column.id)?.toggleVisibility(!!checked)
+                    table?.tableApi?.getColumn(column.id)?.toggleVisibility(!!checked);
                   },
                   onSelect(e?: Event) {
-                    e?.preventDefault()
-                  }
+                    e?.preventDefault();
+                  },
                 }))
             "
             :content="{ align: 'end' }"
@@ -408,7 +425,7 @@ watch(() => statusFilter.value, (newVal) => {
         v-model:row-selection="rowSelection"
         v-model:pagination="pagination"
         :pagination-options="{
-          getPaginationRowModel: getPaginationRowModel()
+          getPaginationRowModel: getPaginationRowModel(),
         }"
         class="shrink-0"
         :data="data"
@@ -420,7 +437,7 @@ watch(() => statusFilter.value, (newVal) => {
           tbody: '[&>tr]:last:[&>td]:border-b-0',
           th: 'py-2 first:rounded-l-lg last:rounded-r-lg border-y border-default first:border-l last:border-r',
           td: 'border-b border-default',
-          separator: 'h-0'
+          separator: 'h-0',
         }"
       />
 
@@ -432,13 +449,15 @@ watch(() => statusFilter.value, (newVal) => {
 
         <div class="flex items-center gap-1.5">
           <UPagination
-            :default-page="(usersData?.pagination?.page || pagination.pageIndex + 1)"
-            :items-per-page="(usersData?.pagination?.perPage || pagination.pageSize)"
-            :total="(usersData?.pagination?.total || data.length || 0)"
-            @update:page="(p: number) => {
-              pagination.pageIndex = p - 1
-              refresh()
-            }"
+            :default-page="usersData?.pagination?.page || pagination.pageIndex + 1"
+            :items-per-page="usersData?.pagination?.perPage || pagination.pageSize"
+            :total="usersData?.pagination?.total || data.length || 0"
+            @update:page="
+              (p: number) => {
+                pagination.pageIndex = p - 1;
+                refresh();
+              }
+            "
           />
         </div>
       </div>

@@ -218,11 +218,8 @@ async function resendOTP() {
       </div>
 
       <div class="text-center">
-        <ULink to="/login" class="text-sm text-primary hover:underline">
-          Back to login
-        </ULink>
+        <ULink to="/login" class="text-sm text-primary hover:underline"> Back to login </ULink>
       </div>
     </div>
   </div>
 </template>
-

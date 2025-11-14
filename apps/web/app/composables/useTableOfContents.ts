@@ -79,4 +79,3 @@ export function useTableOfContents(
     generateToc, // Expose for manual generation if needed
   };
 }
-

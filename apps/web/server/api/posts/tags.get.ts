@@ -14,4 +14,3 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 500, message: 'Failed to fetch categories', data: error });
   }
 });
-
