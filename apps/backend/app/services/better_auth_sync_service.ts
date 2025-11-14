@@ -13,11 +13,7 @@ export class BetterAuthSyncService {
   /**
    * Sync role change from AdonisJS to Better Auth
    */
-  static async syncRole(
-    adonisUserId: number,
-    newRole: string,
-    request?: any
-  ): Promise<void> {
+  static async syncRole(adonisUserId: number, newRole: string, request?: any): Promise<void> {
     const user = await User.findOrFail(adonisUserId);
 
     if (!user.betterAuthUserId) {
@@ -92,4 +88,3 @@ export class BetterAuthSyncService {
     }
   }
 }
-

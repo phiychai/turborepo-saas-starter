@@ -1,4 +1,4 @@
-import env from "#start/env";
+import env from '#start/env';
 
 /**
  * Lago API Types
@@ -19,7 +19,7 @@ interface LagoCustomer {
 interface LagoPlan {
   code: string;
   name: string;
-  interval: "monthly" | "yearly" | "weekly";
+  interval: 'monthly' | 'yearly' | 'weekly';
   amount_cents: number;
   amount_currency: string;
   description?: string;
@@ -30,7 +30,7 @@ interface LagoSubscription {
   plan_code: string;
   name?: string;
   external_id?: string;
-  billing_time?: "calendar" | "anniversary";
+  billing_time?: 'calendar' | 'anniversary';
   ending_at?: string;
   subscription_at?: string;
 }
@@ -61,8 +61,8 @@ class BillingService {
   private apiKey: string;
 
   constructor() {
-    this.apiUrl = env.get("LAGO_API_URL");
-    this.apiKey = env.get("LAGO_API_KEY") || "";
+    this.apiUrl = env.get('LAGO_API_URL');
+    this.apiKey = env.get('LAGO_API_KEY') || '';
   }
 
   /**
@@ -72,13 +72,13 @@ class BillingService {
     const url = `${this.apiUrl}/api/v1${endpoint}`;
 
     const headers: Record<string, string> = {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       ...(options.headers as Record<string, string>),
     };
 
     // Add API key if available
     if (this.apiKey) {
-      headers["Authorization"] = `Bearer ${this.apiKey}`;
+      headers['Authorization'] = `Bearer ${this.apiKey}`;
     }
 
     try {
@@ -98,14 +98,14 @@ class BillingService {
       }
 
       // Check if response has content
-      const contentType = response.headers.get("content-type");
-      if (contentType && contentType.includes("application/json")) {
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
         return await response.json();
       }
 
       return null;
     } catch (error) {
-      console.error("Lago API request failed:", error);
+      console.error('Lago API request failed:', error);
       throw error;
     }
   }
@@ -133,8 +133,8 @@ class BillingService {
         external_id: customer.externalId,
         name: customer.name,
         email: customer.email,
-        currency: customer.currency || "USD",
-        timezone: customer.timezone || "UTC",
+        currency: customer.currency || 'USD',
+        timezone: customer.timezone || 'UTC',
       },
     };
 
@@ -145,8 +145,8 @@ class BillingService {
       };
     }
 
-    return this.request("/customers", {
-      method: "POST",
+    return this.request('/customers', {
+      method: 'POST',
       body: JSON.stringify(payload),
     });
   }
@@ -163,7 +163,7 @@ class BillingService {
    */
   async updateCustomer(externalId: string, updates: Partial<LagoCustomer>) {
     return this.request(`/customers/${externalId}`, {
-      method: "PUT",
+      method: 'PUT',
       body: JSON.stringify({ customer: updates }),
     });
   }
@@ -173,7 +173,7 @@ class BillingService {
    */
   async deleteCustomer(externalId: string) {
     return this.request(`/customers/${externalId}`, {
-      method: "DELETE",
+      method: 'DELETE',
     });
   }
 
@@ -189,7 +189,7 @@ class BillingService {
     planCode: string;
     externalId?: string;
     name?: string;
-    billingTime?: "calendar" | "anniversary";
+    billingTime?: 'calendar' | 'anniversary';
     endingAt?: string;
     subscriptionAt?: string;
   }) {
@@ -205,8 +205,8 @@ class BillingService {
       },
     };
 
-    return this.request("/subscriptions", {
-      method: "POST",
+    return this.request('/subscriptions', {
+      method: 'POST',
       body: JSON.stringify(payload),
     });
   }
@@ -237,7 +237,7 @@ class BillingService {
     }
   ) {
     return this.request(`/subscriptions/${externalId}`, {
-      method: "PUT",
+      method: 'PUT',
       body: JSON.stringify({ subscription: updates }),
     });
   }
@@ -247,7 +247,7 @@ class BillingService {
    */
   async cancelSubscription(externalId: string) {
     return this.request(`/subscriptions/${externalId}`, {
-      method: "DELETE",
+      method: 'DELETE',
     });
   }
 
@@ -261,7 +261,7 @@ class BillingService {
   async createPlan(plan: {
     code: string;
     name: string;
-    interval: "monthly" | "yearly" | "weekly";
+    interval: 'monthly' | 'yearly' | 'weekly';
     amountCents: number;
     amountCurrency: string;
     description?: string;
@@ -278,8 +278,8 @@ class BillingService {
       },
     };
 
-    return this.request("/plans", {
-      method: "POST",
+    return this.request('/plans', {
+      method: 'POST',
       body: JSON.stringify(payload),
     });
   }
@@ -303,7 +303,7 @@ class BillingService {
    */
   async updatePlan(code: string, updates: Partial<LagoPlan>) {
     return this.request(`/plans/${code}`, {
-      method: "PUT",
+      method: 'PUT',
       body: JSON.stringify({ plan: updates }),
     });
   }
@@ -313,7 +313,7 @@ class BillingService {
    */
   async deletePlan(code: string) {
     return this.request(`/plans/${code}`, {
-      method: "DELETE",
+      method: 'DELETE',
     });
   }
 
@@ -340,7 +340,7 @@ class BillingService {
    */
   async downloadInvoice(lagoId: string) {
     return this.request(`/invoices/${lagoId}/download`, {
-      method: "POST",
+      method: 'POST',
     });
   }
 
@@ -349,7 +349,7 @@ class BillingService {
    */
   async finalizeInvoice(lagoId: string) {
     return this.request(`/invoices/${lagoId}/finalize`, {
-      method: "PUT",
+      method: 'PUT',
     });
   }
 
@@ -358,7 +358,7 @@ class BillingService {
    */
   async retryInvoice(lagoId: string) {
     return this.request(`/invoices/${lagoId}/retry_payment`, {
-      method: "POST",
+      method: 'POST',
     });
   }
 
@@ -386,8 +386,8 @@ class BillingService {
       },
     };
 
-    return this.request("/events", {
-      method: "POST",
+    return this.request('/events', {
+      method: 'POST',
       body: JSON.stringify(payload),
     });
   }
@@ -396,8 +396,8 @@ class BillingService {
    * Batch send events
    */
   async sendBatchEvents(events: any[]) {
-    return this.request("/events/batch", {
-      method: "POST",
+    return this.request('/events/batch', {
+      method: 'POST',
       body: JSON.stringify({ events }),
     });
   }
@@ -433,7 +433,7 @@ class BillingService {
     // Note: Lago API doesn't support email-based lookup
     // You'll need to maintain your own mapping in your database
     console.warn(
-      "getAccountByEmail not directly supported by Lago - maintain email->externalId mapping in your DB"
+      'getAccountByEmail not directly supported by Lago - maintain email->externalId mapping in your DB'
     );
     return null;
   }
@@ -465,7 +465,7 @@ class BillingService {
   async linkStripeCustomer(externalCustomerId: string, stripeCustomerId: string) {
     return this.updateCustomer(externalCustomerId, {
       billing_configuration: {
-        payment_provider: "stripe",
+        payment_provider: 'stripe',
         provider_customer_id: stripeCustomerId,
       },
     } as any);
@@ -477,7 +477,7 @@ class BillingService {
   async linkPayPalCustomer(externalCustomerId: string, paypalCustomerId: string) {
     return this.updateCustomer(externalCustomerId, {
       billing_configuration: {
-        payment_provider: "paypal",
+        payment_provider: 'paypal',
         provider_customer_id: paypalCustomerId,
       },
     } as any);

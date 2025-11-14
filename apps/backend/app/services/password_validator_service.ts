@@ -71,4 +71,3 @@ export class PasswordValidatorService {
     return colors[score] || 'gray';
   }
 }
-

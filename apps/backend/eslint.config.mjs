@@ -1,7 +1,7 @@
-import { dirname } from "node:path";
-import { fileURLToPath } from "node:url";
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-import nodeConfig from "@turborepo-saas-starter/eslint-config/node";
+import nodeConfig from '@turborepo-saas-starter/eslint-config/node';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -19,10 +19,10 @@ export default [
     // Backend-specific overrides
     rules: {
       // Allow console in backend
-      "no-console": "off",
+      'no-console': 'off',
     },
   },
   {
-    ignores: ["build/**", "tmp/**", "node_modules/**", "ace.js", "**/*.generated.*", "**/*.cjs"],
+    ignores: ['build/**', 'tmp/**', 'node_modules/**', 'ace.js', '**/*.generated.*', '**/*.cjs'],
   },
 ];

@@ -1,12 +1,12 @@
-import env from "#start/env";
-import { createDirectus, rest, staticToken, authentication } from "@directus/sdk";
+import env from '#start/env';
+import { createDirectus, rest, staticToken, authentication } from '@directus/sdk';
 
 class DirectusService {
   private client: any;
   private adminToken: string | null = null;
 
   constructor() {
-    this.client = createDirectus(env.get("DIRECTUS_URL")).with(rest()).with(authentication());
+    this.client = createDirectus(env.get('DIRECTUS_URL')).with(rest()).with(authentication());
   }
 
   /**
@@ -15,23 +15,23 @@ class DirectusService {
   async authenticate() {
     try {
       // Use static token if available
-      const staticTokenValue = env.get("DIRECTUS_STATIC_TOKEN");
+      const staticTokenValue = env.get('DIRECTUS_STATIC_TOKEN');
       if (staticTokenValue) {
         this.adminToken = staticTokenValue;
         return this.adminToken;
       }
 
       // Otherwise, authenticate with email/password
-      const email = env.get("DIRECTUS_ADMIN_EMAIL");
-      const password = env.get("DIRECTUS_ADMIN_PASSWORD");
+      const email = env.get('DIRECTUS_ADMIN_EMAIL');
+      const password = env.get('DIRECTUS_ADMIN_PASSWORD');
 
       await this.client.login(email, password);
       this.adminToken = this.client.getToken();
 
       return this.adminToken;
     } catch (error) {
-      console.error("Failed to authenticate with Directus:", error);
-      throw new Error("Directus authentication failed");
+      console.error('Failed to authenticate with Directus:', error);
+      throw new Error('Directus authentication failed');
     }
   }
 
@@ -49,13 +49,13 @@ class DirectusService {
    * Proxy a request to Directus
    */
   async proxyRequest(path: string, method: string, body?: any, headers?: Record<string, string>) {
-    const directusUrl = env.get("DIRECTUS_URL");
+    const directusUrl = env.get('DIRECTUS_URL');
     const url = `${directusUrl}${path}`;
 
     const token = await this.getToken();
 
     const requestHeaders: Record<string, string> = {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       ...(token && { Authorization: `Bearer ${token}` }),
       ...headers,
     };
@@ -75,7 +75,7 @@ class DirectusService {
         headers: Object.fromEntries(response.headers.entries()),
       };
     } catch (error) {
-      console.error("Directus proxy request failed:", error);
+      console.error('Directus proxy request failed:', error);
       throw error;
     }
   }
@@ -132,8 +132,7 @@ class DirectusService {
 }
 
 // Helper imports for SDK methods
-import { readItems, readItem, createItem, updateItem, deleteItem } from "@directus/sdk";
+import { readItems, readItem, createItem, updateItem, deleteItem } from '@directus/sdk';
 
 // Singleton instance
 export default new DirectusService();
-

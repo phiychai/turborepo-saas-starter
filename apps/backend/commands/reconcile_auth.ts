@@ -17,9 +17,7 @@ export default class ReconcileAuth extends BaseCommand {
       const result = await AuthReconciliationService.runReconciliation();
 
       this.logger.info('Reconciliation complete:');
-      this.logger.info(
-        `  Syncs: ${result.syncs.success} succeeded, ${result.syncs.failed} failed`
-      );
+      this.logger.info(`  Syncs: ${result.syncs.success} succeeded, ${result.syncs.failed} failed`);
       this.logger.info(
         `  Mappings: ${result.mappings.fixed} fixed, ${result.mappings.failed} failed`
       );
@@ -29,4 +27,3 @@ export default class ReconcileAuth extends BaseCommand {
     }
   }
 }
-

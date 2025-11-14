@@ -1,17 +1,17 @@
-import type { HttpContext } from "@adonisjs/core/http";
+import type { HttpContext } from '@adonisjs/core/http';
 
 /**
  * Convert AdonisJS Request to Web Standard Request
  * Better Auth expects standard Web API Request objects
  */
-export async function toWebRequest(request: HttpContext["request"]): Promise<Request> {
-  const url = new URL(request.url(), `http://${request.header("host")}`);
+export async function toWebRequest(request: HttpContext['request']): Promise<Request> {
+  const url = new URL(request.url(), `http://${request.header('host')}`);
 
   // Prepare request body for non-GET/HEAD requests
   let body: string | undefined;
-  if (!["GET", "HEAD"].includes(request.method())) {
+  if (!['GET', 'HEAD'].includes(request.method())) {
     const rawBody = request.body();
-    body = typeof rawBody === "string" ? rawBody : JSON.stringify(rawBody);
+    body = typeof rawBody === 'string' ? rawBody : JSON.stringify(rawBody);
   }
 
   return new Request(url, {
@@ -27,7 +27,7 @@ export async function toWebRequest(request: HttpContext["request"]): Promise<Req
  */
 export async function fromWebResponse(
   webResponse: Response,
-  adonisResponse: HttpContext["response"]
+  adonisResponse: HttpContext['response']
 ) {
   // Set status code
   adonisResponse.status(webResponse.status);

@@ -112,13 +112,14 @@ export default class UserController {
       if ('bio' in request.body() || data.bio !== undefined) {
         // Get original value from request body (might be empty string)
         const originalBio = (request.body() as any)?.bio;
-        user.bio = originalBio === '' || originalBio === undefined ? null : (data.bio || null);
+        user.bio = originalBio === '' || originalBio === undefined ? null : data.bio || null;
       }
       // Handle username updates via Better Auth API
       // Better Auth handles validation, uniqueness, and normalization
       if ('username' in request.body() || data.username !== undefined) {
         const originalUsername = (request.body() as any)?.username;
-        const newUsername = originalUsername === '' || originalUsername === undefined ? null : (data.username || null);
+        const newUsername =
+          originalUsername === '' || originalUsername === undefined ? null : data.username || null;
 
         // Check if username actually changed
         const usernameChanged = newUsername !== user.username;
@@ -147,7 +148,8 @@ export default class UserController {
             } catch (error: any) {
               // Better Auth API throws errors directly
               console.error('Error updating username in Better Auth:', error);
-              const errorMessage = error?.message || error?.error?.message || 'Failed to update username';
+              const errorMessage =
+                error?.message || error?.error?.message || 'Failed to update username';
               throw new Error(`Username update failed: ${errorMessage}`);
             }
           } else {

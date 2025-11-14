@@ -40,14 +40,11 @@ export default class AdminSessionsController {
       } else {
         // Fallback to handler if API method not available
         const baseURL = env.get('BETTER_AUTH_URL', 'http://localhost:3333');
-        const betterAuthRequest = new Request(
-          `${baseURL}/api/auth/admin/list-user-sessions`,
-          {
-            method: 'POST',
-            headers: webRequest.headers,
-            body: JSON.stringify({ userId: user.betterAuthUserId }),
-          }
-        );
+        const betterAuthRequest = new Request(`${baseURL}/api/auth/admin/list-user-sessions`, {
+          method: 'POST',
+          headers: webRequest.headers,
+          body: JSON.stringify({ userId: user.betterAuthUserId }),
+        });
 
         const betterAuthResponse = await auth.handler(betterAuthRequest);
         const sessions = await betterAuthResponse.json();
@@ -150,4 +147,3 @@ export default class AdminSessionsController {
     }
   }
 }
-
