@@ -1,7 +1,14 @@
-import { createDirectus, rest, staticToken, authentication } from '@directus/sdk';
-
-// Helper imports for SDK methods
-import { readItems, readItem, createItem, updateItem, deleteItem } from '@directus/sdk';
+import {
+  createDirectus,
+  rest,
+  staticToken,
+  authentication,
+  readItems,
+  readItem,
+  createItem,
+  updateItem,
+  deleteItem,
+} from '@directus/sdk';
 
 import env from '#start/env';
 

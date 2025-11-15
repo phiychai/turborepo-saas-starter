@@ -22,8 +22,10 @@ export default authConfig;
  * guards.
  */
 declare module '@adonisjs/auth/types' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export interface Authenticators extends InferAuthenticators<typeof authConfig> {}
 }
 declare module '@adonisjs/core/types' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface EventsList extends InferAuthEvents<Authenticators> {}
 }

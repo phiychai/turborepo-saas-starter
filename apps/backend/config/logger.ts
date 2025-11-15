@@ -32,5 +32,6 @@ export default loggerConfig;
  * in your application.
  */
 declare module '@adonisjs/core/types' {
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   export interface LoggersList extends InferLoggers<typeof loggerConfig> {}
 }
