@@ -76,7 +76,7 @@ function getRowItems(row: Row<DashboardUser>) {
   ];
 }
 
-const columns: TableColumn<User>[] = [
+const columns: TableColumn<DashboardUser>[] = [
   {
     id: 'select',
     header: ({ table }) =>

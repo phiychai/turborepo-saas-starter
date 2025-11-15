@@ -24,7 +24,7 @@ const resending = ref(false);
 const resendCooldown = ref(0);
 
 // Resend cooldown timer
-let cooldownInterval: NodeJS.Timeout | null = null;
+let cooldownInterval: ReturnType<typeof setInterval> | null = null;
 
 watch(resendCooldown, (value) => {
   if (value > 0 && !cooldownInterval) {

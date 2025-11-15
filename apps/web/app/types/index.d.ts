@@ -55,6 +55,7 @@ export interface UserProfile {
  * Legacy User type (for backward compatibility)
  * @deprecated Use UserProfile instead
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface User extends UserProfile {}
 
 // Dashboard types

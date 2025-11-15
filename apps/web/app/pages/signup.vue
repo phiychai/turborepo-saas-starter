@@ -4,7 +4,6 @@ import type { FormSubmitEvent } from '@nuxt/ui';
 import UsernameChecker from '~/components/auth/UsernameChecker.vue';
 import PasswordStrengthMeter from '~/components/PasswordStrengthMeter.vue';
 import { usePasswordValidation } from '~/composables/usePasswordValidation';
-import { authClient } from '~/lib/auth-client';
 
 definePageMeta({
   layout: 'auth',
@@ -99,7 +98,7 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
     toast.add({
       title: 'Account Created',
       description: 'Please check your email for a verification code',
-      color: 'blue',
+      color: 'primary',
     });
 
     // Redirect to verification page
@@ -122,7 +121,7 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
     toast.add({
       title: 'Error',
       description: errorMessage,
-      color: 'red',
+      color: 'error',
     });
   }
 }

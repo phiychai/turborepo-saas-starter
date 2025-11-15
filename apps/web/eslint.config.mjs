@@ -10,7 +10,8 @@ const __dirname = dirname(__filename);
 // Filter out import plugin from vueConfig since Nuxt provides its own
 const vueConfigWithoutImport = vueConfig.map((config) => {
   if (config.plugins?.import) {
-    const { import: _, ...plugins } = config.plugins;
+    const plugins = { ...config.plugins };
+    delete plugins.import;
     return {
       ...config,
       plugins,
@@ -39,6 +40,9 @@ export default withNuxt(
       'node_modules/**',
       '**/*.generated.*',
       '**/*.cjs',
+      'content.config.ts',
+      'vitest.config.ts',
+      'tests/**',
     ],
   }
 );

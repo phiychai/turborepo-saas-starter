@@ -68,7 +68,7 @@ const available = ref(false);
 const valid = ref(false);
 const errorMessage = ref('');
 
-let debounceTimer: NodeJS.Timeout | null = null;
+let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
 const statusClass = computed(() => {
   if (!checked.value) return '';

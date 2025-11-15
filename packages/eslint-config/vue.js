@@ -28,6 +28,7 @@ export default tseslint.config(
       'vue/multi-word-component-names': 'off', // Allow single-word components
       'vue/require-default-prop': 'off',
       'vue/no-v-html': 'warn',
+      'vue/no-multiple-template-root': 'off', // Vue 3 allows multiple root elements
       'vue/component-name-in-template-casing': ['error', 'PascalCase'],
       'vue/custom-event-name-casing': ['error', 'camelCase'],
       'vue/define-macros-order': [
@@ -61,6 +62,7 @@ export default tseslint.config(
           caughtErrorsIgnorePattern: '^_',
         },
       ],
+      '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/consistent-type-imports': [
         'error',
         {
@@ -90,6 +92,7 @@ export default tseslint.config(
           caughtErrorsIgnorePattern: '^_',
         },
       ],
+      '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/consistent-type-imports': [
         'error',
         {

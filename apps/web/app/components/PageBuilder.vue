@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { dashboardPanel } from '#build/ui';
+import type { PageBlock } from '@turborepo-saas-starter/shared-types/schema';
 
 interface PageBuilderProps {
   sections: PageBlock[];

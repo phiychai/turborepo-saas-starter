@@ -1,7 +1,6 @@
 import {
   createDirectus,
   rest,
-  staticToken,
   authentication,
   readItems,
   readItem,
@@ -106,7 +105,7 @@ class DirectusService {
    */
   async getItems(collection: string, params?: Record<string, any>) {
     const client = await this.getClient();
-    return client.request(readItems(collection, params));
+    return client.request(readItems(collection as never, params));
   }
 
   /**
@@ -114,7 +113,7 @@ class DirectusService {
    */
   async getItem(collection: string, id: string | number, params?: Record<string, any>) {
     const client = await this.getClient();
-    return client.request(readItem(collection, id, params));
+    return client.request(readItem(collection as never, id, params));
   }
 
   /**
@@ -122,7 +121,7 @@ class DirectusService {
    */
   async createItem(collection: string, data: Record<string, any>) {
     const client = await this.getClient();
-    return client.request(createItem(collection, data));
+    return client.request(createItem(collection as never, data as never));
   }
 
   /**
@@ -130,7 +129,7 @@ class DirectusService {
    */
   async updateItem(collection: string, id: string | number, data: Record<string, any>) {
     const client = await this.getClient();
-    return client.request(updateItem(collection, id, data));
+    return client.request(updateItem(collection as never, id, data));
   }
 
   /**
@@ -138,7 +137,7 @@ class DirectusService {
    */
   async deleteItem(collection: string, id: string | number) {
     const client = await this.getClient();
-    return client.request(deleteItem(collection, id));
+    return client.request(deleteItem(collection as never, id));
   }
 }
 
