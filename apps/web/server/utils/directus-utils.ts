@@ -4,7 +4,7 @@ export function getDirectusAssetURL(
   if (!fileOrString) return '';
 
   const runtimeConfig = useRuntimeConfig();
-  const directusUrl = runtimeConfig.public.directusUrl;
+  const { directusUrl } = runtimeConfig.public;
 
   if (typeof fileOrString === 'string') {
     return `${directusUrl}/assets/${fileOrString}`;

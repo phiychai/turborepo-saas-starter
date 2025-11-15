@@ -24,8 +24,8 @@ const props = withDefaults(
 );
 
 // Generate random star positions and sizes
-const generateStars = (count: number): Star[] => {
-  return Array.from({ length: count }, () => ({
+const generateStars = (count: number): Star[] =>
+  Array.from({ length: count }, () => ({
     x: Math.floor(Math.random() * 2000),
     y: Math.floor(Math.random() * 2000),
     size:
@@ -33,7 +33,6 @@ const generateStars = (count: number): Star[] => {
         ? props.size
         : Math.random() * (props.size.max - props.size.min) + props.size.min,
   }));
-};
 
 // Define speed configurations once
 const speedMap = {
@@ -43,13 +42,11 @@ const speedMap = {
 };
 
 // Use a more efficient approach to generate and store stars
-const stars = useState<{ slow: Star[]; normal: Star[]; fast: Star[] }>('stars', () => {
-  return {
-    slow: generateStars(Math.floor(props.starCount * speedMap.slow.ratio)),
-    normal: generateStars(Math.floor(props.starCount * speedMap.normal.ratio)),
-    fast: generateStars(Math.floor(props.starCount * speedMap.fast.ratio)),
-  };
-});
+const stars = useState<{ slow: Star[]; normal: Star[]; fast: Star[] }>('stars', () => ({
+  slow: generateStars(Math.floor(props.starCount * speedMap.slow.ratio)),
+  normal: generateStars(Math.floor(props.starCount * speedMap.normal.ratio)),
+  fast: generateStars(Math.floor(props.starCount * speedMap.fast.ratio)),
+}));
 
 // Compute star layers with different speeds and opacities
 const starLayers = computed(() => [

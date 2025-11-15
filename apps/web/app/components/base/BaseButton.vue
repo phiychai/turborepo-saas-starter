@@ -49,9 +49,7 @@ const href = computed(() => {
   return props.url || undefined;
 });
 
-const isExternal = computed(() => {
-  return href.value?.startsWith('http') || props.target === '_blank';
-});
+const isExternal = computed(() => href.value?.startsWith('http') || props.target === '_blank');
 
 // Map variant to Nuxt UI variant/color
 const buttonVariant = computed(() => {

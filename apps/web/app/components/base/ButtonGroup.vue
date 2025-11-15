@@ -3,7 +3,7 @@
  * ButtonGroup - Migrated to Nuxt UI
  * Uses UButtonGroup for grouped button display
  */
-import { type ButtonProps } from './BaseButton.vue';
+import type { ButtonProps } from './BaseButton.vue';
 
 export interface ButtonGroupProps {
   buttons: Array<ButtonProps>;

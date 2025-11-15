@@ -23,8 +23,8 @@ interface CustomForm {
   fields: FormField[];
 }
 
-const { setAttr } = useVisualEditing();
 defineProps<{ data: CustomFormData }>();
+const { setAttr } = useVisualEditing();
 </script>
 
 <template>

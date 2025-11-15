@@ -58,7 +58,7 @@ async function onSubmit(event: FormSubmitEvent<ProfileSchema>) {
   saving.value = true;
 
   try {
-    const data = event.data;
+    const { data } = event;
     const originalUsername = authStore.user?.username || '';
 
     // Handle username update separately via Better Auth for immediate validation

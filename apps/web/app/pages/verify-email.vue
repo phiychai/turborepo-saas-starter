@@ -162,7 +162,7 @@ async function resendOTP() {
         </p>
       </div>
 
-      <form @submit.prevent="handleVerify" class="mt-8 space-y-6">
+      <form class="mt-8 space-y-6" @submit.prevent="handleVerify">
         <div>
           <label for="otp" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
             Enter verification code
@@ -204,8 +204,8 @@ async function resendOTP() {
           variant="ghost"
           size="sm"
           :disabled="resending || resendCooldown > 0"
-          @click="resendOTP"
           class="mt-2"
+          @click="resendOTP"
         >
           {{
             resendCooldown > 0

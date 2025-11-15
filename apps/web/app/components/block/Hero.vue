@@ -25,8 +25,8 @@ interface HeroProps {
   };
 }
 
-const { setAttr } = useVisualEditing();
 defineProps<HeroProps>();
+const { setAttr } = useVisualEditing();
 </script>
 
 <template>

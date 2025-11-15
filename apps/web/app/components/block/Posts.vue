@@ -88,7 +88,7 @@ const categoriesFromPosts = computed(() => {
               categoryMap.set(slug, {
                 id: slug,
                 name: cat,
-                slug: slug,
+                slug,
               });
             }
           } else if (typeof cat === 'object' && cat !== null && 'id' in cat && 'title' in cat) {
@@ -183,8 +183,8 @@ function getImageUrl(image: string | DirectusFile | null | undefined): string | 
 }
 
 // Transform posts to include image URLs and properly formatted authors
-const postsWithImageUrls = computed(() => {
-  return posts.value.map((post) => {
+const postsWithImageUrls = computed(() =>
+  posts.value.map((post) => {
     const imageUrl = getImageUrl(post.image);
     const author = post.author && typeof post.author === 'object' ? post.author : null;
     const authorAvatarUrl = author ? getImageUrl(author.avatar) : undefined;
@@ -204,8 +204,8 @@ const postsWithImageUrls = computed(() => {
           }
         : undefined,
     };
-  });
-});
+  })
+);
 const feedOrientation = ref<'vertical' | 'horizontal'>('horizontal');
 </script>
 <template>

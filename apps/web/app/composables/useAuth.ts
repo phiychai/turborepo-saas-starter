@@ -52,11 +52,9 @@ export const useAuth = () => {
 /**
  * Convenience composable to access all stores
  */
-export const useStores = () => {
-  return {
-    auth: useAuthStore(),
-    user: useUserStore(),
-    billing: useBillingStore(),
-    ui: useUIStore(),
-  };
-};
+export const useStores = () => ({
+  auth: useAuthStore(),
+  user: useUserStore(),
+  billing: useBillingStore(),
+  ui: useUIStore(),
+});

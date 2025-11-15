@@ -25,8 +25,8 @@ interface PricingProps {
     }>;
   };
 }
-const { setAttr } = useVisualEditing();
 defineProps<PricingProps>();
+const { setAttr } = useVisualEditing();
 </script>
 
 <template>

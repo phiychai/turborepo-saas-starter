@@ -254,7 +254,7 @@ export const useBillingStore = defineStore('billing', {
 
   // Optionally persist current subscription
   persist: {
-    storage: persistedState.localStorage,
+    storage: typeof window !== 'undefined' ? localStorage : undefined,
     paths: ['currentSubscription'],
   },
 });

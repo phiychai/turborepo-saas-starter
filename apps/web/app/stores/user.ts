@@ -92,7 +92,7 @@ export const useUserStore = defineStore('user', {
 
   // Persist preferences
   persist: {
-    storage: persistedState.localStorage,
+    storage: typeof window !== 'undefined' ? localStorage : undefined,
     paths: ['preferences'],
   },
 });

@@ -8,11 +8,11 @@ if (!post.value) {
   throw createError({ statusCode: 404, statusMessage: 'Post not found', fatal: true });
 }
 
-const { data: surround } = await useAsyncData(`${route.path}-surround`, () => {
-  return queryCollectionItemSurroundings('posts', route.path, {
+const { data: surround } = await useAsyncData(`${route.path}-surround`, () =>
+  queryCollectionItemSurroundings('posts', route.path, {
     fields: ['description'],
-  });
-});
+  })
+);
 
 const title = post.value.seo?.title || post.value.title;
 const description = post.value.seo?.description || post.value.description;

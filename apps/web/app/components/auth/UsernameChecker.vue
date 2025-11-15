@@ -3,14 +3,14 @@
     <div class="relative">
       <UInput
         :model-value="modelValue"
-        @update:model-value="handleInput"
         :class="['input', statusClass]"
         :placeholder="placeholder"
+        @update:model-value="handleInput"
       />
 
       <!-- Loading indicator -->
       <div v-if="checking" class="absolute right-3 top-3">
-        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+        <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600" />
       </div>
 
       <!-- Status icon -->

@@ -204,11 +204,11 @@ useSeoMeta({
             class="mr-3"
             variant="ghost"
             color="neutral"
-            @click="navigateTo('/')"
             size="sm"
+            @click="navigateTo('/')"
           />
         </template>
-        <template #default> <span class="text-muted"></span></template>
+        <template #default> <span class="text-muted" /></template>
         <template #right>
           <UButton icon="tabler:dots" variant="ghost" color="neutral" size="sm" />
           <!-- <UButton icon="tabler:edit" variant="ghost" color="neutral" size="sm" /> -->
@@ -248,8 +248,8 @@ useSeoMeta({
                   : (category as any).title || category.name || category
               }}
             </UBadge>
-            <span class="text-muted" v-if="post.published_at">&middot;</span>
-            <time class="text-muted" v-if="post.published_at">
+            <span v-if="post.published_at" class="text-muted">&middot;</span>
+            <time v-if="post.published_at" class="text-muted">
               {{
                 new Date(post.published_at).toLocaleDateString('en', {
                   year: 'numeric',
@@ -291,8 +291,8 @@ useSeoMeta({
                     <div class="space-y-4">
                       <UChatMessage
                         v-for="comment in comments"
-                        :key="comment.id"
                         :id="comment.id"
+                        :key="comment.id"
                         :role="comment.role"
                         :parts="comment.parts"
                         :avatar="comment.avatar"
@@ -318,7 +318,7 @@ useSeoMeta({
                   </div>
 
                   <div class="border-t border-default p-4">
-                    <form @submit.prevent="submitComment" class="space-y-3">
+                    <form class="space-y-3" @submit.prevent="submitComment">
                       <UTextarea
                         v-model="newComment"
                         placeholder="Write a comment..."

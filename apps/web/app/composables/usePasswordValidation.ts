@@ -32,9 +32,7 @@ export function usePasswordValidation() {
     };
   }
 
-  const isValid = computed(() => {
-    return password.value.length >= 8 && score.value >= 2;
-  });
+  const isValid = computed(() => password.value.length >= 8 && score.value >= 2);
 
   const strengthLabel = computed(() => {
     const labels = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];

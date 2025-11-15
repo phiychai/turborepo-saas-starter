@@ -23,9 +23,9 @@ interface PricingCardProps {
   };
 }
 
-const { setAttr } = useVisualEditing();
-
 defineProps<PricingCardProps>();
+
+const { setAttr } = useVisualEditing();
 </script>
 
 <template>
@@ -131,8 +131,8 @@ defineProps<PricingCardProps>();
     <div class="mt-auto pt-4">
       <Button
         v-if="card.button"
-        class="w-full"
         id="card.button.uuid"
+        class="w-full"
         :data-directus="
           setAttr({
             collection: 'block_button',

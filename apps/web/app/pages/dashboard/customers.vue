@@ -102,8 +102,8 @@ const columns: TableColumn<User>[] = [
   {
     accessorKey: 'name',
     header: 'Name',
-    cell: ({ row }) => {
-      return h('div', { class: 'flex items-center gap-3' }, [
+    cell: ({ row }) =>
+      h('div', { class: 'flex items-center gap-3' }, [
         h(UAvatar, {
           ...row.original.avatar,
           size: 'lg',
@@ -112,8 +112,7 @@ const columns: TableColumn<User>[] = [
           h('p', { class: 'font-medium text-highlighted' }, row.original.name),
           h('p', { class: '' }, `@${row.original.name}`),
         ]),
-      ]);
-    },
+      ]),
   },
   {
     accessorKey: 'email',
@@ -159,8 +158,8 @@ const columns: TableColumn<User>[] = [
   },
   {
     id: 'actions',
-    cell: ({ row }) => {
-      return h(
+    cell: ({ row }) =>
+      h(
         'div',
         { class: 'text-right' },
         h(
@@ -179,8 +178,7 @@ const columns: TableColumn<User>[] = [
               class: 'ml-auto',
             })
         )
-      );
-    },
+      ),
   },
 ];
 

@@ -1,10 +1,7 @@
 <template>
   <div class="password-strength-meter">
     <div class="strength-bar">
-      <div
-        :class="['strength-fill', strengthColor]"
-        :style="{ width: `${strengthPercentage}%` }"
-      ></div>
+      <div :class="['strength-fill', strengthColor]" :style="{ width: `${strengthPercentage}%` }" />
     </div>
 
     <div class="strength-info">
@@ -41,18 +38,15 @@ const props = withDefaults(defineProps<Props>(), {
 const strengthLabels = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
 const strengthColors = ['red', 'orange', 'yellow', 'blue', 'green'];
 
-const strengthLabel = computed(() => {
-  return strengthLabels[props.score] || 'Unknown';
-});
+const strengthLabel = computed(() => strengthLabels[props.score] || 'Unknown');
 
-const strengthColor = computed(() => {
-  return strengthColors[props.score] || 'gray';
-});
+const strengthColor = computed(() => strengthColors[props.score] || 'gray');
 
-const strengthPercentage = computed(() => {
-  // Convert score (0-4) to percentage (0-100)
-  return ((props.score + 1) / 5) * 100;
-});
+const strengthPercentage = computed(
+  () =>
+    // Convert score (0-4) to percentage (0-100)
+    ((props.score + 1) / 5) * 100
+);
 </script>
 
 <style scoped>

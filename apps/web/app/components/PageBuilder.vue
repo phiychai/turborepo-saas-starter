@@ -4,10 +4,9 @@ import { dashboardPanel } from '#build/ui';
 interface PageBuilderProps {
   sections: PageBlock[];
 }
+const props = defineProps<PageBuilderProps>();
 const authStore = useAuth();
 const { isAuthenticated } = useAuth();
-
-const props = defineProps<PageBuilderProps>();
 
 const validBlocks = computed(() =>
   props.sections.filter(

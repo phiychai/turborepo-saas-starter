@@ -5,14 +5,13 @@ const { data: members } = await useFetch<Member[]>('/api/members', { default: ()
 
 const q = ref('');
 
-const filteredMembers = computed(() => {
-  return members.value.filter((member) => {
-    return (
+const filteredMembers = computed(() =>
+  members.value.filter(
+    (member) =>
       member.name.search(new RegExp(q.value, 'i')) !== -1 ||
       member.username.search(new RegExp(q.value, 'i')) !== -1
-    );
-  });
-});
+  )
+);
 </script>
 
 <template>

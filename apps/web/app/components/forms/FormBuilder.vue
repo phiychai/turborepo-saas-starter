@@ -86,9 +86,9 @@ const handleSubmit = async (data: Record<string, any>) => {
     <DynamicForm
       v-if="!isSubmitted"
       :fields="form.fields"
-      :onSubmit="handleSubmit"
-      :submitLabel="form.submit_label || 'Submit'"
-      :formId="form.id"
+      :on-submit="handleSubmit"
+      :submit-label="form.submit_label || 'Submit'"
+      :form-id="form.id"
     />
   </UCard>
 </template>

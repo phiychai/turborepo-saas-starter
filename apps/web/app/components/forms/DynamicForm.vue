@@ -41,7 +41,7 @@ const initialValues = computed(() => {
   if (!validFields.value.length) return {};
   return validFields.value.reduce(
     (defaults, field) => {
-      const name = field.name;
+      const { name } = field;
 
       switch (field.type) {
         case 'checkbox':

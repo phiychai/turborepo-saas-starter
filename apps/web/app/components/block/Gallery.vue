@@ -178,8 +178,8 @@ const { setAttr } = useVisualEditing();
           size="lg"
           class="absolute top-8 right-8"
           square
-          @click="isLightboxOpen = false"
           aria-label="Close Lightbox"
+          @click="isLightboxOpen = false"
         />
 
         <div class="absolute top-8 left-8 text-white text-lg">

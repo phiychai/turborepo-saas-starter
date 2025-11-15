@@ -1,6 +1,5 @@
 import { createAuthClient } from 'better-auth/client';
-import { usernameClient } from 'better-auth/client/plugins';
-import { emailOTPClient } from 'better-auth/client/plugins';
+import { usernameClient, emailOTPClient } from 'better-auth/client/plugins';
 
 // Create auth client
 // Always use relative URLs to go through the Nuxt server proxy

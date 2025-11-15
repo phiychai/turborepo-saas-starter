@@ -217,28 +217,28 @@ onMounted(async () => {
               <div class="space-y-4">
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                    <div class="w-2 h-2 rounded-full bg-green-500" />
                     <span>Database</span>
                   </div>
                   <UBadge color="green" variant="subtle">Healthy</UBadge>
                 </div>
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                    <div class="w-2 h-2 rounded-full bg-green-500" />
                     <span>API</span>
                   </div>
                   <UBadge color="green" variant="subtle">Operational</UBadge>
                 </div>
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                    <div class="w-2 h-2 rounded-full bg-green-500" />
                     <span>Billing Service</span>
                   </div>
                   <UBadge color="green" variant="subtle">Connected</UBadge>
                 </div>
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
+                    <div class="w-2 h-2 rounded-full bg-yellow-500" />
                     <span>Email Service</span>
                   </div>
                   <UBadge color="yellow" variant="subtle">Degraded</UBadge>

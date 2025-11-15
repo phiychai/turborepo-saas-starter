@@ -217,8 +217,8 @@ const columns: TableColumn<DashboardUser>[] = [
   {
     accessorKey: 'name',
     header: 'Name',
-    cell: ({ row }) => {
-      return h('div', { class: 'flex items-center gap-3' }, [
+    cell: ({ row }) =>
+      h('div', { class: 'flex items-center gap-3' }, [
         h(UAvatar, {
           ...row.original.avatar,
           size: 'lg',
@@ -227,8 +227,7 @@ const columns: TableColumn<DashboardUser>[] = [
           h('p', { class: 'font-medium text-highlighted' }, row.original.name),
           h('p', { class: 'text-muted text-sm' }, row.original.email),
         ]),
-      ]);
-    },
+      ]),
   },
   {
     accessorKey: 'email',
@@ -281,8 +280,8 @@ const columns: TableColumn<DashboardUser>[] = [
   },
   {
     id: 'actions',
-    cell: ({ row }) => {
-      return h(
+    cell: ({ row }) =>
+      h(
         'div',
         { class: 'text-right' },
         h(
@@ -301,8 +300,7 @@ const columns: TableColumn<DashboardUser>[] = [
               class: 'ml-auto',
             })
         )
-      );
-    },
+      ),
   },
 ];
 

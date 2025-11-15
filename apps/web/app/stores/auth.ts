@@ -280,7 +280,7 @@ export const useAuthStore = defineStore('auth', {
       this.loading = true;
 
       try {
-        const authClient = (await import('~/lib/auth-client')).authClient;
+        const { authClient } = await import('~/lib/auth-client');
         const result = await authClient.updateUser({ username });
 
         if (result.error) {
@@ -344,7 +344,7 @@ export const useAuthStore = defineStore('auth', {
 
       // Explicitly clear persisted state from localStorage
       // pinia-plugin-persistedstate uses store ID as key (usually 'auth')
-      if (process.client && typeof window !== 'undefined') {
+      if (import.meta.client && typeof window !== 'undefined') {
         try {
           // Clear common localStorage key formats for this store
           const keysToRemove = ['auth', 'pinia-auth', 'pinia/auth'];
@@ -367,7 +367,7 @@ export const useAuthStore = defineStore('auth', {
 
   // Enable persistence (optional, but recommended)
   persist: {
-    storage: persistedState.localStorage,
+    storage: typeof window !== 'undefined' ? localStorage : undefined,
     paths: ['user'], // Only persist user data, not loading states
   },
 });

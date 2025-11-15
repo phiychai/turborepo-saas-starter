@@ -68,15 +68,15 @@ const toggleSlideover = () => {
       <!-- <TemplateMenu /> -->
     </template>
     <UContentSearchButton
-      :collapsed="false"
       v-if="isAuthenticated"
+      :collapsed="false"
       class="w-full min-w-[480px]"
       variant="subtle"
       icon="tabler:search"
     />
-    <UNavigationMenu :items="items" variant="link" v-else />
+    <UNavigationMenu v-else :items="items" variant="link" />
 
-    <template #right v-if="!isAuthenticated">
+    <template v-if="!isAuthenticated" #right>
       <!-- <UColorModeButton /> -->
 
       <UButton
@@ -103,7 +103,7 @@ const toggleSlideover = () => {
         to="/signup"
       />
     </template>
-    <template #right v-else>
+    <template v-else #right>
       <UPopover>
         <UButton
           label="Create"
@@ -129,7 +129,7 @@ const toggleSlideover = () => {
         <template #content>
           <UPageList divide>
             <UPageCard variant="ghost">
-              <template #body> </template>
+              <template #body />
             </UPageCard>
           </UPageList>
         </template>

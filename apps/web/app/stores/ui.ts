@@ -53,7 +53,7 @@ export const useUIStore = defineStore('ui', {
       this.theme = theme;
 
       // Update color mode
-      if (process.client) {
+      if (import.meta.client) {
         const colorMode = useColorMode();
         colorMode.preference = theme;
       }
@@ -152,7 +152,7 @@ export const useUIStore = defineStore('ui', {
 
   // Persist UI preferences
   persist: {
-    storage: persistedState.localStorage,
+    storage: typeof window !== 'undefined' ? localStorage : undefined,
     paths: ['sidebarCollapsed', 'theme'],
   },
 });

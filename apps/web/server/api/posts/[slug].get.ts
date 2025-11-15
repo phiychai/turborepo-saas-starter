@@ -56,7 +56,7 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 404, message: `Post not found: ${slug}` });
     }
 
-    return { post: posts[0], relatedPosts: relatedPosts };
+    return { post: posts[0], relatedPosts };
   } catch (error) {
     throw createError({ statusCode: 500, message: `Failed to fetch post: ${slug}`, data: error });
   }

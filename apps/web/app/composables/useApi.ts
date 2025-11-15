@@ -34,100 +34,79 @@ export const useApi = () => {
    * CMS API methods
    */
   const cms = {
-    getCollection: async (collection: string, params?: Record<string, any>) => {
-      return request(`/api/cms/collections/${collection}`, {
+    getCollection: async (collection: string, params?: Record<string, any>) =>
+      request(`/api/cms/collections/${collection}`, {
         method: 'GET',
         query: params,
-      });
-    },
+      }),
 
-    getItem: async (collection: string, id: string | number, params?: Record<string, any>) => {
-      return request(`/api/cms/collections/${collection}/${id}`, {
+    getItem: async (collection: string, id: string | number, params?: Record<string, any>) =>
+      request(`/api/cms/collections/${collection}/${id}`, {
         method: 'GET',
         query: params,
-      });
-    },
+      }),
 
-    createItem: async (collection: string, data: Record<string, any>) => {
-      return request(`/api/cms/${collection}`, {
+    createItem: async (collection: string, data: Record<string, any>) =>
+      request(`/api/cms/${collection}`, {
         method: 'POST',
         body: data,
-      });
-    },
+      }),
 
-    updateItem: async (collection: string, id: string | number, data: Record<string, any>) => {
-      return request(`/api/cms/${collection}/${id}`, {
+    updateItem: async (collection: string, id: string | number, data: Record<string, any>) =>
+      request(`/api/cms/${collection}/${id}`, {
         method: 'PATCH',
         body: data,
-      });
-    },
+      }),
 
-    deleteItem: async (collection: string, id: string | number) => {
-      return request(`/api/cms/${collection}/${id}`, {
+    deleteItem: async (collection: string, id: string | number) =>
+      request(`/api/cms/${collection}/${id}`, {
         method: 'DELETE',
-      });
-    },
+      }),
   };
 
   /**
    * Billing API methods
    */
   const billing = {
-    getAccount: async () => {
-      return request('/api/billing/account');
-    },
+    getAccount: async () => request('/api/billing/account'),
 
-    getSubscriptions: async () => {
-      return request('/api/billing/subscriptions');
-    },
+    getSubscriptions: async () => request('/api/billing/subscriptions'),
 
-    createSubscription: async (planName: string, externalKey?: string) => {
-      return request('/api/billing/subscriptions', {
+    createSubscription: async (planName: string, externalKey?: string) =>
+      request('/api/billing/subscriptions', {
         method: 'POST',
         body: { planName, externalKey },
-      });
-    },
+      }),
 
-    cancelSubscription: async (subscriptionId: string, requestedDate?: string) => {
-      return request(`/api/billing/subscriptions/${subscriptionId}`, {
+    cancelSubscription: async (subscriptionId: string, requestedDate?: string) =>
+      request(`/api/billing/subscriptions/${subscriptionId}`, {
         method: 'DELETE',
         query: requestedDate ? { requestedDate } : undefined,
-      });
-    },
+      }),
 
-    getInvoices: async () => {
-      return request('/api/billing/invoices');
-    },
+    getInvoices: async () => request('/api/billing/invoices'),
 
-    getPlans: async () => {
-      return request('/api/billing/plans');
-    },
+    getPlans: async () => request('/api/billing/plans'),
 
-    getPaymentMethods: async () => {
-      return request('/api/billing/payment-methods');
-    },
+    getPaymentMethods: async () => request('/api/billing/payment-methods'),
 
-    addPaymentMethod: async (pluginName: string, pluginInfo: Record<string, any>) => {
-      return request('/api/billing/payment-methods', {
+    addPaymentMethod: async (pluginName: string, pluginInfo: Record<string, any>) =>
+      request('/api/billing/payment-methods', {
         method: 'POST',
         body: { pluginName, pluginInfo },
-      });
-    },
+      }),
   };
 
   /**
    * User API methods
    */
   const users = {
-    getAll: async () => {
-      return request('/api/user/users');
-    },
+    getAll: async () => request('/api/user/users'),
 
-    toggleStatus: async (userId: number) => {
-      return request(`/api/user/users/${userId}/toggle-status`, {
+    toggleStatus: async (userId: number) =>
+      request(`/api/user/users/${userId}/toggle-status`, {
         method: 'PATCH',
-      });
-    },
+      }),
   };
 
   return {

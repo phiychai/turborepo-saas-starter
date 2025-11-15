@@ -119,9 +119,7 @@ const links = computed(() => [
   ],
 ]);
 
-const isCollapsed = computed(() => {
-  return route.path.startsWith('/blog');
-});
+const isCollapsed = computed(() => route.path.startsWith('/blog'));
 onMounted(() => {
   if (!isVisualEditingEnabled.value) return;
   apply({
@@ -143,6 +141,7 @@ onMounted(() => {
     <template v-if="isAuthenticated">
       <UDashboardGroup unit="rem" style="margin-top: 56px">
         <UDashboardSidebar
+          v-if="!collapsed"
           id="default"
           resizable
           :style="{ minHeight: 'calc(100vh - 56px)' }"
@@ -152,7 +151,6 @@ onMounted(() => {
           collapsible
           :collapsed-size="4.5"
           :default-size="20"
-          v-if="!collapsed"
         >
           <template #default="{ collapsed: isSidebarCollapsed }">
             <UNavigationMenu

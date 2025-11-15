@@ -30,8 +30,8 @@ const mappedOptions = computed(() =>
 
 <template>
   <USelect
-    v-model="localValue"
     :id="props.name"
+    v-model="localValue"
     :name="props.name"
     :options="mappedOptions"
     :placeholder="props.placeholder || 'Select an option'"

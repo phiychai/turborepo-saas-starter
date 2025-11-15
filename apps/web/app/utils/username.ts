@@ -13,7 +13,7 @@ export function userName(
   }
 
   if (user.first_name && user.last_name) {
-    return `${user.first_name} ${abbrev ? user.last_name[0] + '.' : user.last_name}`;
+    return `${user.first_name} ${abbrev ? `${user.last_name[0]}.` : user.last_name}`;
   }
 
   if (user.first_name) {
