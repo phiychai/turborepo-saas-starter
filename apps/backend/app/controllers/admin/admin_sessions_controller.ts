@@ -1,11 +1,12 @@
+import logger from '@adonisjs/core/services/logger';
+
 import type { HttpContext } from '@adonisjs/core/http';
 
 import * as abilities from '#abilities/main';
 import { auth } from '#config/better_auth';
 import User from '#models/user';
-import { toWebRequest } from '#utils/better_auth_helpers';
-import logger from '@adonisjs/core/services/logger';
 import env from '#start/env';
+import { toWebRequest } from '#utils/better_auth_helpers';
 
 export default class AdminSessionsController {
   /**

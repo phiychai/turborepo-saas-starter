@@ -1,9 +1,11 @@
+import { randomBytes } from 'node:crypto';
+import { mkdir } from 'node:fs/promises';
+
+import app from '@adonisjs/core/services/app';
+
 import { UserProfileDTOBuilder, type UserProfileDTO } from '../dto/user_profile_dto.js';
 
 import type { HttpContext } from '@adonisjs/core/http';
-import app from '@adonisjs/core/services/app';
-import { mkdir } from 'node:fs/promises';
-import { randomBytes } from 'node:crypto';
 
 import * as abilities from '#abilities/main';
 import { auth } from '#config/better_auth';

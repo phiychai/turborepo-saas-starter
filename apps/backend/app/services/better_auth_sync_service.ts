@@ -1,6 +1,7 @@
+import logger from '@adonisjs/core/services/logger';
+
 import { auth } from '#config/better_auth';
 import User from '#models/user';
-import logger from '@adonisjs/core/services/logger';
 import { toWebRequest } from '#utils/better_auth_helpers';
 
 /**

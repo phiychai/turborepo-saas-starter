@@ -1,5 +1,6 @@
-import env from '#start/env';
 import { defineConfig } from '@adonisjs/redis';
+
+import env from '#start/env';
 
 const redisConfig = defineConfig({
   connection: 'main',

@@ -1,10 +1,11 @@
-import User from '#models/user';
-import AuthSyncError from '#models/auth_sync_error';
-import { UserSyncService } from '#services/user_sync_service';
-import { AuthErrorLogger } from '#services/auth_error_logger';
 import logger from '@adonisjs/core/services/logger';
 import db from '@adonisjs/lucid/services/db';
+
 import { auth } from '#config/better_auth';
+import AuthSyncError from '#models/auth_sync_error';
+import User from '#models/user';
+import { AuthErrorLogger } from '#services/auth_error_logger';
+import { UserSyncService } from '#services/user_sync_service';
 
 export class AuthReconciliationService {
   /**

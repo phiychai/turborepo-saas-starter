@@ -1,5 +1,9 @@
-import env from '#start/env';
 import { createDirectus, rest, staticToken, authentication } from '@directus/sdk';
+
+// Helper imports for SDK methods
+import { readItems, readItem, createItem, updateItem, deleteItem } from '@directus/sdk';
+
+import env from '#start/env';
 
 class DirectusService {
   private client: any;
@@ -130,9 +134,6 @@ class DirectusService {
     return client.request(deleteItem(collection, id));
   }
 }
-
-// Helper imports for SDK methods
-import { readItems, readItem, createItem, updateItem, deleteItem } from '@directus/sdk';
 
 // Singleton instance
 export default new DirectusService();

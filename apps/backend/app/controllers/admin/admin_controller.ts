@@ -5,8 +5,8 @@ import type { HttpContext } from '@adonisjs/core/http';
 import * as abilities from '#abilities/main';
 import User from '#models/user';
 import UserPolicy from '#policies/user_policy';
-import { BetterAuthSyncService } from '#services/better_auth_sync_service';
 import { AuthReconciliationService } from '#services/auth_reconciliation_service';
+import { BetterAuthSyncService } from '#services/better_auth_sync_service';
 import { UserSyncService } from '#services/user_sync_service';
 
 export default class AdminController {
