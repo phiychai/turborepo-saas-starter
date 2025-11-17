@@ -1,6 +1,12 @@
 import type { ParsedContent } from '@nuxt/content';
 import type { Avatar, Badge, Link } from '#ui/types';
 import type { AvatarProps } from '@nuxt/ui';
+import type { UserProfile } from '@turborepo-saas-starter/shared-types';
+
+// Re-export types from organized type files
+export type * from './components';
+export type * from './stores';
+export type * from './composables';
 
 export interface BlogPost extends ParsedContent {
   title: string;
@@ -16,44 +22,8 @@ export interface BlogPost extends ParsedContent {
 }
 
 /**
- * User Profile DTO - Merged data from Adonis User + Better Auth
- * This matches the backend UserProfileDTO
- */
-export interface UserProfile {
-  // Profile data (from Adonis User - canonical)
-  id: number;
-  email: string;
-  firstName: string | null;
-  lastName: string | null;
-  username: string | null;
-  avatarUrl: string | null;
-  bio: string | null;
-  fullName: string | null;
-  displayName: string;
-
-  // Authorization (from Adonis User)
-  role: 'user' | 'admin';
-  isActive: boolean;
-
-  // Preferences (from Adonis User)
-  preferences: Record<string, any> | null;
-
-  // Timestamps
-  createdAt: string;
-  updatedAt: string | null;
-
-  // Auth metadata (from Better Auth)
-  auth: {
-    provider: string | null; // 'email', 'google', 'github', etc.
-    mfaEnabled: boolean;
-    emailVerified: boolean;
-    tokenExpiresAt: string | null;
-  };
-}
-
-/**
  * Legacy User type (for backward compatibility)
- * @deprecated Use UserProfile instead
+ * @deprecated Use UserProfile from @turborepo-saas-starter/shared-types instead
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface User extends UserProfile {}
@@ -103,6 +73,7 @@ export interface Sale {
   amount: number;
 }
 
+// Dashboard Notification (different from UI store Notification)
 export interface Notification {
   id: number;
   unread?: boolean;

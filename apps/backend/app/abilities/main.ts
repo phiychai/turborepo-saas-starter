@@ -35,7 +35,7 @@ export const toggleUserStatus = Bouncer.ability(
 );
 
 export const manageBilling = Bouncer.ability(
-  (user: User) =>
+  (_user: User) =>
     // For now, all authenticated users can manage their billing
     // Later, you might want to check subscription status
     true

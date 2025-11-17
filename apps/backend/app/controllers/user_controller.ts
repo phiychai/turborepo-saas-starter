@@ -134,19 +134,16 @@ export default class UserController {
               const webRequest = await toWebRequest(request);
 
               // Call Better Auth's updateUser API
-              const result = await auth.api.updateUser({
+              await (auth as any).api.updateUser({
                 body: {
-                  username: newUsername,
+                  name: user.fullName || user.email,
+                  image: user.avatarUrl || undefined,
                 },
                 headers: webRequest.headers,
               });
 
-              // Use normalized username from Better Auth response if available
-              if (result?.user?.username) {
-                user.username = result.user.username;
-              } else {
-                user.username = newUsername;
-              }
+              // Update username in AdonisJS (Better Auth doesn't return username in updateUser response)
+              user.username = newUsername;
             } catch (error: any) {
               // Better Auth API throws errors directly
               console.error('Error updating username in Better Auth:', error);

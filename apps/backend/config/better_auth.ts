@@ -234,7 +234,6 @@ export const auth = betterAuth({
      * Validate password strength on password change
      * Note: Better Auth Have I Been Pwned plugin runs automatically before this hook
      */
-    // @ts-expect-error - Better Auth hook types may not include all hooks
     beforePasswordUpdate: async ({ input }: any) => {
       const { newPassword } = input as any;
 
@@ -254,7 +253,7 @@ export const auth = betterAuth({
      * Called after user signs up via Better Auth
      * We sync the user to our Adonis users table
      */
-    onAfterSignUp: async ({ user, account }) => {
+    onAfterSignUp: async ({ user, account }: any) => {
       try {
         // Extract request context if available
         const request = (account as any)?.request;
@@ -269,8 +268,8 @@ export const auth = betterAuth({
         await UserSyncService.syncUser({
           betterAuthUser: user,
           provider: account?.providerId || 'email',
-          requestPath,
-          clientIp,
+          requestPath: requestPath || undefined,
+          clientIp: clientIp || undefined,
         });
 
         // Return user unchanged - Better Auth continues with its flow
@@ -288,7 +287,7 @@ export const auth = betterAuth({
      * We sync/update the user in our Adonis users table
      * This handles profile updates from OAuth providers
      */
-    onAfterSignIn: async ({ user, account }) => {
+    onAfterSignIn: async ({ user, account }: any) => {
       try {
         const request = (account as any)?.request;
         const clientIp =
@@ -301,8 +300,8 @@ export const auth = betterAuth({
         const adonisUser = await UserSyncService.syncUser({
           betterAuthUser: user,
           provider: account?.providerId || 'email',
-          requestPath,
-          clientIp,
+          requestPath: requestPath || undefined,
+          clientIp: clientIp || undefined,
         });
 
         // Reset failed attempts on successful login
@@ -327,7 +326,7 @@ export const auth = betterAuth({
      * Called after a failed sign-in attempt
      * Track failed attempts and lock account after threshold
      */
-    afterFailedSignIn: async ({ user, account }) => {
+    afterFailedSignIn: async ({ user, account: _account }: any) => {
       try {
         if (!user?.id) return;
 

@@ -1,10 +1,6 @@
 <script setup lang="ts">
-interface ProseProps {
-  content: string;
-  size?: 'sm' | 'md' | 'lg';
-  itemId?: string;
-  collection?: string;
-}
+import type { ProseProps } from '~/types/components';
+
 const props = withDefaults(defineProps<ProseProps>(), {
   size: 'md',
 });

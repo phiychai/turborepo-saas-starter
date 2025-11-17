@@ -1,8 +1,5 @@
 <script setup lang="ts">
-interface HeadlineProps {
-  headline?: string | null;
-  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
-}
+import type { HeadlineProps } from '~/types/components';
 
 const props = withDefaults(defineProps<HeadlineProps>(), {
   as: 'h2',

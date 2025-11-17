@@ -3,28 +3,8 @@
  * Pricing - Block component for pricing tables (no migration needed)
  * Uses PricingCard component
  */
-interface PricingProps {
-  data: {
-    id?: string;
-    tagline?: string;
-    headline?: string;
-    pricing_cards: Array<{
-      id: string;
-      title: string;
-      description?: string;
-      price?: string;
-      badge?: string;
-      features?: string[];
-      button?: {
-        id: string;
-        label: string | null;
-        variant: string | null;
-        url: string | null;
-      };
-      is_highlighted?: boolean;
-    }>;
-  };
-}
+import type { PricingProps } from '~/types/components';
+
 defineProps<PricingProps>();
 const { setAttr } = useVisualEditing();
 </script>

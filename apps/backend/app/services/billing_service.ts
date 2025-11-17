@@ -1,3 +1,5 @@
+import type { Plan, Subscription, Invoice } from '@turborepo-saas-starter/shared-types';
+
 import env from '#start/env';
 
 /**
@@ -16,35 +18,26 @@ interface LagoCustomer {
   metadata?: Record<string, any>;
 }
 
-interface LagoPlan {
-  code: string;
-  name: string;
-  interval: 'monthly' | 'yearly' | 'weekly';
-  amount_cents: number;
-  amount_currency: string;
-  description?: string;
-}
+// Use shared Plan type (matches LagoPlan structure)
+type LagoPlan = Plan;
 
-interface LagoSubscription {
+// Use shared Subscription type with Lago-specific fields
+type LagoSubscription = Subscription & {
   external_customer_id: string;
-  plan_code: string;
-  name?: string;
-  external_id?: string;
   billing_time?: 'calendar' | 'anniversary';
-  ending_at?: string;
   subscription_at?: string;
-}
+};
 
-interface LagoInvoice {
-  lago_id: string;
-  sequential_id: number;
-  number: string;
-  issuing_date: string;
-  payment_status: string;
-  amount_cents: number;
-  currency: string;
-  customer: any;
-}
+// interface LagoInvoice {
+//   lago_id: string;
+//   sequential_id: number;
+//   number: string;
+//   issuing_date: string;
+//   payment_status: string;
+//   amount_cents: number;
+//   currency: string;
+//   customer: any;
+// }
 
 /**
  * Billing Service using Lago API
@@ -428,12 +421,14 @@ class BillingService {
 
   /**
    * Get account by email (Lago doesn't support email lookup directly)
+   * Note: This method requires a database mapping between email and Lago external_id
+   * TODO: Implement email->externalId mapping in your database
    */
   async getAccountByEmail(email: string) {
     // Note: Lago API doesn't support email-based lookup
     // You'll need to maintain your own mapping in your database
     console.warn(
-      'getAccountByEmail not directly supported by Lago - maintain email->externalId mapping in your DB'
+      `getAccountByEmail not directly supported by Lago for email: ${email} - maintain email->externalId mapping in your DB`
     );
     return null;
   }

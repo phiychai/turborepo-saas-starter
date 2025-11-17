@@ -1,44 +1,5 @@
 import { defineStore } from 'pinia';
-
-export interface Plan {
-  code: string;
-  name: string;
-  interval: 'monthly' | 'yearly' | 'weekly';
-  amount_cents: number;
-  amount_currency: string;
-  description?: string;
-}
-
-export interface Subscription {
-  external_id: string;
-  plan_code: string;
-  status: string;
-  name?: string;
-  created_at: string;
-  started_at?: string;
-  ending_at?: string;
-}
-
-export interface Invoice {
-  lago_id: string;
-  number: string;
-  issuing_date: string;
-  payment_status: string;
-  amount_cents: number;
-  currency: string;
-  file_url?: string;
-}
-
-export interface BillingState {
-  plans: Plan[];
-  subscriptions: Subscription[];
-  invoices: Invoice[];
-  currentSubscription: Subscription | null;
-  loading: boolean;
-  plansLoading: boolean;
-  subscriptionsLoading: boolean;
-  invoicesLoading: boolean;
-}
+import type { Plan, Subscription, Invoice, BillingState } from '~/types/stores';
 
 export const useBillingStore = defineStore('billing', {
   state: (): BillingState => ({

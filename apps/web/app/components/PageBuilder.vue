@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { dashboardPanel } from '#build/ui';
-import type { PageBlock } from '@turborepo-saas-starter/shared-types/schema';
+import type { PageBuilderProps } from '~/types/components';
 
-interface PageBuilderProps {
-  sections: PageBlock[];
-}
 const props = defineProps<PageBuilderProps>();
 const authStore = useAuth();
 const { isAuthenticated } = useAuth();

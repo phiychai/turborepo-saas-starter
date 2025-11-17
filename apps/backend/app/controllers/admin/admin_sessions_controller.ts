@@ -3,7 +3,7 @@ import logger from '@adonisjs/core/services/logger';
 import type { HttpContext } from '@adonisjs/core/http';
 
 import * as abilities from '#abilities/main';
-import { auth } from '#config/better_auth';
+import { auth as betterAuth } from '#config/better_auth';
 import User from '#models/user';
 import env from '#start/env';
 import { toWebRequest } from '#utils/better_auth_helpers';
@@ -13,7 +13,7 @@ export default class AdminSessionsController {
    * List user sessions (Better Auth)
    * GET /api/admin/users/:id/sessions
    */
-  async listUserSessions({ params, request, response, auth, bouncer }: HttpContext) {
+  async listUserSessions({ params, request, response, auth }: HttpContext) {
     await abilities.manageUsers.execute(auth.user!);
 
     const user = await User.findOrFail(params.id);
@@ -29,8 +29,8 @@ export default class AdminSessionsController {
       const webRequest = await toWebRequest(request);
 
       // Use Better Auth API method if available
-      if (auth.api.listUserSessions) {
-        const sessions = await auth.api.listUserSessions({
+      if ((betterAuth as any).api?.listUserSessions) {
+        const sessions = await (betterAuth as any).api.listUserSessions({
           body: { userId: user.betterAuthUserId },
           headers: webRequest.headers,
         });
@@ -47,7 +47,7 @@ export default class AdminSessionsController {
           body: JSON.stringify({ userId: user.betterAuthUserId }),
         });
 
-        const betterAuthResponse = await auth.handler(betterAuthRequest);
+        const betterAuthResponse = await (betterAuth as any).handler(betterAuthRequest);
         const sessions = await betterAuthResponse.json();
 
         return response.ok({
@@ -66,15 +66,15 @@ export default class AdminSessionsController {
    * Revoke user session (Better Auth)
    * DELETE /api/admin/sessions/:sessionToken
    */
-  async revokeSession({ params, request, response, auth, bouncer }: HttpContext) {
+  async revokeSession({ params, request, response, auth }: HttpContext) {
     await abilities.manageUsers.execute(auth.user!);
 
     try {
       const webRequest = await toWebRequest(request);
 
       // Use Better Auth API method if available
-      if (auth.api.revokeUserSession) {
-        await auth.api.revokeUserSession({
+      if ((betterAuth as any).api?.revokeUserSession) {
+        await (betterAuth as any).api.revokeUserSession({
           body: { sessionToken: params.sessionToken },
           headers: webRequest.headers,
         });
@@ -87,7 +87,7 @@ export default class AdminSessionsController {
           body: JSON.stringify({ sessionToken: params.sessionToken }),
         });
 
-        await auth.handler(betterAuthRequest);
+        await (betterAuth as any).handler(betterAuthRequest);
       }
 
       return response.ok({
@@ -105,7 +105,7 @@ export default class AdminSessionsController {
    * Revoke all sessions for user (Better Auth)
    * DELETE /api/admin/users/:id/sessions
    */
-  async revokeAllSessions({ params, request, response, auth, bouncer }: HttpContext) {
+  async revokeAllSessions({ params, request, response, auth }: HttpContext) {
     await abilities.manageUsers.execute(auth.user!);
 
     const user = await User.findOrFail(params.id);
@@ -120,8 +120,8 @@ export default class AdminSessionsController {
       const webRequest = await toWebRequest(request);
 
       // Use Better Auth API method if available
-      if (auth.api.revokeUserSessions) {
-        await auth.api.revokeUserSessions({
+      if ((betterAuth as any).api?.revokeUserSessions) {
+        await (betterAuth as any).api.revokeUserSessions({
           body: { userId: user.betterAuthUserId },
           headers: webRequest.headers,
         });
@@ -134,7 +134,7 @@ export default class AdminSessionsController {
           body: JSON.stringify({ userId: user.betterAuthUserId }),
         });
 
-        await auth.handler(betterAuthRequest);
+        await (betterAuth as any).handler(betterAuthRequest);
       }
 
       return response.ok({

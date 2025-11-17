@@ -1,16 +1,5 @@
 import { defineStore } from 'pinia';
-
-export interface UserPreferences {
-  emailNotifications: boolean;
-  marketingEmails: boolean;
-  language: string;
-  timezone: string;
-}
-
-export interface UserState {
-  preferences: UserPreferences | null;
-  loading: boolean;
-}
+import type { UserPreferences, UserState } from '~/types/stores';
 
 export const useUserStore = defineStore('user', {
   state: (): UserState => ({

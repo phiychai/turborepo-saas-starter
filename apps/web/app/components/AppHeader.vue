@@ -113,9 +113,9 @@ const toggleSlideover = () => {
           class="rounded-full"
         />
 
-        <template #content>
+        <!-- <template #content>
           <Placeholder class="size-48 m-4 inline-flex" />
-        </template>
+        </template> -->
       </UPopover>
       <UPopover
         arrow

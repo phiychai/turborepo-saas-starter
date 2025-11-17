@@ -4,17 +4,8 @@
  * Uses UPagination for pagination controls
  */
 import { formatDistanceToNow } from 'date-fns';
-import type { Post, DirectusFile, DirectusUser } from '@turborepo-saas-starter/shared-types/schema';
-
-interface PostsProps {
-  data: {
-    id?: string;
-    tagline?: string;
-    headline?: string;
-    posts: Post[];
-    limit: number;
-  };
-}
+import type { Post, DirectusFile, DirectusUser } from '~turborepo-saas-starter/shared-types/schema';
+import type { PostsProps } from '~/types/components';
 
 const props = defineProps<PostsProps>();
 

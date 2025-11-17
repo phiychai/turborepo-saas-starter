@@ -3,27 +3,7 @@
  * Hero - Block component for hero sections (no migration needed)
  * Already uses migrated base components
  */
-interface HeroProps {
-  data: {
-    id: string;
-    tagline: string;
-    headline: string;
-    description: string;
-    layout: 'image_image_left' | 'image_center' | 'image_left';
-    image: string;
-    button_group?: {
-      buttons: Array<{
-        id: string;
-        label: string | null;
-        variant: string | null;
-        url: string | null;
-        type: 'url' | 'page' | 'post';
-        pagePermalink?: string | null;
-        postSlug?: string | null;
-      }>;
-    };
-  };
-}
+import type { HeroProps } from '~/types/components';
 
 defineProps<HeroProps>();
 const { setAttr } = useVisualEditing();

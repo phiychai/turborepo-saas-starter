@@ -3,25 +3,7 @@
  * FormBlock - Block component for displaying forms (migrated to Nuxt UI)
  * Uses FormBuilder component which now uses Nuxt UI
  */
-import type { FormField } from '@turborepo-saas-starter/shared-types/schema';
-
-interface CustomFormData {
-  id: string;
-  tagline: string | null;
-  headline: string | null;
-  form: CustomForm;
-}
-interface CustomForm {
-  id: string;
-  on_success?: 'redirect' | 'message' | null;
-  sort?: number | null;
-  submit_label?: string | null;
-  success_message?: string | null;
-  title?: string | null;
-  success_redirect_url?: string | null;
-  is_active?: boolean | null;
-  fields: FormField[];
-}
+import type { CustomFormData } from '~/types/components';
 
 defineProps<{ data: CustomFormData }>();
 const { setAttr } = useVisualEditing();

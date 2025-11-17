@@ -1,10 +1,8 @@
 import logger from '@adonisjs/core/services/logger';
 import db from '@adonisjs/lucid/services/db';
 
-import { auth } from '#config/better_auth';
 import AuthSyncError from '#models/auth_sync_error';
 import User from '#models/user';
-import { AuthErrorLogger } from '#services/auth_error_logger';
 import { UserSyncService } from '#services/user_sync_service';
 
 export class AuthReconciliationService {
@@ -47,8 +45,8 @@ export class AuthReconciliationService {
         const adonisUser = await UserSyncService.syncUser({
           betterAuthUser,
           provider: error.provider || 'email',
-          requestPath: error.requestPath || null,
-          clientIp: null, // Don't log IP on retry
+          requestPath: error.requestPath || undefined,
+          clientIp: undefined, // Don't log IP on retry
         });
 
         if (adonisUser) {
@@ -104,8 +102,8 @@ export class AuthReconciliationService {
             adonisUser = await UserSyncService.syncUser({
               betterAuthUser,
               provider: error.provider || 'email',
-              requestPath: error.requestPath || null,
-              clientIp: null,
+              requestPath: error.requestPath || undefined,
+              clientIp: undefined,
             });
           }
         }
@@ -173,8 +171,8 @@ export class AuthReconciliationService {
           const adonisUser = await UserSyncService.syncUser({
             betterAuthUser,
             provider: 'email',
-            requestPath: null,
-            clientIp: null,
+            requestPath: undefined,
+            clientIp: undefined,
           });
 
           if (adonisUser) {

@@ -5,7 +5,6 @@ import type { CommandOptions } from '@adonisjs/core/types/ace';
 import { auth } from '#config/better_auth';
 import User from '#models/user';
 import { UserSyncService } from '#services/user_sync_service';
-import env from '#start/env';
 
 export default class CreateAdmin extends BaseCommand {
   static commandName = 'create:admin';
@@ -63,26 +62,14 @@ export default class CreateAdmin extends BaseCommand {
               name:
                 this.firstName && this.lastName
                   ? `${this.firstName} ${this.lastName}`.trim()
-                  : this.firstName || this.lastName || undefined,
-              username: this.username || undefined,
+                  : this.firstName || this.lastName || this.email,
             },
           });
-          betterAuthUser = result?.user || result?.data?.user;
+          betterAuthUser = result?.user;
           betterAuthUserId = betterAuthUser?.id;
         } else {
-          // Fallback to createUser API (admin method)
-          betterAuthUser = await auth.api.createUser({
-            body: {
-              email: this.email,
-              password: this.password,
-              name:
-                this.firstName && this.lastName
-                  ? `${this.firstName} ${this.lastName}`.trim()
-                  : this.firstName || this.lastName || undefined,
-              username: this.username || undefined,
-            },
-          });
-          betterAuthUserId = betterAuthUser?.id;
+          // Fallback: create user manually via Better Auth signup
+          throw new Error('Better Auth signup failed and createUser API not available');
         }
       } catch (error: any) {
         const errorMessage = error?.message || error?.error?.message || 'Unknown error';
@@ -116,8 +103,8 @@ export default class CreateAdmin extends BaseCommand {
           adonisUser = await UserSyncService.syncUser({
             betterAuthUser: betterAuthUser as any,
             provider: 'email',
-            requestPath: null,
-            clientIp: null,
+            requestPath: undefined,
+            clientIp: undefined,
           });
         } else {
           // Fallback: construct user object from available data
@@ -135,8 +122,8 @@ export default class CreateAdmin extends BaseCommand {
           adonisUser = await UserSyncService.syncUser({
             betterAuthUser: fallbackUser as any,
             provider: 'email',
-            requestPath: null,
-            clientIp: null,
+            requestPath: undefined,
+            clientIp: undefined,
           });
         }
 

@@ -5,15 +5,7 @@
  */
 import { ref, computed } from 'vue';
 import { useDebounceFn } from '@vueuse/core';
-
-type SearchResult = {
-  id: string;
-  title: string;
-  description: string;
-  type: string;
-  link: string;
-  content: string;
-};
+import type { SearchResult } from '~/types/components';
 
 const router = useRouter();
 const isOpen = ref(false);

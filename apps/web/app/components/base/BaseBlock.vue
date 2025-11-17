@@ -9,14 +9,7 @@ import Gallery from '~/components/block/Gallery.vue';
 import Pricing from '~/components/block/Pricing.vue';
 import Posts from '~/components/block/Posts.vue';
 import Form from '~/components/block/FormBlock.vue';
-
-interface BaseBlockProps {
-  block: {
-    collection: string;
-    item: any;
-    id: string;
-  };
-}
+import type { BaseBlockProps } from '~/types/components';
 
 const props = defineProps<BaseBlockProps>();
 const blockRef = ref<HTMLElement | null>(null);

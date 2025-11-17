@@ -3,24 +3,7 @@
  * BaseButton - Migrated to Nuxt UI
  * Wrapper around UButton with support for pages, posts, and external URLs
  */
-export interface ButtonProps {
-  id: string;
-  label?: string | null;
-  variant?: string | null;
-  url?: string | null;
-  type?: 'page' | 'post' | 'url' | 'submit' | null;
-  page?: { permalink: string | null };
-  post?: { slug: string | null };
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-  icon?: 'arrow' | 'plus' | string;
-  customIcon?: string;
-  iconPosition?: 'left' | 'right';
-  className?: string;
-  disabled?: boolean;
-  block?: boolean;
-  target?: '_blank' | '_self' | '_parent' | '_top';
-  color?: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info';
-}
+import type { ButtonProps } from '~/types/components';
 
 const props = withDefaults(defineProps<ButtonProps>(), {
   size: 'md',

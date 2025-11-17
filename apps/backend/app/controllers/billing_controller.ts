@@ -44,13 +44,13 @@ export default class BillingController {
       // Get the Lago account
       const account = await billingService.getAccountByEmail(user.email);
 
-      if (!account || !account.accountId) {
+      if (!account || !(account as any).customer?.external_id) {
         return response.ok({
           subscriptions: [],
         });
       }
 
-      const subscriptions = await billingService.getSubscriptions(account.accountId);
+      const subscriptions = await billingService.getSubscriptions((account as any).customer.external_id);
 
       return response.ok({
         subscriptions,
@@ -89,10 +89,11 @@ export default class BillingController {
         });
       }
 
+      const accountExternalId = (account as any).customer?.external_id || (account as any).external_id;
       const subscription = await billingService.createSubscription({
-        accountId: account.accountId,
-        planName,
-        externalKey,
+        externalCustomerId: accountExternalId,
+        planCode: planName,
+        externalId: externalKey,
       });
 
       return response.created({
@@ -110,13 +111,12 @@ export default class BillingController {
   /**
    * Cancel a subscription
    */
-  async cancelSubscription({ params, request, response, auth }: HttpContext) {
+  async cancelSubscription({ params, response, auth }: HttpContext) {
     try {
       await auth.check();
       const subscriptionId = params.id;
-      const { requestedDate } = request.qs();
 
-      await billingService.cancelSubscription(subscriptionId, requestedDate);
+      await billingService.cancelSubscription(subscriptionId);
 
       return response.ok({
         message: 'Subscription cancelled successfully',
@@ -138,13 +138,13 @@ export default class BillingController {
 
       const account = await billingService.getAccountByEmail(user.email);
 
-      if (!account || !account.accountId) {
+      if (!account || !(account as any).customer?.external_id) {
         return response.ok({
           invoices: [],
         });
       }
 
-      const invoices = await billingService.getInvoices(account.accountId);
+      const invoices = await billingService.getInvoices((account as any).customer.external_id);
 
       return response.ok({
         invoices,
@@ -191,15 +191,15 @@ export default class BillingController {
 
       const account = await billingService.getAccountByEmail(user.email);
 
-      const paymentMethod = await billingService.addPaymentMethod({
-        accountId: account.accountId,
-        pluginName,
-        pluginInfo,
-      });
+      if (!account) {
+        return response.badRequest({
+          message: 'Account not found',
+        });
+      }
 
-      return response.created({
-        message: 'Payment method added successfully',
-        paymentMethod,
+      // Note: addPaymentMethod doesn't exist in BillingService - implement or remove this endpoint
+      return response.notImplemented({
+        message: 'Payment method management not yet implemented',
       });
     } catch (error) {
       return response.internalServerError({
@@ -218,16 +218,16 @@ export default class BillingController {
 
       const account = await billingService.getAccountByEmail(user.email);
 
-      if (!account || !account.accountId) {
+      if (!account || !(account as any).customer?.external_id) {
         return response.ok({
           paymentMethods: [],
         });
       }
 
-      const paymentMethods = await billingService.getPaymentMethods(account.accountId);
-
+      // Note: getPaymentMethods doesn't exist in BillingService - implement or remove this endpoint
       return response.ok({
-        paymentMethods,
+        paymentMethods: [],
+        message: 'Payment method retrieval not yet implemented',
       });
     } catch (error) {
       return response.internalServerError({

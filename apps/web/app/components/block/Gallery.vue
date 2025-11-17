@@ -3,20 +3,7 @@
  * Gallery - Migrated to Nuxt UI
  * Uses UModal for lightbox with keyboard navigation
  */
-interface GalleryItem {
-  id: string;
-  directus_file: string;
-  sort?: number;
-}
-
-interface GalleryProps {
-  data: {
-    id: string;
-    tagline?: string;
-    headline?: string;
-    items: GalleryItem[];
-  };
-}
+import type { GalleryProps } from '~/types/components';
 
 const props = defineProps<GalleryProps>();
 

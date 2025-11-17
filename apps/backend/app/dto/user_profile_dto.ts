@@ -1,36 +1,8 @@
 import type User from '#models/user';
+import type { UserProfile } from '@turborepo-saas-starter/shared-types';
 
-export interface UserProfileDTO {
-  // Profile data (from Adonis User - canonical)
-  id: number;
-  email: string;
-  firstName: string | null;
-  lastName: string | null;
-  username: string | null;
-  avatarUrl: string | null;
-  bio: string | null;
-  fullName: string | null;
-  displayName: string;
-
-  // Authorization (from Adonis User)
-  role: 'user' | 'admin';
-  isActive: boolean;
-
-  // Preferences (from Adonis User)
-  preferences: Record<string, any> | null;
-
-  // Timestamps
-  createdAt: string;
-  updatedAt: string | null;
-
-  // Auth metadata (from Better Auth)
-  auth: {
-    provider: string | null; // 'email', 'google', 'github', etc.
-    mfaEnabled: boolean;
-    emailVerified: boolean;
-    tokenExpiresAt: string | null;
-  };
-}
+// Use shared UserProfile type - it matches the DTO structure
+export type UserProfileDTO = UserProfile;
 
 export class UserProfileDTOBuilder {
   /**
@@ -57,7 +29,7 @@ export class UserProfileDTOBuilder {
       preferences: user.preferences,
 
       // Timestamps
-      createdAt: user.createdAt.toISO(),
+      createdAt: user.createdAt?.toISO() || new Date().toISOString(),
       updatedAt: user.updatedAt?.toISO() || null,
 
       // Auth metadata

@@ -1,11 +1,5 @@
 import { ref, watch, type Ref } from 'vue';
-
-export interface TocLink {
-  id: string;
-  text: string;
-  depth: number;
-  children?: TocLink[];
-}
+import type { TocLink } from '~/types/composables';
 
 export function useTableOfContents(
   content: Ref<string | null | undefined> | (() => string | null | undefined)

@@ -14,7 +14,7 @@ export default class AdminController {
    * List all users (admin only)
    * GET /api/admin/users
    */
-  async listUsers({ request, response, auth, bouncer }: HttpContext) {
+  async listUsers({ request, response, auth }: HttpContext) {
     // Check authorization via Bouncer
     await abilities.manageUsers.execute(auth.user!);
 
@@ -62,7 +62,7 @@ export default class AdminController {
    * Get user details (admin only)
    * GET /api/admin/users/:id
    */
-  async getUser({ params, response, auth, bouncer }: HttpContext) {
+  async getUser({ params, response, auth }: HttpContext) {
     await abilities.manageUsers.execute(auth.user!);
 
     const user = await User.findOrFail(params.id);
@@ -76,7 +76,7 @@ export default class AdminController {
    * Update user (admin only)
    * PATCH /api/admin/users/:id
    */
-  async updateUser({ params, request, response, auth, bouncer }: HttpContext) {
+  async updateUser({ params, request, response, bouncer }: HttpContext) {
     const targetUser = await User.findOrFail(params.id);
     await bouncer.with(UserPolicy).authorize('update', targetUser);
 
@@ -109,7 +109,7 @@ export default class AdminController {
    * Delete user (admin only)
    * DELETE /api/admin/users/:id
    */
-  async deleteUser({ params, response, auth, bouncer }: HttpContext) {
+  async deleteUser({ params, request, response, bouncer }: HttpContext) {
     const targetUser = await User.findOrFail(params.id);
     await bouncer.with(UserPolicy).authorize('delete', targetUser);
 
@@ -130,7 +130,7 @@ export default class AdminController {
    * Toggle user active status (admin only)
    * PATCH /api/admin/users/:id/toggle-status
    */
-  async toggleStatus({ params, response, auth, bouncer }: HttpContext) {
+  async toggleStatus({ params, request, response, bouncer }: HttpContext) {
     const user = await User.findOrFail(params.id);
 
     await bouncer.with(UserPolicy).authorize('toggleStatus', user);
@@ -161,7 +161,7 @@ export default class AdminController {
    * Sync all Better Auth users that are missing from AdonisJS (admin only)
    * POST /api/admin/users/sync-all
    */
-  async syncAllUsers({ response, auth, bouncer }: HttpContext) {
+  async syncAllUsers({ response, auth }: HttpContext) {
     await abilities.manageUsers.execute(auth.user!);
 
     try {
@@ -184,7 +184,7 @@ export default class AdminController {
    * Sync a specific user by email (admin only)
    * POST /api/admin/users/sync
    */
-  async syncUser({ request, response, auth, bouncer }: HttpContext) {
+  async syncUser({ request, response, auth }: HttpContext) {
     await abilities.manageUsers.execute(auth.user!);
 
     const { email } = request.only(['email']);
@@ -219,8 +219,8 @@ export default class AdminController {
       const adonisUser = await UserSyncService.syncUser({
         betterAuthUser,
         provider: 'email',
-        requestPath: null,
-        clientIp: null,
+        requestPath: undefined,
+        clientIp: undefined,
       });
 
       if (!adonisUser) {

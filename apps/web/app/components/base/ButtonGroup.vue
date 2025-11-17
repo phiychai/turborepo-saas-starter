@@ -3,13 +3,7 @@
  * ButtonGroup - Migrated to Nuxt UI
  * Uses UButtonGroup for grouped button display
  */
-import type { ButtonProps } from './BaseButton.vue';
-
-export interface ButtonGroupProps {
-  buttons: Array<ButtonProps>;
-  className?: string;
-  orientation?: 'horizontal' | 'vertical';
-}
+import type { ButtonGroupProps } from '~/types/components';
 
 const props = withDefaults(defineProps<ButtonGroupProps>(), {
   orientation: 'horizontal',

@@ -4,17 +4,7 @@
  * Already uses migrated base components
  */
 import Text from '~/components/base/Text.vue';
-
-interface RichTextProps {
-  data: {
-    id?: string;
-    tagline?: string;
-    headline?: string;
-    content?: string;
-    alignment?: 'left' | 'center' | 'right';
-    className?: string;
-  };
-}
+import type { RichTextProps } from '~/types/components';
 
 withDefaults(defineProps<RichTextProps>(), {
   data: () => ({

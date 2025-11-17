@@ -110,7 +110,8 @@ export class EmailService {
    * Send email via Resend
    */
   private static async sendViaResend(to: string, subject: string, html: string): Promise<void> {
-    const Resend = await import('resend').catch(() => null);
+    // @ts-ignore - Optional dependency
+    const Resend = await import('resend').catch(() => null) as any;
     if (!Resend) {
       throw new Error('Resend package not installed. Run: npm install resend');
     }
@@ -128,7 +129,8 @@ export class EmailService {
    * Send email via SendGrid
    */
   private static async sendViaSendGrid(to: string, subject: string, html: string): Promise<void> {
-    const sgMail = await import('@sendgrid/mail').catch(() => null);
+    // @ts-ignore - Optional dependency
+    const sgMail = await import('@sendgrid/mail').catch(() => null) as any;
     if (!sgMail) {
       throw new Error('SendGrid package not installed. Run: npm install @sendgrid/mail');
     }

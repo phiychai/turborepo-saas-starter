@@ -16,7 +16,7 @@ export async function toWebRequest(request: HttpContext['request']): Promise<Req
 
   return new Request(url, {
     method: request.method(),
-    headers: request.headers() as HeadersInit,
+    headers: request.headers() as Record<string, string>,
     body,
   });
 }

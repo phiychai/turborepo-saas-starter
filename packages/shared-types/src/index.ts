@@ -1,6 +1,12 @@
 // Re-export schema types
 export type { DirectusFile, DirectusUser, Page, PageBlock, Post } from './schema';
 
+// Re-export billing types
+export type { Plan, Subscription, Invoice } from './billing';
+
+// Re-export user types
+export type { UserProfile } from './user';
+
 // User-related types
 export interface User {
   id: string;

@@ -1,20 +1,5 @@
 import { defineStore } from 'pinia';
-
-export interface Notification {
-  id: string;
-  title: string;
-  description?: string;
-  type?: 'info' | 'success' | 'warning' | 'error';
-  timeout?: number;
-}
-
-export interface UIState {
-  sidebarCollapsed: boolean;
-  theme: 'light' | 'dark' | 'system';
-  notifications: Notification[];
-  commandPaletteOpen: boolean;
-  searchOpen: boolean;
-}
+import type { UINotification, UIState } from '~/types/stores';
 
 export const useUIStore = defineStore('ui', {
   state: (): UIState => ({
@@ -70,7 +55,7 @@ export const useUIStore = defineStore('ui', {
     /**
      * Add notification
      */
-    addNotification(notification: Omit<Notification, 'id'>) {
+    addNotification(notification: Omit<UINotification, 'id'>) {
       const id = `notif-${Date.now()}-${Math.random()}`;
       const newNotification = {
         id,

@@ -3,10 +3,7 @@
  * Tagline - Migrated to Nuxt UI Typography
  * Uses ProseP component with custom styling for taglines
  */
-interface TaglineProps {
-  tagline?: string | null;
-  className?: string;
-}
+import type { TaglineProps } from '~/types/components';
 
 const props = defineProps<TaglineProps>();
 </script>

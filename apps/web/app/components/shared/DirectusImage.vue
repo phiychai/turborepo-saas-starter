@@ -1,14 +1,7 @@
 <script setup lang="ts">
 import { getDirectusAssetURL } from '@@/server/utils/directus-utils';
 import { watch, ref } from 'vue';
-
-interface DirectusImageProps {
-  uuid: string;
-  alt: string;
-  width?: number;
-  height?: number;
-  [key: string]: any;
-}
+import type { DirectusImageProps } from '~/types/components';
 
 const props = withDefaults(defineProps<DirectusImageProps>(), {
   width: undefined,

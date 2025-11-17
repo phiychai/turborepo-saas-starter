@@ -4,22 +4,10 @@
  * Uses UAlert for success/error states
  */
 import DynamicForm from './DynamicForm.vue';
-import type { FormField } from '@turborepo-saas-starter/shared-types/schema';
-
-interface CustomFormData {
-  id: string;
-  on_success?: 'redirect' | 'message' | null;
-  sort?: number | null;
-  submit_label?: string | null;
-  success_message?: string | null;
-  title?: string | null;
-  success_redirect_url?: string | null;
-  is_active?: boolean | null;
-  fields: FormField[];
-}
+import type { CustomForm } from '~/types/components';
 
 const props = defineProps<{
-  form: CustomFormData;
+  form: CustomForm;
   className?: string;
 }>();
 

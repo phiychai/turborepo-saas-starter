@@ -1,4 +1,3 @@
-import { compose } from '@adonisjs/core/helpers';
 import { BaseModel, column } from '@adonisjs/lucid/orm';
 import { DateTime } from 'luxon';
 

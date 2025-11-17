@@ -1,17 +1,17 @@
 import { $fetch } from 'ofetch';
 import type { Schema } from '@turborepo-saas-starter/shared-types/schema';
 import {
-  aggregate,
+  // aggregate,
   createDirectus,
   readItem,
   readItems,
   rest,
   readSingleton,
   createItem,
-  updateItem,
+  // updateItem,
   // staticToken,
   uploadFiles,
-  readMe,
+  // readMe,
   withToken,
   type QueryFilter,
   readUser,
@@ -34,13 +34,10 @@ export {
   directusServer,
   readItem,
   readItems,
-  readMe,
   readSingleton,
   createItem,
-  updateItem,
   withToken,
   aggregate,
   uploadFiles,
-  readUser,
 };
 export type { QueryFilter };

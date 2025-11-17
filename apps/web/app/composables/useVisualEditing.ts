@@ -1,16 +1,5 @@
 import { apply as applyVisualEditing, setAttr } from '@directus/visual-editing';
-import type { PrimaryKey } from '@directus/types';
-
-interface ApplyOptions {
-  directusUrl: string;
-  elements?: HTMLElement[] | HTMLElement;
-  onSaved?: (data: {
-    collection?: string;
-    item?: PrimaryKey | null;
-    payload?: Record<string, any>;
-  }) => void;
-  customClass?: string;
-}
+import type { ApplyOptions } from '~/types/composables';
 export default function useVisualEditing() {
   // Use useState for state that persists across navigation
   const isVisualEditingEnabled = useState('visual-editing-enabled', () => false);

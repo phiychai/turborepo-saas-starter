@@ -1,12 +1,7 @@
 import { defineStore } from 'pinia';
 import { signIn, signUp, signOut } from '~/lib/auth-client';
-import type { UserProfile } from '~/types';
-
-export interface AuthState {
-  user: UserProfile | null;
-  loading: boolean;
-  initialized: boolean;
-}
+import type { UserProfile } from '@turborepo-saas-starter/shared-types';
+import type { AuthState } from '~/types/stores';
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
