@@ -15,7 +15,7 @@ export default defineNuxtConfig({
     '@nuxt/content',
     '@vueuse/nuxt',
     '@pinia/nuxt',
-    '@pinia-plugin-persistedstate/nuxt',
+    'pinia-plugin-persistedstate/nuxt',
     'nuxt-og-image',
     'nuxt-security',
     '@nuxt/scripts',
