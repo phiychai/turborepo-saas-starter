@@ -1,3 +1,5 @@
+import type { Page, Post } from '@turborepo-saas-starter/shared-types';
+
 export default defineCachedEventHandler(
   async (event) => {
     const query = getQuery(event);

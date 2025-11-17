@@ -25,10 +25,6 @@ export default defineNuxtConfig({
 
   devtools: {
     enabled: true,
-
-    timeline: {
-      enabled: true,
-    },
   },
 
   css: ['~/assets/css/main.css'],
@@ -44,6 +40,9 @@ export default defineNuxtConfig({
 
   routeRules: {
     '/docs': { redirect: '/docs/getting-started', prerender: false },
+    '/api/pages/**': { cors: true, headers: { 'Cache-Control': 's-maxage=300' } },
+    '/api/posts/**': { cors: true, headers: { 'Cache-Control': 's-maxage=60' } },
+    '/api/posts/categories': { cors: true, headers: { 'Cache-Control': 's-maxage=600' } },
   },
 
   compatibilityDate: '2024-07-11',

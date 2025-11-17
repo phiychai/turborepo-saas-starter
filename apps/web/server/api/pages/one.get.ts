@@ -1,6 +1,6 @@
 import { withoutTrailingSlash, withLeadingSlash } from 'ufo';
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
   const query = getQuery(event);
 
   // Handle live preview
@@ -141,19 +141,22 @@ export default defineEventHandler(async (event) => {
 
     const page = pageData[0];
 
+    // Replace the loop with parallel fetching
     if (Array.isArray(page?.blocks)) {
-      for (const block of page.blocks as PageBlock[]) {
-        if (
-          block.collection === 'block_posts' &&
-          block.item &&
-          typeof block.item !== 'string' &&
-          'collection' in block.item &&
-          block.item.collection === 'posts'
-        ) {
+      const postBlockPromises = page.blocks
+        .filter(
+          (block): block is PageBlock & { item: BlockPost } =>
+            block.collection === 'block_posts' &&
+            block.item &&
+            typeof block.item !== 'string' &&
+            'collection' in block.item &&
+            block.item.collection === 'posts'
+        )
+        .map(async (block) => {
           const blockPost = block.item as BlockPost;
           const limit = blockPost.limit ?? 12;
 
-          const posts: Post[] = await directusServer.request(
+          const posts = await directusServer.request(
             readItems('posts', {
               fields: ['id', 'title', 'description', 'slug', 'image', 'published_at'],
               filter: { status: { _eq: 'published' } },
@@ -162,9 +165,14 @@ export default defineEventHandler(async (event) => {
             })
           );
 
-          (block.item as BlockPost & { posts: Post[] }).posts = posts;
-        }
-      }
+          return { block, posts };
+        });
+
+      const results = await Promise.all(postBlockPromises);
+
+      results.forEach(({ block, posts }) => {
+        (block.item as BlockPost & { posts: Post[] }).posts = posts;
+      });
     }
 
     return page;

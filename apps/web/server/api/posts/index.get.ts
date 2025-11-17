@@ -6,7 +6,7 @@ const querySchema = z.object({
   category: z.string().optional(),
 });
 
-export default defineEventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
   const query = await getValidatedQuery(event, querySchema.safeParse);
 
   if (!query.success) {
