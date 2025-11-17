@@ -147,8 +147,8 @@ importers:
   apps/web:
     dependencies:
       '@directus/sdk':
-        specifier: 19.1.0
-        version: 19.1.0
+        specifier: 20.1.1
+        version: 20.1.1
       '@directus/visual-editing':
         specifier: ^1.1.0
         version: 1.1.0
@@ -797,8 +797,8 @@ packages:
   '@directus/schema@13.0.1':
     resolution: {integrity: sha512-kRQ8KER70RUDQL5Caao4OWlw7YQFYXM1TNS7OlwZfvPyEGqAdEIC4z3jTh5ANJpBv2b6XZk+5BMcu+ddFwJ11w==}
 
-  '@directus/sdk@19.1.0':
-    resolution: {integrity: sha512-Nqem9BsvvGyVtAa69mGPtoMoMVkZxdIREdsWvvTzNF4/1XqaFfEiFL7PhtUNfc46/Nufus2+QUKYQbNiAWe3ZA==}
+  '@directus/sdk@20.1.1':
+    resolution: {integrity: sha512-cCWvxDRKOygVHBkKA7l1I4O4niomK8SKR/+Ul1L9NFF1K2zAf3jRqhjc7JavCECOiiAWME/s2wYatNFqFFh0gQ==}
     engines: {node: '>=22'}
 
   '@directus/types@13.1.1':
@@ -10441,7 +10441,7 @@ snapshots:
       - supports-color
       - tedious
 
-  '@directus/sdk@19.1.0': {}
+  '@directus/sdk@20.1.1': {}
 
   '@directus/types@13.1.1(better-sqlite3@12.2.0)(knex@3.1.0(better-sqlite3@12.2.0))(vue@3.5.24(typescript@5.8.3))':
     dependencies:
