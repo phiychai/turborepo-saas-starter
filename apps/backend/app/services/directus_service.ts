@@ -7,12 +7,14 @@ import {
   createItem,
   updateItem,
   deleteItem,
+  type DirectusClient,
 } from '@directus/sdk';
+import type { Schema } from '@turborepo-saas-starter/shared-types/schema';
 
 import env from '#start/env';
 
 class DirectusService {
-  private client: any;
+  private client: DirectusClient<Schema>;
   private adminToken: string | null = null;
 
   constructor() {
@@ -58,7 +60,7 @@ class DirectusService {
   /**
    * Proxy a request to Directus
    */
-  async proxyRequest(path: string, method: string, body?: any, headers?: Record<string, string>) {
+  async proxyRequest(path: string, method: string, body?: unknown, headers?: Record<string, string>) {
     const directusUrl = env.get('DIRECTUS_URL');
     const url = `${directusUrl}${path}`;
 
@@ -103,33 +105,51 @@ class DirectusService {
   /**
    * Get items from a collection
    */
-  async getItems(collection: string, params?: Record<string, any>) {
+  async getItems<CollectionName extends keyof Schema>(
+    collection: CollectionName,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    params?: Record<string, any>
+  ) {
     const client = await this.getClient();
-    return client.request(readItems(collection as never, params));
+    return client.request(readItems(collection, params));
   }
 
   /**
    * Get a single item from a collection
    */
-  async getItem(collection: string, id: string | number, params?: Record<string, any>) {
+  async getItem<CollectionName extends keyof Schema>(
+    collection: CollectionName,
+    id: string | number,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    params?: Record<string, any>
+  ) {
     const client = await this.getClient();
-    return client.request(readItem(collection as never, id, params));
+    return client.request(readItem(collection, id, params));
   }
 
   /**
    * Create an item in a collection
    */
-  async createItem(collection: string, data: Record<string, any>) {
+  async createItem<CollectionName extends keyof Schema>(
+    collection: CollectionName,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data: Record<string, any>
+  ) {
     const client = await this.getClient();
-    return client.request(createItem(collection as never, data as never));
+    return client.request(createItem(collection, data));
   }
 
   /**
    * Update an item in a collection
    */
-  async updateItem(collection: string, id: string | number, data: Record<string, any>) {
+  async updateItem<CollectionName extends keyof Schema>(
+    collection: CollectionName,
+    id: string | number,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    data: Record<string, any>
+  ) {
     const client = await this.getClient();
-    return client.request(updateItem(collection as never, id, data));
+    return client.request(updateItem(collection, id, data));
   }
 
   /**

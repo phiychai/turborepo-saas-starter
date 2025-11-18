@@ -138,8 +138,8 @@ const items = computed<DropdownMenuItem[][]>(() => [
     <template #chip-leading="{ item }">
       <span
         :style="{
-          '--chip-light': `var(--color-${(item as any).chip}-500)`,
-          '--chip-dark': `var(--color-${(item as any).chip}-400)`,
+          '--chip-light': `var(--color-${'chip' in item && typeof item.chip === 'string' ? item.chip : 'neutral'}-500)`,
+          '--chip-dark': `var(--color-${'chip' in item && typeof item.chip === 'string' ? item.chip : 'neutral'}-400)`,
         }"
         class="ms-0.5 size-2 rounded-full bg-(--chip-light) dark:bg-(--chip-dark)"
       />

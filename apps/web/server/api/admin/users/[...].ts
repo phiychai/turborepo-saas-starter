@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
 
   // Get query parameters
   const query = getQuery(event);
-  const queryString = new URLSearchParams(query as any).toString();
+  const queryString = new URLSearchParams(query as Record<string, string | string[]>).toString();
   const fullUrl = queryString ? `${targetUrl}?${queryString}` : targetUrl;
 
   // Get request body for POST/PUT/PATCH
@@ -67,14 +67,14 @@ export default defineEventHandler(async (event) => {
 
     const data = await response.json();
     return data;
-  } catch (error: any) {
-    if (error.statusCode) {
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'statusCode' in error) {
       throw error;
     }
     throw createError({
       statusCode: 500,
       statusMessage: 'Failed to proxy admin request',
-      data: error.message,
+      data: error instanceof Error ? error.message : String(error),
     });
   }
 });

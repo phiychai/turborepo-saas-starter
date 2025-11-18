@@ -57,8 +57,8 @@ export class AuthReconciliationService {
           await error.incrementRetry();
           failed++;
         }
-      } catch (err: any) {
-        logger.error(`Reconciliation retry failed: ${err.message}`);
+      } catch (err: unknown) {
+        logger.error(`Reconciliation retry failed: ${err instanceof Error ? err.message : String(err)}`);
         await error.incrementRetry();
         failed++;
       }
@@ -117,8 +117,8 @@ export class AuthReconciliationService {
           await error.markAsHandled();
           failed++;
         }
-      } catch (err: any) {
-        logger.error(`Failed to fix missing mapping: ${err.message}`);
+      } catch (err: unknown) {
+        logger.error(`Failed to fix missing mapping: ${err instanceof Error ? err.message : String(err)}`);
         await error.incrementRetry();
         failed++;
       }
@@ -181,15 +181,15 @@ export class AuthReconciliationService {
           } else {
             failed++;
           }
-        } catch (err: any) {
-          logger.error(`Failed to sync user ${baUser.email}: ${err.message}`);
+        } catch (err: unknown) {
+          logger.error(`Failed to sync user ${baUser.email}: ${err instanceof Error ? err.message : String(err)}`);
           failed++;
         }
       }
 
       return { synced, failed, skipped };
-    } catch (err: any) {
-      logger.error(`Error syncing all users: ${err.message}`);
+    } catch (err: unknown) {
+      logger.error(`Error syncing all users: ${err instanceof Error ? err.message : String(err)}`);
       throw err;
     }
   }
@@ -198,7 +198,7 @@ export class AuthReconciliationService {
    * Get Better Auth user from Better Auth database
    * Note: Better Auth uses its own database tables
    */
-  static async getBetterAuthUser(betterAuthUserId: string): Promise<any | null> {
+  static async getBetterAuthUser(betterAuthUserId: string): Promise<import('#services/user_sync_service').BetterAuthUser | null> {
     try {
       // Better Auth stores users in its own database
       // The table name depends on Better Auth configuration
@@ -221,8 +221,8 @@ export class AuthReconciliationService {
         emailVerified: result.emailVerified || false,
         username: result.username || null, // If using Username Plugin
       };
-    } catch (err: any) {
-      logger.error(`Error fetching Better Auth user: ${err.message}`);
+    } catch (err: unknown) {
+      logger.error(`Error fetching Better Auth user: ${err instanceof Error ? err.message : String(err)}`);
       return null;
     }
   }
@@ -230,7 +230,7 @@ export class AuthReconciliationService {
   /**
    * Get Better Auth user from Better Auth database by email
    */
-  static async getBetterAuthUserByEmail(email: string): Promise<any | null> {
+  static async getBetterAuthUserByEmail(email: string): Promise<import('#services/user_sync_service').BetterAuthUser | null> {
     try {
       const result = await db.from('user').where('email', email).first();
 
@@ -246,8 +246,8 @@ export class AuthReconciliationService {
         emailVerified: result.emailVerified || false,
         username: result.username || null,
       };
-    } catch (err: any) {
-      logger.error(`Error fetching Better Auth user by email: ${err.message}`);
+    } catch (err: unknown) {
+      logger.error(`Error fetching Better Auth user by email: ${err instanceof Error ? err.message : String(err)}`);
       return null;
     }
   }

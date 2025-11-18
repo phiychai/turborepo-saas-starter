@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import type { Schema } from '@turborepo-saas-starter/shared-types/schema';
+import type { Post } from '@turborepo-saas-starter/shared-types/schema';
 
 const querySchema = z.object({
   limit: z.coerce.number().min(1).max(100).default(12),
@@ -16,7 +18,8 @@ export default defineCachedEventHandler(async (event) => {
   const { limit, page, category } = query.data;
 
   // Build filter - include category filter if provided
-  const filter: any = { status: { _eq: 'published' } };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const filter: Record<string, any> = { status: { _eq: 'published' } };
 
   if (category) {
     // Filter by category slug (categories field uses M2M relationship)
@@ -29,7 +32,8 @@ export default defineCachedEventHandler(async (event) => {
 
   try {
     // Try to fetch with categories first, fallback without if permissions issue
-    let posts: any;
+    // The response may include additional fields from Directus, so we use a more flexible type
+    let posts: Post[] | unknown[];
     try {
       posts = await directusServer.request(
         readItems('posts', {
@@ -48,15 +52,16 @@ export default defineCachedEventHandler(async (event) => {
               author: ['id', 'first_name', 'last_name', 'avatar'],
             },
             {
-              categories: ['id', 'title', 'slug'] as any,
-            } as any,
+              categories: ['id', 'title', 'slug'],
+            },
           ],
           filter,
         })
       );
-    } catch (error: any) {
+    } catch (error: unknown) {
       // If categories field causes permission error, fetch without it
-      if (error?.message?.includes('403') || error?.message?.includes('Forbidden')) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorMessage.includes('403') || errorMessage.includes('Forbidden')) {
         console.warn('Categories field requires permissions, fetching posts without categories');
         posts = await directusServer.request(
           readItems('posts', {
@@ -96,15 +101,20 @@ export default defineCachedEventHandler(async (event) => {
         : 0;
 
     return {
-      posts,
+      posts: posts as Post[],
       count,
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching posts:', error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorResponse =
+      error && typeof error === 'object' && 'response' in error
+        ? (error as { response?: { data?: unknown; status?: number } }).response
+        : undefined;
     console.error('Error details:', {
-      message: error?.message,
-      response: error?.response?.data,
-      status: error?.response?.status,
+      message: errorMessage,
+      response: errorResponse?.data,
+      status: errorResponse?.status,
       filter,
       category,
     });
@@ -112,8 +122,8 @@ export default defineCachedEventHandler(async (event) => {
       statusCode: 500,
       message: 'Failed to fetch paginated posts',
       data: {
-        error: error?.message || String(error),
-        details: error?.response?.data || error?.response,
+        error: errorMessage,
+        details: errorResponse?.data || errorResponse,
       },
     });
   }

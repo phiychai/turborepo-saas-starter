@@ -20,7 +20,7 @@ export interface UserProfile {
   isActive: boolean;
 
   // Preferences (from Adonis User)
-  preferences: Record<string, any> | null;
+  preferences: import('./preferences').UserPreferences | null;
 
   // Timestamps
   createdAt: string;

@@ -124,8 +124,8 @@ onMounted(() => {
   if (!isVisualEditingEnabled.value) return;
   apply({
     elements: [
-      (navigation.value as any)?.navigationRef as HTMLElement,
-      (footer.value as any)?.footerRef as HTMLElement,
+      (navigation.value && typeof navigation.value === 'object' && 'navigationRef' in navigation.value ? navigation.value.navigationRef as HTMLElement : null),
+      (footer.value && typeof footer.value === 'object' && 'footerRef' in footer.value ? footer.value.footerRef as HTMLElement : null),
     ],
     onSaved: () => {
       refresh();

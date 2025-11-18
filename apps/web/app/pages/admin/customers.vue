@@ -39,7 +39,7 @@ const {
   data: usersData,
   status,
   refresh,
-} = await useFetch<any>('/api/admin/users', {
+} = await useFetch<{ users?: { data?: unknown[] } | unknown[]; data?: unknown[] }>('/api/admin/users', {
   lazy: true,
   query: {
     page: computed(() => pagination.value.pageIndex + 1),
@@ -54,21 +54,32 @@ const data = computed<DashboardUser[]>(() => {
 
   // Handle different response structures
   // AdonisJS pagination might return users.data or users directly
-  let usersArray: any[] = [];
+  type BackendUser = {
+    id: number | string;
+    firstName?: string | null;
+    lastName?: string | null;
+    username?: string | null;
+    email?: string | null;
+    avatarUrl?: string | null;
+    isActive?: boolean;
+    role?: 'user' | 'admin';
+  };
 
-  if (Array.isArray(usersData.value.users)) {
-    usersArray = usersData.value.users;
-  } else if (usersData.value.users?.data && Array.isArray(usersData.value.users.data)) {
-    usersArray = usersData.value.users.data;
-  } else if (usersData.value.data && Array.isArray(usersData.value.data)) {
-    usersArray = usersData.value.data;
+  let usersArray: BackendUser[] = [];
+
+  if (usersData.value?.users && Array.isArray(usersData.value.users)) {
+    usersArray = usersData.value.users as BackendUser[];
+  } else if (usersData.value?.users && typeof usersData.value.users === 'object' && 'data' in usersData.value.users && Array.isArray(usersData.value.users.data)) {
+    usersArray = usersData.value.users.data as BackendUser[];
+  } else if (usersData.value?.data && Array.isArray(usersData.value.data)) {
+    usersArray = usersData.value.data as BackendUser[];
   }
 
   if (!Array.isArray(usersArray) || usersArray.length === 0) {
     return [];
   }
 
-  return usersArray.map((user: any) => {
+  return usersArray.map((user: BackendUser) => {
     const fullName =
       [user.firstName, user.lastName].filter(Boolean).join(' ') ||
       user.username ||
@@ -113,10 +124,11 @@ async function syncAllUsers() {
 
     // Refresh the table
     await refresh();
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorData = error && typeof error === 'object' && 'data' in error ? (error as { data?: { message?: string } }).data : undefined;
     toast.add({
       title: 'Sync Failed',
-      description: error.data?.message || 'Failed to sync users',
+      description: errorData?.message || 'Failed to sync users',
       color: 'error',
     });
   } finally {
@@ -176,10 +188,11 @@ async function handleDelete(userId: number) {
     });
 
     await refresh();
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorData = error && typeof error === 'object' && 'data' in error ? (error as { data?: { message?: string } }).data : undefined;
     toast.add({
       title: 'Error',
-      description: error.data?.message || 'Failed to delete customer',
+      description: errorData?.message || 'Failed to delete customer',
       color: 'error',
     });
   }
@@ -252,7 +265,7 @@ const columns: TableColumn<DashboardUser>[] = [
     accessorKey: 'role',
     header: 'Role',
     cell: ({ row }) => {
-      const role = (row.original as any).role || 'user';
+      const role = ('role' in row.original && typeof row.original.role === 'string' ? row.original.role : 'user') as 'user' | 'admin';
       const color = role === 'admin' ? 'primary' : 'neutral';
 
       return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () => role);
@@ -391,8 +404,8 @@ watch(
             :items="
               table?.tableApi
                 ?.getAllColumns()
-                .filter((column: any) => column.getCanHide())
-                .map((column: any) => ({
+                .filter((column: { getCanHide?: () => boolean }) => column.getCanHide?.())
+                .map((column: { id: string; getIsVisible?: () => boolean }) => ({
                   label: upperFirst(column.id),
                   type: 'checkbox' as const,
                   checked: column.getIsVisible(),

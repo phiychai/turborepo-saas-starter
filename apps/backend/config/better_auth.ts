@@ -10,6 +10,14 @@ import { EmailService } from '#services/email_service';
 import { PasswordValidatorService } from '#services/password_validator_service';
 import { UserSyncService } from '#services/user_sync_service';
 import env from '#start/env';
+import type {
+  BetterAuthBeforeSignUpContext,
+  BetterAuthBeforePasswordUpdateContext,
+  BetterAuthAfterSignUpContext,
+  BetterAuthAfterSignInContext,
+  BetterAuthAfterFailedSignInContext,
+  BetterAuthBeforeSignInContext,
+} from '#types/better_auth';
 
 /**
  * Better Auth Configuration
@@ -118,7 +126,7 @@ export const auth = betterAuth({
             otp,
             type: type as 'email-verification' | 'sign-in' | 'password-reset',
           });
-        } catch (error: any) {
+        } catch (error: unknown) {
           console.error('Failed to send OTP:', error);
           throw new Error('Failed to send verification code. Please try again.');
         }
@@ -214,8 +222,8 @@ export const auth = betterAuth({
      * Note: Better Auth Have I Been Pwned plugin runs automatically before this hook
      */
     // @ts-expect-error - Better Auth hook types may not include all hooks
-    beforeSignUp: async ({ input }: any) => {
-      const { password } = input as any;
+    beforeSignUp: async ({ input }: BetterAuthBeforeSignUpContext) => {
+      const { password } = input;
 
       if (password) {
         const validation = PasswordValidatorService.validate(password);
@@ -234,8 +242,8 @@ export const auth = betterAuth({
      * Validate password strength on password change
      * Note: Better Auth Have I Been Pwned plugin runs automatically before this hook
      */
-    beforePasswordUpdate: async ({ input }: any) => {
-      const { newPassword } = input as any;
+    beforePasswordUpdate: async ({ input }: BetterAuthBeforePasswordUpdateContext) => {
+      const { newPassword } = input;
 
       if (newPassword) {
         const validation = PasswordValidatorService.validate(newPassword);
@@ -253,10 +261,10 @@ export const auth = betterAuth({
      * Called after user signs up via Better Auth
      * We sync the user to our Adonis users table
      */
-    onAfterSignUp: async ({ user, account }: any) => {
+    onAfterSignUp: async ({ user, account }: BetterAuthAfterSignUpContext) => {
       try {
         // Extract request context if available
-        const request = (account as any)?.request;
+        const request = account?.request;
         const clientIp =
           request?.headers?.get('x-forwarded-for')?.split(',')[0]?.trim() ||
           request?.headers?.get('x-real-ip') ||
@@ -287,9 +295,9 @@ export const auth = betterAuth({
      * We sync/update the user in our Adonis users table
      * This handles profile updates from OAuth providers
      */
-    onAfterSignIn: async ({ user, account }: any) => {
+    onAfterSignIn: async ({ user, account }: BetterAuthAfterSignInContext) => {
       try {
-        const request = (account as any)?.request;
+        const request = account?.request;
         const clientIp =
           request?.headers?.get('x-forwarded-for')?.split(',')[0]?.trim() ||
           request?.headers?.get('x-real-ip') ||
@@ -326,7 +334,7 @@ export const auth = betterAuth({
      * Called after a failed sign-in attempt
      * Track failed attempts and lock account after threshold
      */
-    afterFailedSignIn: async ({ user, account: _account }: any) => {
+    afterFailedSignIn: async ({ user, account: _account }: BetterAuthAfterFailedSignInContext) => {
       try {
         if (!user?.id) return;
 
@@ -356,7 +364,7 @@ export const auth = betterAuth({
      * Called before sign-in attempt
      * Check if account is locked
      */
-    beforeSignIn: async ({ user }: any) => {
+    beforeSignIn: async ({ user }: BetterAuthBeforeSignInContext) => {
       if (!user?.id) return;
 
       const adonisUser = await User.findBy('better_auth_user_id', user.id);

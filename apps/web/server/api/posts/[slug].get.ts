@@ -1,3 +1,6 @@
+import type { Schema } from '@turborepo-saas-starter/shared-types/schema';
+import type { Post } from '@turborepo-saas-starter/shared-types/schema';
+
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug');
 
@@ -11,7 +14,8 @@ export default defineEventHandler(async (event) => {
   const token = preview === 'true' && rawToken ? String(rawToken) : null;
 
   try {
-    const postQuery = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const postQuery: Record<string, any> = {
       filter: {
         slug: { _eq: slug },
       },
@@ -25,30 +29,31 @@ export default defineEventHandler(async (event) => {
         'image',
         'description',
         'seo',
-        'categories' as any,
+        'categories',
         {
           author: ['id', 'first_name', 'last_name', 'avatar'],
         },
         {
           categories: ['id', 'title', 'slug'],
-        } as any,
+        },
       ],
     };
 
     const postsPromise = token
-      ? directusServer.request(withToken(token, readItems('posts' as any, postQuery)))
-      : directusServer.request(readItems('posts' as any, postQuery));
+      ? directusServer.request(withToken(token, readItems('posts', postQuery)))
+      : directusServer.request(readItems('posts', postQuery));
 
     // This is a really naive implementation of related posts. Just a basic check to ensure we don't return the same post. You might want to do something more sophisticated.
-    const relatedPostsQuery = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const relatedPostsQuery: Record<string, any> = {
       filter: { slug: { _neq: slug } },
       fields: ['id', 'title', 'image', 'slug'],
       limit: 2,
     };
 
     const relatedPostsPromise = token
-      ? directusServer.request(withToken(token, readItems('posts' as any, relatedPostsQuery)))
-      : directusServer.request(readItems('posts' as any, relatedPostsQuery));
+      ? directusServer.request(withToken(token, readItems('posts', relatedPostsQuery)))
+      : directusServer.request(readItems('posts', relatedPostsQuery));
 
     const [posts, relatedPosts] = await Promise.all([postsPromise, relatedPostsPromise]);
 

@@ -45,11 +45,11 @@ export const useAuthStore = defineStore('auth', {
           success: true,
           user: this.user,
         };
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Login error:', error);
         return {
           success: false,
-          error: error.message || 'Login failed',
+          error: error instanceof Error ? error.message : 'Login failed',
         };
       } finally {
         this.loading = false;
@@ -79,11 +79,11 @@ export const useAuthStore = defineStore('auth', {
           success: true,
           user: this.user,
         };
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Login error:', error);
         return {
           success: false,
-          error: error.message || 'Login failed',
+          error: error instanceof Error ? error.message : 'Login failed',
         };
       } finally {
         this.loading = false;
@@ -123,11 +123,11 @@ export const useAuthStore = defineStore('auth', {
           success: true,
           user: this.user,
         };
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Registration error:', error);
         return {
           success: false,
-          error: error.message || 'Registration failed',
+          error: error instanceof Error ? error.message : 'Registration failed',
         };
       } finally {
         this.loading = false;
@@ -146,11 +146,11 @@ export const useAuthStore = defineStore('auth', {
         await navigateTo('/');
 
         return { success: true };
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Logout error:', error);
         return {
           success: false,
-          error: error.message || 'Logout failed',
+          error: error instanceof Error ? error.message : 'Logout failed',
         };
       } finally {
         this.loading = false;
@@ -180,10 +180,11 @@ export const useAuthStore = defineStore('auth', {
           success: true,
           user: this.user,
         };
-      } catch (error: any) {
+      } catch (error: unknown) {
         // Silently handle 401/403 - user is not authenticated (expected)
         // Don't log to console as this is normal when user is not logged in
-        if (error.statusCode === 401 || error.statusCode === 403) {
+        const statusCode = error && typeof error === 'object' && 'statusCode' in error ? (error as { statusCode: number }).statusCode : undefined;
+        if (statusCode === 401 || statusCode === 403) {
           this.user = null;
           this.initialized = true;
         } else {
@@ -257,11 +258,11 @@ export const useAuthStore = defineStore('auth', {
           success: true,
           user: this.user,
         };
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Update profile error:', error);
         return {
           success: false,
-          error: error.message || 'Update failed',
+          error: error instanceof Error ? error.message : 'Update failed',
         };
       } finally {
         this.loading = false;
@@ -292,11 +293,11 @@ export const useAuthStore = defineStore('auth', {
           success: true,
           user: this.user,
         };
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Update username error:', error);
         return {
           success: false,
-          error: error.message || 'Username update failed',
+          error: error instanceof Error ? error.message : 'Username update failed',
         };
       } finally {
         this.loading = false;
@@ -319,11 +320,11 @@ export const useAuthStore = defineStore('auth', {
         });
 
         return { success: true };
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Change password error:', error);
         return {
           success: false,
-          error: error.message || 'Password change failed',
+          error: error instanceof Error ? error.message : 'Password change failed',
         };
       } finally {
         this.loading = false;

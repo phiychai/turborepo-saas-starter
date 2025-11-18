@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { LazySlideoverExample } from '#components';
 const route = useRoute();
-const authStore = useAuthStore();
 const { isAuthenticated } = useAuth();
-
 const items = computed(() => [
   {
     label: 'Docs',

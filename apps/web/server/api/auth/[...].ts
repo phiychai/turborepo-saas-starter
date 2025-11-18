@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
 
   // Get query parameters
   const query = getQuery(event);
-  const queryString = new URLSearchParams(query as any).toString();
+  const queryString = new URLSearchParams(query as Record<string, string | string[]>).toString();
   const fullUrl = queryString ? `${targetUrl}?${queryString}` : targetUrl;
 
   // Get request body for POST/PUT/PATCH
@@ -68,7 +68,7 @@ export default defineEventHandler(async (event) => {
     setHeader(event, 'content-type', 'application/json');
 
     return responseText;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('❌ Auth proxy error:', error);
     console.error(`   Backend URL: ${backendUrl}`);
     console.error(`   Target URL: ${fullUrl}`);
@@ -77,17 +77,20 @@ export default defineEventHandler(async (event) => {
     let errorMessage = 'Authentication service unavailable';
     let statusCode = 503; // Service Unavailable
 
-    if (error.name === 'AbortError' || error.message?.includes('timeout')) {
+    const errorName = error && typeof error === 'object' && 'name' in error ? (error as { name?: string }).name : undefined;
+    const errorMsg = error instanceof Error ? error.message : String(error);
+
+    if (errorName === 'AbortError' || errorMsg.includes('timeout')) {
       errorMessage =
         'Authentication service timeout. Please check if the backend server is running.';
-    } else if (error.message?.includes('ECONNREFUSED') || error.message?.includes('connect')) {
+    } else if (errorMsg.includes('ECONNREFUSED') || errorMsg.includes('connect')) {
       errorMessage = `Cannot connect to backend server at ${backendUrl}. Please ensure the backend is running on port 3333.`;
       statusCode = 503;
-    } else if (error.message?.includes('ENOTFOUND')) {
+    } else if (errorMsg.includes('ENOTFOUND')) {
       errorMessage = `Backend server not found at ${backendUrl}. Please check your configuration.`;
       statusCode = 503;
     } else {
-      errorMessage = error.message || 'Authentication proxy error';
+      errorMessage = errorMsg || 'Authentication proxy error';
     }
 
     throw createError({
@@ -96,7 +99,7 @@ export default defineEventHandler(async (event) => {
       data: {
         message: errorMessage,
         backendUrl,
-        originalError: process.env.NODE_ENV === 'development' ? error.message : undefined,
+        originalError: process.env.NODE_ENV === 'development' ? errorMsg : undefined,
       },
     });
   }
