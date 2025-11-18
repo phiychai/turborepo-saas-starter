@@ -30,8 +30,10 @@ export default defineEventHandler(async (event) => {
     return { categories: formattedCategories };
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    const errorResponse = error && typeof error === 'object' && 'response' in error ? (error as { response?: { status?: number; url?: string } }).response : undefined;
-    const is403 = errorMessage.includes('403') || errorResponse?.status === 403;
+    const errorResponse =
+      error && typeof error === 'object' && 'response' in error
+        ? (error as { response?: { status?: number; url?: string } }).response
+        : undefined;
 
     console.error('Failed to fetch categories collection:', {
       message: errorMessage,
