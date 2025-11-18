@@ -1,5 +1,6 @@
 import { BaseModel, column } from '@adonisjs/lucid/orm';
 import { DateTime } from 'luxon';
+import type { AuthSyncErrorPayload } from '@turborepo-saas-starter/shared-types';
 
 export type AuthSyncErrorType =
   | 'upsert_failed'
@@ -52,12 +53,12 @@ export default class AuthSyncError extends BaseModel {
       return typeof value === 'string' ? JSON.parse(value) : value;
     },
   })
-  declare payload: Record<string, any> | null;
+  declare payload: AuthSyncErrorPayload | null;
 
   /**
    * Sanitize payload by redacting sensitive fields
    */
-  static sanitizePayload(payload: Record<string, any>): Record<string, any> {
+  static sanitizePayload(payload: AuthSyncErrorPayload): AuthSyncErrorPayload {
     const sensitiveKeys = [
       'password',
       'token',

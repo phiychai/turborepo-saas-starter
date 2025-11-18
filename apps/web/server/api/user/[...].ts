@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
 
   // Get query parameters
   const query = getQuery(event);
-  const queryString = new URLSearchParams(query as any).toString();
+  const queryString = new URLSearchParams(query as Record<string, string | string[]>).toString();
   const fullUrl = queryString ? `${targetUrl}?${queryString}` : targetUrl;
 
   // Get request body for POST/PUT/PATCH
@@ -65,12 +65,14 @@ export default defineEventHandler(async (event) => {
     setHeader(event, 'content-type', 'application/json');
 
     return responseText;
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('❌ User API proxy error:', error);
+    const status = error && typeof error === 'object' && 'status' in error ? (error as { status?: number }).status : undefined;
+    const message = error instanceof Error ? error.message : String(error);
     throw createError({
-      statusCode: error.status || 500,
+      statusCode: status || 500,
       statusMessage: 'User API proxy error',
-      data: error.message,
+      data: message,
     });
   }
 });

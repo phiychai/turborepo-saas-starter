@@ -1,5 +1,7 @@
 import type User from '#models/user';
 import type { UserProfile } from '@turborepo-saas-starter/shared-types';
+import type { BetterAuthUser } from '#services/user_sync_service';
+import type { BetterAuthSession } from '#types/context';
 
 // Use shared UserProfile type - it matches the DTO structure
 export type UserProfileDTO = UserProfile;
@@ -8,7 +10,7 @@ export class UserProfileDTOBuilder {
   /**
    * Build UserProfileDTO from Adonis User and Better Auth data
    */
-  static build(user: User, betterAuthUser: any, session: any): UserProfileDTO {
+  static build(user: User, betterAuthUser: BetterAuthUser | null, session: BetterAuthSession | null): UserProfileDTO {
     return {
       // Profile data
       id: user.id,
@@ -45,14 +47,17 @@ export class UserProfileDTOBuilder {
   /**
    * Determine auth provider from Better Auth user/account
    */
-  private static getProvider(betterAuthUser: any): string | null {
+  private static getProvider(betterAuthUser: BetterAuthUser | null): string | null {
+    if (!betterAuthUser) {
+      return 'email';
+    }
     // Better Auth might store provider in account or user object
     // Adjust based on Better Auth structure
-    if (betterAuthUser?.account?.providerId) {
-      return betterAuthUser.account.providerId;
+    if ('account' in betterAuthUser && betterAuthUser.account && typeof betterAuthUser.account === 'object' && 'providerId' in betterAuthUser.account) {
+      return String(betterAuthUser.account.providerId);
     }
-    if (betterAuthUser?.provider) {
-      return betterAuthUser.provider;
+    if ('provider' in betterAuthUser && betterAuthUser.provider) {
+      return String(betterAuthUser.provider);
     }
     // Default to email if no provider found
     return 'email';

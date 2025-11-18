@@ -160,10 +160,27 @@ export interface CustomFormData {
 }
 
 // BaseBlock
+import type {
+  BlockHero,
+  BlockRichtext,
+  BlockGallery,
+  BlockPricing,
+  BlockPost,
+  BlockForm,
+} from '@turborepo-saas-starter/shared-types/schema';
+
+export type BlockItem =
+  | BlockHero
+  | BlockRichtext
+  | BlockGallery
+  | BlockPricing
+  | BlockPost
+  | BlockForm;
+
 export interface BaseBlockProps {
   block: {
-    collection: string;
-    item: any;
+    collection: 'block_hero' | 'block_richtext' | 'block_gallery' | 'block_pricing' | 'block_posts' | 'block_form';
+    item: BlockItem;
     id: string;
   };
 }
@@ -195,12 +212,17 @@ export interface TaglineProps {
 }
 
 // DirectusImage
+import type { DirectusFile } from '@turborepo-saas-starter/shared-types/schema';
+
 export interface DirectusImageProps {
   uuid: string;
   alt: string;
   width?: number;
   height?: number;
-  [key: string]: any;
+  className?: string;
+  loading?: 'lazy' | 'eager';
+  objectFit?: 'contain' | 'cover' | 'fill' | 'none' | 'scale-down';
+  [key: string]: string | number | boolean | undefined;
 }
 
 // Text (Prose)

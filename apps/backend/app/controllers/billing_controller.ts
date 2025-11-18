@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http';
 
 import billingService from '#services/billing_service';
+import type { LagoAccountResponse } from '#types/billing';
 
 export default class BillingController {
   /**
@@ -44,13 +45,14 @@ export default class BillingController {
       // Get the Lago account
       const account = await billingService.getAccountByEmail(user.email);
 
-      if (!account || !(account as any).customer?.external_id) {
+      const accountResponse = account as LagoAccountResponse;
+      if (!accountResponse || !accountResponse.customer?.external_id) {
         return response.ok({
           subscriptions: [],
         });
       }
 
-      const subscriptions = await billingService.getSubscriptions((account as any).customer.external_id);
+      const subscriptions = await billingService.getSubscriptions(accountResponse.customer.external_id);
 
       return response.ok({
         subscriptions,
@@ -89,7 +91,8 @@ export default class BillingController {
         });
       }
 
-      const accountExternalId = (account as any).customer?.external_id || (account as any).external_id;
+      const accountResponse = account as LagoAccountResponse;
+      const accountExternalId = accountResponse?.customer?.external_id || accountResponse?.external_id;
       const subscription = await billingService.createSubscription({
         externalCustomerId: accountExternalId,
         planCode: planName,
@@ -138,13 +141,14 @@ export default class BillingController {
 
       const account = await billingService.getAccountByEmail(user.email);
 
-      if (!account || !(account as any).customer?.external_id) {
+      const accountResponse = account as LagoAccountResponse;
+      if (!accountResponse || !accountResponse.customer?.external_id) {
         return response.ok({
           invoices: [],
         });
       }
 
-      const invoices = await billingService.getInvoices((account as any).customer.external_id);
+      const invoices = await billingService.getInvoices(accountResponse.customer.external_id);
 
       return response.ok({
         invoices,
@@ -218,7 +222,8 @@ export default class BillingController {
 
       const account = await billingService.getAccountByEmail(user.email);
 
-      if (!account || !(account as any).customer?.external_id) {
+      const accountResponse = account as LagoAccountResponse;
+      if (!accountResponse || !accountResponse.customer?.external_id) {
         return response.ok({
           paymentMethods: [],
         });

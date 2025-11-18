@@ -171,11 +171,11 @@ export default class AdminController {
         message: 'User sync completed',
         ...result,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error('Failed to sync all users:', error);
       return response.internalServerError({
         message: 'Failed to sync users',
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
       });
     }
   }
@@ -233,11 +233,11 @@ export default class AdminController {
         message: 'User synced successfully',
         user: adonisUser.serialize(),
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       logger.error('Failed to sync user:', error);
       return response.internalServerError({
         message: 'Failed to sync user',
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
       });
     }
   }

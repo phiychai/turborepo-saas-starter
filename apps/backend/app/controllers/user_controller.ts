@@ -13,6 +13,7 @@ import User from '#models/user';
 import UserPolicy from '#policies/user_policy';
 import { toWebRequest } from '#utils/better_auth_helpers';
 import { updateProfileValidator } from '#validators/auth_validator';
+import type { BetterAuthInstance } from '#types/better_auth';
 
 export default class UserController {
   /**
@@ -79,8 +80,9 @@ export default class UserController {
 
       // Handle name splitting if a single "name" field is provided
       // This is for frontend compatibility where name might come as a single field
-      if ((data as any).name && typeof (data as any).name === 'string') {
-        const nameParts = (data as any).name.trim().split(/\s+/);
+      const requestBody = request.body() as Record<string, unknown>;
+      if ('name' in requestBody && typeof requestBody.name === 'string' && requestBody.name) {
+        const nameParts = requestBody.name.trim().split(/\s+/);
         if (nameParts.length > 0) {
           data.firstName = nameParts[0] || undefined;
           data.lastName = nameParts.slice(1).join(' ') || undefined;
@@ -111,17 +113,17 @@ export default class UserController {
       if (data.avatarUrl !== undefined) {
         user.avatarUrl = data.avatarUrl;
       }
-      if ('bio' in request.body() || data.bio !== undefined) {
+      if ('bio' in requestBody || data.bio !== undefined) {
         // Get original value from request body (might be empty string)
-        const originalBio = (request.body() as any)?.bio;
-        user.bio = originalBio === '' || originalBio === undefined ? null : data.bio || null;
+        const originalBio = 'bio' in requestBody ? requestBody.bio : undefined;
+        user.bio = originalBio === '' || originalBio === undefined ? null : (typeof originalBio === 'string' ? originalBio : data.bio || null);
       }
       // Handle username updates via Better Auth API
       // Better Auth handles validation, uniqueness, and normalization
-      if ('username' in request.body() || data.username !== undefined) {
-        const originalUsername = (request.body() as any)?.username;
+      if ('username' in requestBody || data.username !== undefined) {
+        const originalUsername = 'username' in requestBody ? requestBody.username : undefined;
         const newUsername =
-          originalUsername === '' || originalUsername === undefined ? null : data.username || null;
+          originalUsername === '' || originalUsername === undefined ? null : (typeof originalUsername === 'string' ? originalUsername : data.username || null);
 
         // Check if username actually changed
         const usernameChanged = newUsername !== user.username;
@@ -134,7 +136,7 @@ export default class UserController {
               const webRequest = await toWebRequest(request);
 
               // Call Better Auth's updateUser API
-              await (auth as any).api.updateUser({
+              await (auth as BetterAuthInstance).api?.updateUser?.({
                 body: {
                   name: user.fullName || user.email,
                   image: user.avatarUrl || undefined,
@@ -144,11 +146,13 @@ export default class UserController {
 
               // Update username in AdonisJS (Better Auth doesn't return username in updateUser response)
               user.username = newUsername;
-            } catch (error: any) {
+            } catch (error: unknown) {
               // Better Auth API throws errors directly
               console.error('Error updating username in Better Auth:', error);
               const errorMessage =
-                error?.message || error?.error?.message || 'Failed to update username';
+                (error instanceof Error && error.message) ||
+                (typeof error === 'object' && error !== null && 'error' in error && typeof (error as { error?: { message?: string } }).error?.message === 'string' ? (error as { error: { message: string } }).error.message : undefined) ||
+                'Failed to update username';
               throw new Error(`Username update failed: ${errorMessage}`);
             }
           } else {
@@ -178,11 +182,11 @@ export default class UserController {
           role: user.role,
         },
       });
-    } catch (error: any) {
-      if (error.messages) {
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'messages' in error) {
         return response.badRequest({
           message: 'Validation failed',
-          errors: error.messages,
+          errors: (error as { messages: unknown }).messages,
         });
       }
       throw error;
@@ -256,11 +260,11 @@ export default class UserController {
         message: 'Avatar uploaded successfully',
         avatarUrl,
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Avatar upload error:', error);
       return response.internalServerError({
         message: 'Failed to upload avatar',
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
       });
     }
   }

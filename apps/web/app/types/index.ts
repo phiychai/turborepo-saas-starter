@@ -39,6 +39,8 @@ export interface DashboardUser {
   avatar?: AvatarProps;
   status: UserStatus;
   location: string;
+  role?: 'user' | 'admin';
+  isActive?: boolean;
 }
 
 export interface Mail {
@@ -88,3 +90,4 @@ export interface Range {
   start: Date;
   end: Date;
 }
+

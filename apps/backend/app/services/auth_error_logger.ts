@@ -20,7 +20,7 @@ export interface LogErrorOptions {
   requestPath?: string | null;
   clientIp?: string | null;
   error: string | Error;
-  payload?: Record<string, any> | null;
+  payload?: import('@turborepo-saas-starter/shared-types').AuthSyncErrorPayload | null;
 }
 
 export class AuthErrorLogger {
@@ -63,9 +63,9 @@ export class AuthErrorLogger {
       });
 
       return error;
-    } catch (logError: any) {
+    } catch (logError: unknown) {
       // If logging fails, at least log to console
-      logger.error(`Failed to log auth sync error: ${logError.message}`, {
+      logger.error(`Failed to log auth sync error: ${logError instanceof Error ? logError.message : String(logError)}`, {
         originalError: errorMessage,
       });
       throw logError;
@@ -75,7 +75,9 @@ export class AuthErrorLogger {
   /**
    * Truncate payload to max 1KB
    */
-  private static truncatePayload(payload: Record<string, any>): Record<string, any> {
+  private static truncatePayload(
+    payload: import('@turborepo-saas-starter/shared-types').AuthSyncErrorPayload
+  ): import('@turborepo-saas-starter/shared-types').AuthSyncErrorPayload {
     // First sanitize
     const sanitized = AuthSyncError.sanitizePayload(payload);
     const json = JSON.stringify(sanitized);
@@ -140,8 +142,8 @@ export class AuthErrorLogger {
     ]);
 
     const byTypeMap: Record<string, number> = {};
-    byType.forEach((row: any) => {
-      byTypeMap[row.event_type] = parseInt(row.count || '0');
+    byType.forEach((row: { event_type: string; count: string | number }) => {
+      byTypeMap[row.event_type] = parseInt(String(row.count || '0'));
     });
 
     return {

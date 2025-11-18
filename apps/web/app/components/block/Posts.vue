@@ -71,33 +71,35 @@ const categoriesFromPosts = computed(() => {
     posts.value.forEach((post) => {
       if (post.categories) {
         const postCategories = Array.isArray(post.categories) ? post.categories : [];
-        postCategories.forEach((cat: any) => {
-          if (typeof cat === 'string') {
-            // If it's a string, create a category from it
-            const slug = cat.toLowerCase().replace(/\s+/g, '-');
-            if (!categoryMap.has(slug)) {
-              categoryMap.set(slug, {
-                id: slug,
-                name: cat,
-                slug,
-              });
-            }
-          } else if (typeof cat === 'object' && cat !== null && 'id' in cat && 'title' in cat) {
-            // If it's an object with id and title
-            const category = {
-              id: String(cat.id),
-              name: String(cat.title || ''),
-              slug: cat.slug
-                ? String(cat.slug)
-                : String(cat.title || '')
-                    .toLowerCase()
-                    .replace(/\s+/g, '-'),
-            };
-            if (category.id && category.name && !categoryMap.has(category.id)) {
-              categoryMap.set(category.id, category);
+        postCategories.forEach(
+          (cat: string | { id: string; title?: string | null; slug?: string | null }) => {
+            if (typeof cat === 'string') {
+              // If it's a string, create a category from it
+              const slug = cat.toLowerCase().replace(/\s+/g, '-');
+              if (!categoryMap.has(slug)) {
+                categoryMap.set(slug, {
+                  id: slug,
+                  name: cat,
+                  slug,
+                });
+              }
+            } else if (typeof cat === 'object' && cat !== null && 'id' in cat && 'title' in cat) {
+              // If it's an object with id and title
+              const category = {
+                id: String(cat.id),
+                name: String(cat.title || ''),
+                slug: cat.slug
+                  ? String(cat.slug)
+                  : String(cat.title || '')
+                      .toLowerCase()
+                      .replace(/\s+/g, '-'),
+              };
+              if (category.id && category.name && !categoryMap.has(category.id)) {
+                categoryMap.set(category.id, category);
+              }
             }
           }
-        });
+        );
       }
     });
   }

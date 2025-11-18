@@ -88,14 +88,14 @@ export default defineEventHandler(async (event) => {
     });
 
     return customers;
-  } catch (error: any) {
-    if (error.statusCode) {
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'statusCode' in error) {
       throw error;
     }
     throw createError({
       statusCode: 500,
       statusMessage: 'Failed to fetch customers',
-      data: error.message,
+      data: error instanceof Error ? error.message : String(error),
     });
   }
 });

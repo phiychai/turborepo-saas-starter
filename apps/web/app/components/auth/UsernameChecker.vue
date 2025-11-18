@@ -107,11 +107,11 @@ async function checkUsername(username: string) {
     available.value = result.data?.available || false;
     valid.value = true; // Better Auth handles validation
     checked.value = true;
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Better Auth will return validation errors
     available.value = false;
     valid.value = false;
-    errorMessage.value = error.message || 'Username is not available';
+    errorMessage.value = error instanceof Error ? error.message : 'Username is not available';
     checked.value = true;
   } finally {
     checking.value = false;

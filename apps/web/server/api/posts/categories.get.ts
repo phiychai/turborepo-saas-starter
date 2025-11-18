@@ -1,8 +1,12 @@
+import type { Schema } from '@turborepo-saas-starter/shared-types/schema';
+
+type Category = Schema['categories'][number];
+
 export default defineEventHandler(async (event) => {
   try {
     // Query categories collection directly
     const categories = await directusServer.request(
-      readItems('categories' as any, {
+      readItems('categories', {
         fields: ['id', 'title', 'slug'],
         sort: ['title'],
         limit: -1,
@@ -11,7 +15,7 @@ export default defineEventHandler(async (event) => {
 
     // Convert to expected format (ensure slug exists, generate from title if not)
     const formattedCategories = categories
-      .map((cat: any) => ({
+      .map((cat: Category) => ({
         id: String(cat.id),
         name: String(cat.title || ''),
         slug: cat.slug
@@ -24,13 +28,15 @@ export default defineEventHandler(async (event) => {
       .sort((a, b) => a.name.localeCompare(b.name));
 
     return { categories: formattedCategories };
-  } catch (error: any) {
-    const is403 = error?.message?.includes('403') || error?.response?.status === 403;
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorResponse = error && typeof error === 'object' && 'response' in error ? (error as { response?: { status?: number; url?: string } }).response : undefined;
+    const is403 = errorMessage.includes('403') || errorResponse?.status === 403;
 
     console.error('Failed to fetch categories collection:', {
-      message: error?.message,
-      status: error?.response?.status,
-      url: error?.response?.url,
+      message: errorMessage,
+      status: errorResponse?.status,
+      url: errorResponse?.url,
     });
 
     return { categories: [] };
