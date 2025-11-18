@@ -8,7 +8,7 @@ import BaseButton from '../base/BaseButton.vue';
 
 const props = defineProps<{
   fields: FormField[];
-  onSubmit: (data: Record<string, any>) => Promise<void> | void;
+  onSubmit: (data: Record<string, string | number | boolean | File | null | undefined>) => Promise<void> | void;
   submitLabel: string;
   formId?: string;
 }>();
@@ -65,7 +65,7 @@ const initialValues = computed(() => {
 
       return defaults;
     },
-    {} as Record<string, any>
+    {} as Record<string, string | number | boolean | File | null | undefined>
   );
 });
 

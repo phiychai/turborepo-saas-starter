@@ -76,8 +76,8 @@ export class UserSyncService {
           existingUser.avatarUrl = betterAuthUser.image || existingUser.avatarUrl;
 
           // Sync username from Better Auth if using Username Plugin
-          if ((betterAuthUser as any).username) {
-            existingUser.username = (betterAuthUser as any).username;
+          if (betterAuthUser.username) {
+            existingUser.username = betterAuthUser.username;
           }
 
           // Set default role if not set
@@ -105,7 +105,7 @@ export class UserSyncService {
             email: betterAuthUser.email,
             firstName: nameParts.firstName,
             lastName: nameParts.lastName,
-            username: (betterAuthUser as any).username || null, // Sync username from Better Auth if available
+            username: betterAuthUser.username || null, // Sync username from Better Auth if available
             avatarUrl: betterAuthUser.image,
             role: 'user',
             isActive: true,
@@ -119,7 +119,7 @@ export class UserSyncService {
 
       logger.info(`User synced successfully: ${user.id} (${user.email})`);
       return user;
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Log error to auth_sync_errors table (with security measures)
       await AuthErrorLogger.logError({
         eventType: 'upsert_failed',
@@ -129,7 +129,7 @@ export class UserSyncService {
         adonisUserId: null,
         requestPath,
         clientIp, // Will be hashed in AuthErrorLogger
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
         payload: {
           betterAuthUserId: betterAuthUser.id,
           // Don't include email/name in payload - they'll be in separate fields (hashed)
@@ -137,7 +137,7 @@ export class UserSyncService {
       });
 
       // Log to console without sensitive data
-      logger.error(`Failed to sync user: ${error.message}`, {
+      logger.error(`Failed to sync user: ${error instanceof Error ? error.message : String(error)}`, {
         externalUserId: betterAuthUser.id,
         // Don't log email or other sensitive data
       });

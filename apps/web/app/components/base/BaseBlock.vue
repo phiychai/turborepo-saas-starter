@@ -14,7 +14,7 @@ import type { BaseBlockProps } from '~/types/components';
 const props = defineProps<BaseBlockProps>();
 const blockRef = ref<HTMLElement | null>(null);
 
-const components: Record<string, any> = {
+const components: Record<BaseBlockProps['block']['collection'], Component> = {
   block_hero: Hero,
   block_richtext: RichText,
   block_gallery: Gallery,

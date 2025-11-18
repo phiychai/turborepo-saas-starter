@@ -40,8 +40,8 @@ watch(
       const nameParts = user.name.split(' ');
       state.firstName = nameParts[0] || '';
       state.lastName = nameParts.slice(1).join(' ') || '';
-      state.role = (user as any).role || 'user';
-      state.isActive = (user as any).isActive !== false;
+      state.role = ('role' in user && (user.role === 'user' || user.role === 'admin') ? user.role : 'user');
+      state.isActive = ('isActive' in user && typeof user.isActive === 'boolean' ? user.isActive : true);
       open.value = true;
     }
   }
@@ -79,10 +79,12 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
     emit('updated', updatedUser);
     open.value = false;
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errorData = error && typeof error === 'object' && 'data' in error ? (error as { data?: { message?: string } }).data : undefined;
+    const errorMessage = error instanceof Error ? error.message : undefined;
     toast.add({
       title: 'Error',
-      description: error.data?.message || error.message || 'Failed to update user',
+      description: errorData?.message || errorMessage || 'Failed to update user',
       color: 'error',
     });
   } finally {

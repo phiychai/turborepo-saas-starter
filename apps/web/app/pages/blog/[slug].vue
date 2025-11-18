@@ -245,7 +245,14 @@ useSeoMeta({
               {{
                 typeof category === 'string'
                   ? category
-                  : (category as any).title || category.name || category
+                  : typeof category === 'object' &&
+                      category !== null &&
+                      'title' in category &&
+                      typeof category.title === 'string'
+                    ? category.title
+                    : 'name' in category && typeof category.name === 'string'
+                      ? category.name
+                      : String(category)
               }}
             </UBadge>
             <span v-if="post.published_at" class="text-muted">&middot;</span>

@@ -38,11 +38,11 @@ export const useBillingStore = defineStore('billing', {
           success: true,
           plans: this.plans,
         };
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Fetch plans error:', error);
         return {
           success: false,
-          error: error.message || 'Failed to fetch plans',
+          error: error instanceof Error ? error.message : 'Failed to fetch plans',
         };
       } finally {
         this.plansLoading = false;
@@ -69,11 +69,11 @@ export const useBillingStore = defineStore('billing', {
           success: true,
           subscriptions: this.subscriptions,
         };
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Fetch subscriptions error:', error);
         return {
           success: false,
-          error: error.message || 'Failed to fetch subscriptions',
+          error: error instanceof Error ? error.message : 'Failed to fetch subscriptions',
         };
       } finally {
         this.subscriptionsLoading = false;
@@ -104,11 +104,11 @@ export const useBillingStore = defineStore('billing', {
           success: true,
           subscription,
         };
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Create subscription error:', error);
         return {
           success: false,
-          error: error.message || 'Failed to create subscription',
+          error: error instanceof Error ? error.message : 'Failed to create subscription',
         };
       } finally {
         this.loading = false;
@@ -140,11 +140,11 @@ export const useBillingStore = defineStore('billing', {
         }
 
         return { success: true };
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Cancel subscription error:', error);
         return {
           success: false,
-          error: error.message || 'Failed to cancel subscription',
+          error: error instanceof Error ? error.message : 'Failed to cancel subscription',
         };
       } finally {
         this.loading = false;
@@ -167,11 +167,11 @@ export const useBillingStore = defineStore('billing', {
           success: true,
           invoices: this.invoices,
         };
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Fetch invoices error:', error);
         return {
           success: false,
-          error: error.message || 'Failed to fetch invoices',
+          error: error instanceof Error ? error.message : 'Failed to fetch invoices',
         };
       } finally {
         this.invoicesLoading = false;
@@ -193,11 +193,11 @@ export const useBillingStore = defineStore('billing', {
           success: true,
           url: response,
         };
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Download invoice error:', error);
         return {
           success: false,
-          error: error.message || 'Failed to download invoice',
+          error: error instanceof Error ? error.message : 'Failed to download invoice',
         };
       }
     },

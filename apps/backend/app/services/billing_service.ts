@@ -1,4 +1,5 @@
 import type { Plan, Subscription, Invoice } from '@turborepo-saas-starter/shared-types';
+import type { LagoApiResponse, LagoEvent, LagoCharge, LagoAccountResponse } from '#types/billing';
 
 import env from '#start/env';
 
@@ -15,7 +16,7 @@ interface LagoCustomer {
     payment_provider?: string;
     provider_customer_id?: string;
   };
-  metadata?: Record<string, any>;
+  metadata?: Record<string, string | number | boolean | null>;
 }
 
 // Use shared Plan type (matches LagoPlan structure)
@@ -61,7 +62,7 @@ class BillingService {
   /**
    * Make a request to Lago API
    */
-  private async request(endpoint: string, options: RequestInit = {}): Promise<any> {
+  private async request<T = unknown>(endpoint: string, options: RequestInit = {}): Promise<LagoApiResponse<T> | null> {
     const url = `${this.apiUrl}/api/v1${endpoint}`;
 
     const headers: Record<string, string> = {
@@ -258,7 +259,7 @@ class BillingService {
     amountCents: number;
     amountCurrency: string;
     description?: string;
-    charges?: any[];
+    charges?: LagoCharge[];
   }) {
     const payload: { plan: LagoPlan } = {
       plan: {
@@ -367,7 +368,7 @@ class BillingService {
     externalCustomerId: string;
     code: string; // billable metric code
     timestamp?: number;
-    properties?: Record<string, any>;
+    properties?: Record<string, string | number | boolean | null>;
   }) {
     const payload = {
       event: {
@@ -388,7 +389,7 @@ class BillingService {
   /**
    * Batch send events
    */
-  async sendBatchEvents(events: any[]) {
+  async sendBatchEvents(events: LagoEvent[]) {
     return this.request('/events/batch', {
       method: 'POST',
       body: JSON.stringify({ events }),
@@ -463,7 +464,7 @@ class BillingService {
         payment_provider: 'stripe',
         provider_customer_id: stripeCustomerId,
       },
-    } as any);
+    } as Partial<LagoCustomer>);
   }
 
   /**
@@ -475,7 +476,7 @@ class BillingService {
         payment_provider: 'paypal',
         provider_customer_id: paypalCustomerId,
       },
-    } as any);
+    } as Partial<LagoCustomer>);
   }
 
   /**

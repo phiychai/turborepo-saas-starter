@@ -7,22 +7,14 @@ export type { Plan, Subscription, Invoice } from './billing';
 // Re-export user types
 export type { UserProfile } from './user';
 
+// Re-export preferences types
+export type { UserPreferences, CommandPaletteSettings, AuthSyncErrorPayload, WidgetData } from './preferences';
+
 // User-related types
 export interface User {
   id: string;
   email: string;
   username: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface UserPreferences {
-  id: string;
-  userId: string;
-  theme: 'light' | 'dark';
-  notifications: 'all' | 'important' | 'none';
-  language: string;
-  timezone: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -73,7 +65,7 @@ export interface Widget {
   workspaceId: string;
   position: { x: number; y: number };
   size: { width: number; height: number };
-  data: Record<string, any>;
+  data: import('./preferences').WidgetData;
   createdAt: Date;
   updatedAt: Date;
 }

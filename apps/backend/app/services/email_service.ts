@@ -1,4 +1,5 @@
 import env from '#start/env';
+import type { ResendModule, SendGridModule } from '#types/email';
 
 /**
  * Email Service
@@ -110,13 +111,13 @@ export class EmailService {
    * Send email via Resend
    */
   private static async sendViaResend(to: string, subject: string, html: string): Promise<void> {
-    // @ts-ignore - Optional dependency
-    const Resend = await import('resend').catch(() => null) as any;
-    if (!Resend) {
+    // Optional dependency - may not be installed
+    const resendModule = (await import('resend').catch(() => null)) as ResendModule | null;
+    if (!resendModule || !resendModule.Resend) {
       throw new Error('Resend package not installed. Run: npm install resend');
     }
 
-    const resend = new Resend.Resend(env.get('RESEND_API_KEY'));
+    const resend = new resendModule.Resend(env.get('RESEND_API_KEY'));
     await resend.emails.send({
       from: env.get('EMAIL_FROM', 'noreply@example.com'),
       to,
@@ -129,9 +130,9 @@ export class EmailService {
    * Send email via SendGrid
    */
   private static async sendViaSendGrid(to: string, subject: string, html: string): Promise<void> {
-    // @ts-ignore - Optional dependency
-    const sgMail = await import('@sendgrid/mail').catch(() => null) as any;
-    if (!sgMail) {
+    // Optional dependency - may not be installed
+    const sgMail = (await import('@sendgrid/mail').catch(() => null)) as SendGridModule | null;
+    if (!sgMail || !sgMail.default) {
       throw new Error('SendGrid package not installed. Run: npm install @sendgrid/mail');
     }
 

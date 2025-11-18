@@ -7,6 +7,7 @@ import { auth as betterAuth } from '#config/better_auth';
 import User from '#models/user';
 import env from '#start/env';
 import { toWebRequest } from '#utils/better_auth_helpers';
+import type { BetterAuthInstance } from '#types/better_auth';
 
 export default class AdminSessionsController {
   /**
@@ -29,8 +30,9 @@ export default class AdminSessionsController {
       const webRequest = await toWebRequest(request);
 
       // Use Better Auth API method if available
-      if ((betterAuth as any).api?.listUserSessions) {
-        const sessions = await (betterAuth as any).api.listUserSessions({
+      const betterAuthInstance = betterAuth as BetterAuthInstance;
+      if (betterAuthInstance.api?.listUserSessions) {
+        const sessions = await betterAuthInstance.api.listUserSessions({
           body: { userId: user.betterAuthUserId },
           headers: webRequest.headers,
         });
@@ -47,7 +49,10 @@ export default class AdminSessionsController {
           body: JSON.stringify({ userId: user.betterAuthUserId }),
         });
 
-        const betterAuthResponse = await (betterAuth as any).handler(betterAuthRequest);
+        const betterAuthResponse = await betterAuthInstance.handler?.(betterAuthRequest);
+        if (!betterAuthResponse) {
+          throw new Error('Better Auth handler not available');
+        }
         const sessions = await betterAuthResponse.json();
 
         return response.ok({
@@ -73,8 +78,9 @@ export default class AdminSessionsController {
       const webRequest = await toWebRequest(request);
 
       // Use Better Auth API method if available
-      if ((betterAuth as any).api?.revokeUserSession) {
-        await (betterAuth as any).api.revokeUserSession({
+      const betterAuthInstance = betterAuth as BetterAuthInstance;
+      if (betterAuthInstance.api?.revokeUserSession) {
+        await betterAuthInstance.api.revokeUserSession({
           body: { sessionToken: params.sessionToken },
           headers: webRequest.headers,
         });
@@ -87,7 +93,10 @@ export default class AdminSessionsController {
           body: JSON.stringify({ sessionToken: params.sessionToken }),
         });
 
-        await (betterAuth as any).handler(betterAuthRequest);
+        const response = await betterAuthInstance.handler?.(betterAuthRequest);
+        if (!response) {
+          throw new Error('Better Auth handler not available');
+        }
       }
 
       return response.ok({
@@ -120,8 +129,9 @@ export default class AdminSessionsController {
       const webRequest = await toWebRequest(request);
 
       // Use Better Auth API method if available
-      if ((betterAuth as any).api?.revokeUserSessions) {
-        await (betterAuth as any).api.revokeUserSessions({
+      const betterAuthInstance = betterAuth as BetterAuthInstance;
+      if (betterAuthInstance.api?.revokeUserSessions) {
+        await betterAuthInstance.api.revokeUserSessions({
           body: { userId: user.betterAuthUserId },
           headers: webRequest.headers,
         });
@@ -134,7 +144,10 @@ export default class AdminSessionsController {
           body: JSON.stringify({ userId: user.betterAuthUserId }),
         });
 
-        await (betterAuth as any).handler(betterAuthRequest);
+        const response = await betterAuthInstance.handler?.(betterAuthRequest);
+        if (!response) {
+          throw new Error('Better Auth handler not available');
+        }
       }
 
       return response.ok({

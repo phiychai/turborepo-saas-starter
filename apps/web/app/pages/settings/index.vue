@@ -80,7 +80,7 @@ async function onSubmit(event: FormSubmitEvent<ProfileSchema>) {
     }
 
     // Prepare update data - include username if it was updated
-    const updateData: any = {
+    const updateData: Record<string, string | null | undefined> = {
       name: data.name, // Will be split on backend
       email: data.email,
       bio: data.bio || null,
@@ -117,10 +117,10 @@ async function onSubmit(event: FormSubmitEvent<ProfileSchema>) {
         color: 'error',
       });
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     toast.add({
       title: 'Error',
-      description: error.message || 'Failed to update profile.',
+      description: error instanceof Error ? error.message : 'Failed to update profile.',
       icon: 'i-lucide-alert-circle',
       color: 'error',
     });
@@ -187,10 +187,10 @@ async function onFileChange(e: Event) {
         color: 'success',
       });
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     toast.add({
       title: 'Upload failed',
-      description: error.message || 'Failed to upload avatar.',
+      description: error instanceof Error ? error.message : 'Failed to upload avatar.',
       icon: 'i-lucide-alert-circle',
       color: 'error',
     });

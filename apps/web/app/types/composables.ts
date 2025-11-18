@@ -12,7 +12,7 @@ export interface ApplyOptions {
   onSaved?: (data: {
     collection?: string;
     item?: PrimaryKey | null;
-    payload?: Record<string, any>;
+    payload?: Record<string, unknown>;
   }) => void;
   customClass?: string;
 }

@@ -1,3 +1,5 @@
+import type { ApiRequestBody, ApiQueryParams } from '~/types/api';
+
 export const useApi = () => {
   const config = useRuntimeConfig();
   const apiUrl = config.public.apiUrl || 'http://localhost:3333';
@@ -5,12 +7,12 @@ export const useApi = () => {
   /**
    * Make an API request
    */
-  const request = async <T = any>(
+  const request = async <T = unknown>(
     endpoint: string,
     options: {
       method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
-      body?: any;
-      query?: Record<string, any>;
+      body?: ApiRequestBody;
+      query?: ApiQueryParams;
     } = {}
   ): Promise<{ data: T | null; error: string | null }> => {
     try {
@@ -22,10 +24,14 @@ export const useApi = () => {
       });
 
       return { data, error: null };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage =
+        (error && typeof error === 'object' && 'data' in error && typeof (error as { data?: { message?: string } }).data?.message === 'string' ? (error as { data: { message: string } }).data.message : undefined) ||
+        (error instanceof Error ? error.message : undefined) ||
+        'Request failed';
       return {
         data: null,
-        error: error.data?.message || error.message || 'Request failed',
+        error: errorMessage,
       };
     }
   };
@@ -34,25 +40,25 @@ export const useApi = () => {
    * CMS API methods
    */
   const cms = {
-    getCollection: async (collection: string, params?: Record<string, any>) =>
+    getCollection: async (collection: string, params?: ApiQueryParams) =>
       request(`/api/cms/collections/${collection}`, {
         method: 'GET',
         query: params,
       }),
 
-    getItem: async (collection: string, id: string | number, params?: Record<string, any>) =>
+    getItem: async (collection: string, id: string | number, params?: ApiQueryParams) =>
       request(`/api/cms/collections/${collection}/${id}`, {
         method: 'GET',
         query: params,
       }),
 
-    createItem: async (collection: string, data: Record<string, any>) =>
+    createItem: async (collection: string, data: ApiRequestBody) =>
       request(`/api/cms/${collection}`, {
         method: 'POST',
         body: data,
       }),
 
-    updateItem: async (collection: string, id: string | number, data: Record<string, any>) =>
+    updateItem: async (collection: string, id: string | number, data: ApiRequestBody) =>
       request(`/api/cms/${collection}/${id}`, {
         method: 'PATCH',
         body: data,
@@ -90,7 +96,7 @@ export const useApi = () => {
 
     getPaymentMethods: async () => request('/api/billing/payment-methods'),
 
-    addPaymentMethod: async (pluginName: string, pluginInfo: Record<string, any>) =>
+    addPaymentMethod: async (pluginName: string, pluginInfo: ApiRequestBody) =>
       request('/api/billing/payment-methods', {
         method: 'POST',
         body: { pluginName, pluginInfo },

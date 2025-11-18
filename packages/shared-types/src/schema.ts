@@ -761,7 +761,7 @@ export interface DirectusSettings {
   public_registration_role?: DirectusRole | string | null;
   public_registration_email_filter?: 'json' | null;
   /** @description Settings for the Command Palette Module. */
-  command_palette_settings?: Record<string, any> | null;
+  command_palette_settings?: import('./preferences').CommandPaletteSettings | null;
   visual_editor_urls?: Array<{ url: string }> | null;
 }
 

@@ -29,11 +29,11 @@ export const useUserStore = defineStore('user', {
           success: true,
           preferences: this.preferences,
         };
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Fetch preferences error:', error);
         return {
           success: false,
-          error: error.message || 'Failed to fetch preferences',
+          error: error instanceof Error ? error.message : 'Failed to fetch preferences',
         };
       } finally {
         this.loading = false;
@@ -60,11 +60,11 @@ export const useUserStore = defineStore('user', {
           success: true,
           preferences: this.preferences,
         };
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('Update preferences error:', error);
         return {
           success: false,
-          error: error.message || 'Failed to update preferences',
+          error: error instanceof Error ? error.message : 'Failed to update preferences',
         };
       } finally {
         this.loading = false;

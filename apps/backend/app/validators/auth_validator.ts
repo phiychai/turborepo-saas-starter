@@ -25,7 +25,8 @@ export const updateProfileValidator = vine.compile(
       .optional(),
     // Username validation is handled by Better Auth Username Plugin
     // We just accept it here and pass it to Better Auth for validation
-    username: vine.any().optional(),
+    // Using string() to validate type, but Better Auth handles format validation
+    username: vine.string().trim().optional(),
     avatarUrl: vine.string().url().nullable().optional(),
     bio: vine
       .string()
@@ -34,7 +35,18 @@ export const updateProfileValidator = vine.compile(
       .transform((value) => (value === '' ? null : value))
       .nullable()
       .optional(),
-    preferences: vine.any().optional(),
+    // Preferences is a flexible JSON object - validate it's an object structure
+    // Known properties are validated, but unknown properties are allowed for flexibility
+    preferences: vine
+      .object({
+        emailNotifications: vine.boolean().optional(),
+        marketingEmails: vine.boolean().optional(),
+        language: vine.string().optional(),
+        timezone: vine.string().optional(),
+        theme: vine.enum(['light', 'dark', 'system']).optional(),
+      })
+      .allowUnknownProperties()
+      .optional(),
   })
 );
 

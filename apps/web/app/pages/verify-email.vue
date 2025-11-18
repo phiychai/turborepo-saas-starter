@@ -104,8 +104,8 @@ async function handleVerify() {
       path: '/login',
       query: { verified: 'true' },
     });
-  } catch (err: any) {
-    error.value = err.message || 'Verification failed. Please try again.';
+  } catch (err: unknown) {
+    error.value = err instanceof Error ? err.message : 'Verification failed. Please try again.';
   } finally {
     verifying.value = false;
   }
@@ -141,8 +141,8 @@ async function resendOTP() {
       description: 'A new verification code has been sent to your email',
       color: 'blue',
     });
-  } catch (err: any) {
-    error.value = err.message || 'Failed to resend code';
+  } catch (err: unknown) {
+    error.value = err instanceof Error ? err.message : 'Failed to resend code';
   } finally {
     resending.value = false;
   }

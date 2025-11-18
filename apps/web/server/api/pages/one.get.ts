@@ -1,4 +1,5 @@
 import { withoutTrailingSlash, withLeadingSlash } from 'ufo';
+import type { PageBlock, BlockPost, Post } from '@turborepo-saas-starter/shared-types/schema';
 
 export default defineCachedEventHandler(async (event) => {
   const query = getQuery(event);
@@ -176,7 +177,12 @@ export default defineCachedEventHandler(async (event) => {
     }
 
     return page;
-  } catch {
-    throw createError({ statusCode: 500, statusMessage: 'Page not found' });
+  } catch (error: unknown) {
+    // If it's already a createError with statusCode, re-throw it
+    if (error && typeof error === 'object' && 'statusCode' in error) {
+      throw error;
+    }
+    // Otherwise, it's an unexpected error
+    throw createError({ statusCode: 500, statusMessage: 'Failed to fetch page' });
   }
 });

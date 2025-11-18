@@ -1,5 +1,6 @@
 import { BaseModel, column } from '@adonisjs/lucid/orm';
 import { DateTime } from 'luxon';
+import type { UserPreferences } from '@turborepo-saas-starter/shared-types';
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -47,7 +48,7 @@ export default class User extends BaseModel {
     prepare: (value) => JSON.stringify(value),
     consume: (value) => (typeof value === 'string' ? JSON.parse(value) : value),
   })
-  declare preferences: Record<string, any> | null;
+  declare preferences: UserPreferences | null;
 
   // Legacy fields (kept for backward compatibility, but password will not be used with Better Auth)
   @column()

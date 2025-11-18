@@ -31,7 +31,7 @@ const getComponentProps = (field: FormField) => {
     name: field.name ?? '',
     placeholder: field.placeholder ?? '',
     modelValue: value.value,
-    'onUpdate:modelValue': (val: any) => (value.value = val),
+    'onUpdate:modelValue': (val: string | number | boolean | File | null | undefined) => (value.value = val),
   };
 
   if (['checkbox_group', 'radio', 'select'].includes(field.type ?? '')) {
