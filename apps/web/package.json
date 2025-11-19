@@ -26,7 +26,7 @@
     "@nuxt/content": "^3.8.2",
     "@nuxt/image": "^2.0.0",
     "@nuxt/scripts": "^0.13.0",
-    "@nuxt/ui": "^4.1.0",
+    "@nuxt/ui": "^4.2.0",
     "@nuxtjs/seo": "3.2.2",
     "@pinia/nuxt": "^0.11.3",
     "@standard-schema/spec": "^1.0.0",
