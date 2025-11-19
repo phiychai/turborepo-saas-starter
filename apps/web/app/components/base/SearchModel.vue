@@ -42,14 +42,14 @@ const debouncedFetchResults = useDebounceFn(fetchResults, 300);
 // Map results to command palette format
 const groups = computed(() => {
   if (loading.value) {
-  return [
-    {
-      id: 'loading',
-      key: 'loading',
-      label: 'Searching...',
-      commands: [],
-    },
-  ];
+    return [
+      {
+        id: 'loading',
+        key: 'loading',
+        label: 'Searching...',
+        commands: [],
+      },
+    ];
   }
 
   if (!searched.value) {

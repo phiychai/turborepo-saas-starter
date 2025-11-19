@@ -2,18 +2,18 @@
  * Store state interfaces
  * Extracted from Pinia store files for better organization
  */
-
-// Auth Store
-import type { UserProfile } from '@turborepo-saas-starter/shared-types';
+import type {
+  Plan,
+  Subscription,
+  Invoice,
+  UserProfile,
+} from '@turborepo-saas-starter/shared-types';
 
 export interface AuthState {
   user: UserProfile | null;
   loading: boolean;
   initialized: boolean;
 }
-
-// Billing Store
-import type { Plan, Subscription, Invoice } from '@turborepo-saas-starter/shared-types';
 
 export type { Plan, Subscription, Invoice };
 

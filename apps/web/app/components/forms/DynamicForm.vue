@@ -8,7 +8,9 @@ import BaseButton from '../base/BaseButton.vue';
 
 const props = defineProps<{
   fields: FormField[];
-  onSubmit: (data: Record<string, string | number | boolean | File | null | undefined>) => Promise<void> | void;
+  onSubmit: (
+    data: Record<string, string | number | boolean | File | null | undefined>
+  ) => Promise<void> | void;
   submitLabel: string;
   formId?: string;
 }>();

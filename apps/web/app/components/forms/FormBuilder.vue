@@ -14,7 +14,9 @@ const props = defineProps<{
 const isSubmitted = ref(false);
 const error = ref<string | null>(null);
 
-const handleSubmit = async (data: Record<string, string | number | boolean | File | null | undefined>) => {
+const handleSubmit = async (
+  data: Record<string, string | number | boolean | File | null | undefined>
+) => {
   error.value = null;
   try {
     const fieldsWithNames = props.form.fields.map((field) => ({

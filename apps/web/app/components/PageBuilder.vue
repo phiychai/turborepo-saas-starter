@@ -9,7 +9,18 @@ const { isAuthenticated } = useAuth();
 
 const validBlocks = computed(() =>
   props.sections.filter(
-    (block): block is PageBlock & { collection: 'block_hero' | 'block_richtext' | 'block_gallery' | 'block_pricing' | 'block_posts' | 'block_form'; item: object } =>
+    (
+      block
+    ): block is PageBlock & {
+      collection:
+        | 'block_hero'
+        | 'block_richtext'
+        | 'block_gallery'
+        | 'block_pricing'
+        | 'block_posts'
+        | 'block_form';
+      item: object;
+    } =>
       typeof block !== 'string' &&
       'collection' in block &&
       (block.collection === 'block_hero' ||

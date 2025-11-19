@@ -1,6 +1,5 @@
 import { z } from 'zod';
-import type { Schema } from '@turborepo-saas-starter/shared-types/schema';
-import type { Post } from '@turborepo-saas-starter/shared-types/schema';
+import type { Schema, Post } from '@turborepo-saas-starter/shared-types/schema';
 
 const querySchema = z.object({
   limit: z.coerce.number().min(1).max(100).default(12),

@@ -62,11 +62,25 @@ const { setAttr } = useVisualEditing();
           :price="card.price"
           :badge="card.badge"
           :features="card.features"
-          :button="card.button && card.button.label ? {
-            label: card.button.label,
-            ...(card.button.variant ? { variant: card.button.variant as 'solid' | 'outline' | 'soft' | 'subtle' | 'ghost' | 'link' } : {}),
-            ...(card.button.url ? { to: card.button.url } : {}),
-          } : undefined"
+          :button="
+            card.button && card.button.label
+              ? {
+                  label: card.button.label,
+                  ...(card.button.variant
+                    ? {
+                        variant: card.button.variant as
+                          | 'solid'
+                          | 'outline'
+                          | 'soft'
+                          | 'subtle'
+                          | 'ghost'
+                          | 'link',
+                      }
+                    : {}),
+                  ...(card.button.url ? { to: card.button.url } : {}),
+                }
+              : undefined
+          "
         />
       </UPricingPlans>
       <!-- <PricingCard v-for="card in data.pricing_cards" :key="card.id" :card="card" /> -->

@@ -25,4 +25,3 @@ export interface TocLink {
   depth: number;
   children?: TocLink[];
 }
-

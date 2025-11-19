@@ -37,7 +37,9 @@ const toggleValue = (value: string, checked: boolean) => {
       :id="`${props.name}-${option.value}`"
       :model-value="isChecked(option.value)"
       :name="`${props.name}-${option.value}`"
-      @update:model-value="(value: boolean | 'indeterminate') => toggleValue(option.value, value === true)"
+      @update:model-value="
+        (value: boolean | 'indeterminate') => toggleValue(option.value, value === true)
+      "
     />
     <label :for="`${props.name}-${option.value}`" class="text-sm">
       {{ option.text }}

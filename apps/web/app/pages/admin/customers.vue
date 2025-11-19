@@ -39,7 +39,13 @@ const {
   data: usersData,
   status,
   refresh,
-} = await useFetch<{ users?: { data?: unknown[]; pagination?: { page?: number; perPage?: number; total?: number } } | unknown[]; data?: unknown[]; pagination?: { page?: number; perPage?: number; total?: number } }>('/api/admin/users', {
+} = await useFetch<{
+  users?:
+    | { data?: unknown[]; pagination?: { page?: number; perPage?: number; total?: number } }
+    | unknown[];
+  data?: unknown[];
+  pagination?: { page?: number; perPage?: number; total?: number };
+}>('/api/admin/users', {
   lazy: true,
   query: {
     page: computed(() => pagination.value.pageIndex + 1),
@@ -52,25 +58,45 @@ const {
 const getPaginationTotal = computed(() => {
   const data = usersData.value;
   if (data && typeof data === 'object') {
-    if ('pagination' in data && data.pagination && typeof data.pagination === 'object' && 'total' in data.pagination) {
+    if (
+      'pagination' in data &&
+      data.pagination &&
+      typeof data.pagination === 'object' &&
+      'total' in data.pagination
+    ) {
       return (data.pagination as { total?: number }).total ?? 0;
     }
-    if ('users' in data && data.users && typeof data.users === 'object' && 'pagination' in data.users) {
+    if (
+      'users' in data &&
+      data.users &&
+      typeof data.users === 'object' &&
+      'pagination' in data.users
+    ) {
       const users = data.users as { pagination?: { total?: number } };
       return users.pagination?.total ?? 0;
     }
   }
   if (!data) return 0;
-  return (Array.isArray(data) ? data.length : 0);
+  return Array.isArray(data) ? data.length : 0;
 });
 
 const getPaginationPage = computed(() => {
   const data = usersData.value;
   if (data && typeof data === 'object') {
-    if ('pagination' in data && data.pagination && typeof data.pagination === 'object' && 'page' in data.pagination) {
+    if (
+      'pagination' in data &&
+      data.pagination &&
+      typeof data.pagination === 'object' &&
+      'page' in data.pagination
+    ) {
       return (data.pagination as { page?: number }).page ?? pagination.value.pageIndex + 1;
     }
-    if ('users' in data && data.users && typeof data.users === 'object' && 'pagination' in data.users) {
+    if (
+      'users' in data &&
+      data.users &&
+      typeof data.users === 'object' &&
+      'pagination' in data.users
+    ) {
       const users = data.users as { pagination?: { page?: number } };
       return users.pagination?.page ?? pagination.value.pageIndex + 1;
     }
@@ -81,10 +107,20 @@ const getPaginationPage = computed(() => {
 const getPaginationPerPage = computed(() => {
   const data = usersData.value;
   if (data && typeof data === 'object') {
-    if ('pagination' in data && data.pagination && typeof data.pagination === 'object' && 'perPage' in data.pagination) {
+    if (
+      'pagination' in data &&
+      data.pagination &&
+      typeof data.pagination === 'object' &&
+      'perPage' in data.pagination
+    ) {
       return (data.pagination as { perPage?: number }).perPage ?? pagination.value.pageSize;
     }
-    if ('users' in data && data.users && typeof data.users === 'object' && 'pagination' in data.users) {
+    if (
+      'users' in data &&
+      data.users &&
+      typeof data.users === 'object' &&
+      'pagination' in data.users
+    ) {
       const users = data.users as { pagination?: { perPage?: number } };
       return users.pagination?.perPage ?? pagination.value.pageSize;
     }
@@ -113,7 +149,12 @@ const data = computed<DashboardUser[]>(() => {
 
   if (usersData.value?.users && Array.isArray(usersData.value.users)) {
     usersArray = usersData.value.users as BackendUser[];
-  } else if (usersData.value?.users && typeof usersData.value.users === 'object' && 'data' in usersData.value.users && Array.isArray(usersData.value.users.data)) {
+  } else if (
+    usersData.value?.users &&
+    typeof usersData.value.users === 'object' &&
+    'data' in usersData.value.users &&
+    Array.isArray(usersData.value.users.data)
+  ) {
     usersArray = usersData.value.users.data as BackendUser[];
   } else if (usersData.value?.data && Array.isArray(usersData.value.data)) {
     usersArray = usersData.value.data as BackendUser[];
@@ -170,7 +211,10 @@ async function syncAllUsers() {
     // Refresh the table
     await refresh();
   } catch (error: unknown) {
-    const errorData = error && typeof error === 'object' && 'data' in error ? (error as { data?: { message?: string } }).data : undefined;
+    const errorData =
+      error && typeof error === 'object' && 'data' in error
+        ? (error as { data?: { message?: string } }).data
+        : undefined;
     toast.add({
       title: 'Sync Failed',
       description: errorData?.message || 'Failed to sync users',
@@ -234,7 +278,10 @@ async function handleDelete(userId: number) {
 
     await refresh();
   } catch (error: unknown) {
-    const errorData = error && typeof error === 'object' && 'data' in error ? (error as { data?: { message?: string } }).data : undefined;
+    const errorData =
+      error && typeof error === 'object' && 'data' in error
+        ? (error as { data?: { message?: string } }).data
+        : undefined;
     toast.add({
       title: 'Error',
       description: errorData?.message || 'Failed to delete customer',
@@ -310,7 +357,9 @@ const columns: TableColumn<DashboardUser>[] = [
     accessorKey: 'role',
     header: 'Role',
     cell: ({ row }) => {
-      const role = ('role' in row.original && typeof row.original.role === 'string' ? row.original.role : 'user') as 'user' | 'admin';
+      const role = (
+        'role' in row.original && typeof row.original.role === 'string' ? row.original.role : 'user'
+      ) as 'user' | 'admin';
       const color = role === 'admin' ? 'primary' : 'neutral';
 
       return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () => role);

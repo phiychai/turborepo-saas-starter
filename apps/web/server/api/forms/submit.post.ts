@@ -1,3 +1,5 @@
+import type { FormSubmission } from '@turborepo-saas-starter/shared-types/schema';
+
 interface SubmissionValue {
   field: string;
   value?: string | null;
@@ -72,10 +74,16 @@ export default defineEventHandler(async (event) => {
 
     const payload = {
       form: formId,
-      values: submissionValues as Array<{ field: string; value?: string | null; file?: string | null }>,
+      values: submissionValues as Array<{
+        field: string;
+        value?: string | null;
+        file?: string | null;
+      }>,
     };
 
-    await directusServer.request(withToken(TOKEN, createItem('form_submissions', payload as Partial<import('@turborepo-saas-starter/shared-types/schema').FormSubmission>)));
+    await directusServer.request(
+      withToken(TOKEN, createItem('form_submissions', payload as Partial<FormSubmission>))
+    );
 
     return { success: true };
   } catch {

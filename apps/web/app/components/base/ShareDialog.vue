@@ -50,52 +50,52 @@ const socialLinks = [
       <template #default>
         <div class="sm:max-w-md">
           <UCard>
-        <template #header>
-          <h3 class="text-base font-semibold leading-6">Share this blog post</h3>
-        </template>
+            <template #header>
+              <h3 class="text-base font-semibold leading-6">Share this blog post</h3>
+            </template>
 
-        <div class="space-y-4">
-          <div class="flex justify-center space-x-4">
-            <a
-              v-for="social in socialLinks"
-              :key="social.service"
-              :href="social.getUrl()"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="rounded inline-flex items-center justify-center transition-opacity hover:opacity-70"
-            >
-              <img
-                :src="social.icon"
-                :alt="`${social.service} icon`"
-                width="32"
-                height="32"
-                class="size-8 dark:invert"
-              />
-            </a>
-          </div>
+            <div class="space-y-4">
+              <div class="flex justify-center space-x-4">
+                <a
+                  v-for="social in socialLinks"
+                  :key="social.service"
+                  :href="social.getUrl()"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="rounded inline-flex items-center justify-center transition-opacity hover:opacity-70"
+                >
+                  <img
+                    :src="social.icon"
+                    :alt="`${social.service} icon`"
+                    width="32"
+                    height="32"
+                    class="size-8 dark:invert"
+                  />
+                </a>
+              </div>
 
-          <div class="flex items-center gap-2">
-            <UInput :model-value="url" readonly class="flex-1" />
-            <UButton
-              icon="i-lucide-copy"
-              size="sm"
-              color="neutral"
-              variant="solid"
-              @click="handleCopy"
-            />
-          </div>
+              <div class="flex items-center gap-2">
+                <UInput :model-value="url" readonly class="flex-1" />
+                <UButton
+                  icon="i-lucide-copy"
+                  size="sm"
+                  color="neutral"
+                  variant="solid"
+                  @click="handleCopy"
+                />
+              </div>
 
-          <p v-if="copied" class="text-sm text-green-600 dark:text-green-400">
-            Link copied to clipboard!
-          </p>
-        </div>
+              <p v-if="copied" class="text-sm text-green-600 dark:text-green-400">
+                Link copied to clipboard!
+              </p>
+            </div>
 
-        <template #footer>
-          <div class="flex justify-start">
-            <UButton color="neutral" variant="ghost" label="Close" @click="isOpen = false" />
-          </div>
-        </template>
-      </UCard>
+            <template #footer>
+              <div class="flex justify-start">
+                <UButton color="neutral" variant="ghost" label="Close" @click="isOpen = false" />
+              </div>
+            </template>
+          </UCard>
         </div>
       </template>
     </UModal>

@@ -89,9 +89,10 @@ const categoriesFromPosts = computed(() => {
             const category = {
               id: catId,
               name: catTitle,
-              slug: 'slug' in cat && cat.slug
-                ? String(cat.slug)
-                : catTitle.toLowerCase().replace(/\s+/g, '-'),
+              slug:
+                'slug' in cat && cat.slug
+                  ? String(cat.slug)
+                  : catTitle.toLowerCase().replace(/\s+/g, '-'),
             };
             if (category.id && category.name && !categoryMap.has(category.id)) {
               categoryMap.set(category.id, category);
@@ -253,7 +254,9 @@ const feedOrientation = ref<'vertical' | 'horizontal'>('horizontal');
                   post.categories && post.categories.length > 0 && post.categories[0]
                     ? typeof post.categories[0] === 'string'
                       ? post.categories[0]
-                      : ('title' in post.categories[0] ? String(post.categories[0].title || '') : '')
+                      : 'title' in post.categories[0]
+                        ? String(post.categories[0].title || '')
+                        : ''
                     : '',
               }
             : undefined
