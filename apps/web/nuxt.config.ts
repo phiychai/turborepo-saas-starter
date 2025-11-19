@@ -16,7 +16,7 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     '@pinia/nuxt',
     'pinia-plugin-persistedstate/nuxt',
-    'nuxt-og-image',
+    ['nuxt-og-image', { enabled: process.env.NODE_ENV !== 'test' }], // Disable in test environment
     'nuxt-security',
     '@nuxt/scripts',
     '@nuxtjs/mdc',
@@ -26,16 +26,16 @@ export default defineNuxtConfig({
   devtools: {
     enabled: true,
   },
-
+  ssr: true,
   css: ['~/assets/css/main.css'],
   runtimeConfig: {
     public: {
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL as string,
-      apiUrl: process.env.NUXT_PUBLIC_API_URL as string,
-      directusUrl: process.env.DIRECTUS_URL as string,
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+      apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:3333',
+      directusUrl: process.env.DIRECTUS_URL || 'http://localhost:8055',
       enableVisualEditing: process.env.NUXT_PUBLIC_ENABLE_VISUAL_EDITING !== 'false',
     },
-    directusServerToken: process.env.DIRECTUS_SERVER_TOKEN,
+    directusServerToken: process.env.DIRECTUS_SERVER_TOKEN || '',
   },
 
   routeRules: {

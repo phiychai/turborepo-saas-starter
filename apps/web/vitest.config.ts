@@ -9,10 +9,12 @@ export default defineVitestConfig({
       },
     },
     globals: true,
+    // Exclude .data directory from test discovery (contains Nuxt Content test files)
+    exclude: ['**/node_modules/**', '**/.data/**', '**/dist/**', '**/.nuxt/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      exclude: ['node_modules/', '.nuxt/', 'dist/', '*.config.*'],
+      exclude: ['node_modules/', '.nuxt/', 'dist/', '.data/', '*.config.*'],
     },
   },
 });
