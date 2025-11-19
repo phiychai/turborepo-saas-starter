@@ -15,6 +15,8 @@ out
 .cache
 .eslintcache
 .stylelintcache
+# Data directories
+**/.data
 
 # Logs
 *.log
@@ -41,6 +43,18 @@ coverage
 *.generated.*
 auto-imports.d.ts
 components.d.ts
+# Generated JS files in src (from TypeScript compilation)
+**/packages/*/src/*.js
+packages/shared-types/src/*.js
+packages/shared-utils/src/*.js
+# AdonisJS generated files
+apps/backend/ace.js
+
+# TypeScript build info
+*.tsbuildinfo
+
+# Source maps
+*.map
 
 # Database
 *.sqlite
@@ -48,8 +62,7 @@ components.d.ts
 *.db
 
 # CMS/Directus
-apps/cms/directus/data/
-apps/cms/directus/uploads/
+apps/cms
 
 # Temporary files
 tmp

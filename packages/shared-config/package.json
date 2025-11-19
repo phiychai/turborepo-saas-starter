@@ -7,6 +7,8 @@
     "./tsconfig.base.json": "./tsconfig.base.json"
   },
   "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "lint": "echo 'No linting needed for config package'",
     "lint:fix": "echo 'No linting needed for config package'",
     "type-check": "echo 'No type-check needed for config package'"

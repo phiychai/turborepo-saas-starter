@@ -39,7 +39,14 @@ export interface CommandPaletteSettings {
  * Using interface to support recursive/nested structures
  */
 export interface AuthSyncErrorPayload {
-  [key: string]: string | number | boolean | null | undefined | AuthSyncErrorPayload | AuthSyncErrorPayload[];
+  [key: string]:
+    | string
+    | number
+    | boolean
+    | null
+    | undefined
+    | AuthSyncErrorPayload
+    | AuthSyncErrorPayload[];
 }
 
 /**
@@ -49,4 +56,3 @@ export interface AuthSyncErrorPayload {
 export interface WidgetData {
   [key: string]: string | number | boolean | null | undefined | WidgetData | WidgetData[];
 }
-

@@ -16,6 +16,8 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "clean": "rm -rf dist",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "lint": "echo 'No linting needed for utils package'",
     "lint:fix": "echo 'No linting needed for utils package'",
     "type-check": "tsc --noEmit"

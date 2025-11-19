@@ -80,4 +80,3 @@ updates:
     schedule:
       interval: 'weekly'
       day: 'monday'
-

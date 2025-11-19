@@ -25,6 +25,11 @@ const {
 });
 
 if (!page.value || error.value) {
+  // During prerender, don't throw fatal errors for missing pages
+  // They'll be handled at runtime
+  if (import.meta.prerender) {
+    throw createError({ statusCode: 404, statusMessage: 'Page not found', fatal: false });
+  }
   throw createError({ statusCode: 404, statusMessage: 'Page not found', fatal: true });
 }
 

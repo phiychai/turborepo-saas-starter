@@ -2,13 +2,18 @@
 export type { DirectusFile, DirectusUser, Page, PageBlock, Post } from './schema';
 
 // Re-export billing types
-export type { Plan, Subscription, Invoice } from './billing';
+export type { Invoice, Plan, Subscription } from './billing';
 
 // Re-export user types
 export type { UserProfile } from './user';
 
 // Re-export preferences types
-export type { UserPreferences, CommandPaletteSettings, AuthSyncErrorPayload, WidgetData } from './preferences';
+export type {
+  AuthSyncErrorPayload,
+  CommandPaletteSettings,
+  UserPreferences,
+  WidgetData,
+} from './preferences';
 
 // User-related types
 export interface User {

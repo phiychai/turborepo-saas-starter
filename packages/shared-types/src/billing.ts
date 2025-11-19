@@ -35,4 +35,3 @@ export interface Invoice {
   currency: string;
   file_url?: string;
 }
-

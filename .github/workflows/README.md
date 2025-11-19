@@ -1,6 +1,7 @@
 # GitHub Workflows Documentation
 
-This directory contains all GitHub Actions workflows for the Turborepo SaaS Starter.
+This directory contains all GitHub Actions workflows for the Turborepo SaaS
+Starter.
 
 ## 🔄 Workflows Overview
 
@@ -9,12 +10,14 @@ This directory contains all GitHub Actions workflows for the Turborepo SaaS Star
 **Trigger:** Push to `main`/`develop` or Pull Requests
 
 **Jobs:**
+
 - ✅ **Lint** - ESLint and Prettier checks
 - ✅ **Type Check** - TypeScript validation across all packages
 - ✅ **Build** - Build all apps and packages
 - ✅ **Test** - Run all tests with coverage
 
 **Features:**
+
 - Parallel job execution for speed
 - Turborepo cache optimization
 - pnpm store caching
@@ -27,12 +30,14 @@ This directory contains all GitHub Actions workflows for the Turborepo SaaS Star
 **Purpose:** Create preview deployments for PRs
 
 **Features:**
+
 - Automated preview environment creation
 - PR comment with preview URL
 - Preview URL format: `https://preview-{PR_NUMBER}.example.com`
 - Supports Vercel, Netlify, and other platforms
 
 **Setup Required:**
+
 ```bash
 # Add secrets to your repository:
 DIRECTUS_URL - Your Directus CMS URL
@@ -44,16 +49,19 @@ DIRECTUS_URL - Your Directus CMS URL
 **Trigger:** Push to `main` or manual workflow dispatch
 
 **Jobs:**
+
 - 🌐 **Deploy Web** - Deploy Nuxt frontend
 - 🔌 **Deploy Backend** - Deploy AdonisJS API
 
 **Features:**
+
 - Sequential deployment (web first, then backend)
 - Environment-specific builds
 - Deployment summaries
 - Support for multiple platforms
 
 **Supported Platforms:**
+
 - Vercel (Frontend)
 - Netlify (Frontend)
 - Railway (Backend)
@@ -61,6 +69,7 @@ DIRECTUS_URL - Your Directus CMS URL
 - Custom deployment scripts
 
 **Setup Required:**
+
 ```bash
 # Add secrets:
 PRODUCTION_URL - Your production domain
@@ -75,6 +84,7 @@ DIRECTUS_URL - Production Directus URL
 **Purpose:** Security review of dependency changes
 
 **Features:**
+
 - Checks for vulnerabilities in new dependencies
 - License compliance verification
 - Fails on moderate+ severity issues
@@ -83,6 +93,7 @@ DIRECTUS_URL - Production Directus URL
 ### 5. **CodeQL Security** (`codeql.yml`)
 
 **Trigger:**
+
 - Push to `main`/`develop`
 - Pull Requests
 - Weekly schedule (Mondays)
@@ -90,6 +101,7 @@ DIRECTUS_URL - Production Directus URL
 **Purpose:** Static security analysis
 
 **Features:**
+
 - JavaScript/TypeScript analysis
 - Security-extended query suite
 - Automated vulnerability detection
@@ -102,12 +114,14 @@ DIRECTUS_URL - Production Directus URL
 **Purpose:** Create GitHub releases
 
 **Features:**
+
 - Automatic changelog generation
 - Build artifact packaging
 - Release notes with changes
 - Pre-release detection (alpha, beta, rc)
 
 **Usage:**
+
 ```bash
 # Create a new release
 git tag v1.0.0
@@ -119,6 +133,7 @@ git push origin v1.0.0
 **File:** `dependabot.yml`
 
 **Updates:**
+
 - npm dependencies (root, apps, packages)
 - GitHub Actions
 - Docker images
@@ -126,6 +141,7 @@ git push origin v1.0.0
 **Schedule:** Weekly on Mondays
 
 **Features:**
+
 - Grouped updates (Turborepo, Nuxt, TypeScript, ESLint)
 - Separate PRs per workspace
 - Automatic version bumps
@@ -236,12 +252,14 @@ Add to your README.md:
 ## 🐛 Troubleshooting
 
 ### Build Fails - Cache Issues
+
 ```bash
 # Clear GitHub Actions cache manually:
 # Settings → Actions → Caches → Delete all caches
 ```
 
 ### Deployment Fails
+
 ```bash
 # Check deployment logs in Actions tab
 # Verify secrets are set correctly
@@ -249,6 +267,7 @@ Add to your README.md:
 ```
 
 ### Dependency Review Fails
+
 ```bash
 # Check for vulnerable dependencies
 pnpm audit
@@ -269,5 +288,3 @@ pnpm update
 - [pnpm Action](https://github.com/pnpm/action-setup)
 - [Vercel Deploy Action](https://github.com/amondnet/vercel-action)
 - [Netlify Deploy Action](https://github.com/netlify/actions)
-
-
