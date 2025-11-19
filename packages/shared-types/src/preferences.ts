@@ -36,11 +36,11 @@ export interface CommandPaletteSettings {
  * Auth Sync Error Payload
  * Payload structure for authentication sync errors
  * This is a flexible type that can contain various error-related data
+ * Using interface to support recursive/nested structures
  */
-export type AuthSyncErrorPayload = Record<
-  string,
-  string | number | boolean | null | undefined | AuthSyncErrorPayload | AuthSyncErrorPayload[]
->;
+export interface AuthSyncErrorPayload {
+  [key: string]: string | number | boolean | null | undefined | AuthSyncErrorPayload | AuthSyncErrorPayload[];
+}
 
 /**
  * Widget Data
