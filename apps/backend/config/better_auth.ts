@@ -1,3 +1,6 @@
+import { mkdirSync } from 'node:fs';
+import { dirname } from 'node:path';
+
 import app from '@adonisjs/core/services/app';
 import { betterAuth } from 'better-auth';
 import { username, emailOTP, haveIBeenPwned, admin } from 'better-auth/plugins';
@@ -43,7 +46,10 @@ if (dbConnection === 'postgres') {
   });
 } else {
   // SQLite: Pass Database instance directly
-  database = new Database(app.tmpPath('db.sqlite3'));
+  // Ensure tmp directory exists before creating database
+  const dbPath = app.tmpPath('db.sqlite3');
+  mkdirSync(dirname(dbPath), { recursive: true });
+  database = new Database(dbPath);
 }
 
 // Initialize Better Auth instance (direct export, no wrapper)

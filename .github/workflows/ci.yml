@@ -258,6 +258,7 @@ jobs:
           APP_KEY=test-key-for-ci-validation-only-32-chars
           HOST=localhost
           LOG_LEVEL=info
+          DB_CONNECTION=postgres
           DB_HOST=localhost
           DB_PORT=5432
           DB_USER=postgres
