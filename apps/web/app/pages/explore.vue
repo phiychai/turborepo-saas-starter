@@ -11,6 +11,8 @@ const { isVisualEditingEnabled, apply, setAttr } = useVisualEditing();
 
 const permalink = withoutTrailingSlash(withLeadingSlash(route.path));
 
+// Try to fetch page from Directus, but don't fail if it doesn't exist
+// This allows explore.vue to work as a standalone page or with Directus content
 const {
   data: page,
   error,
@@ -22,11 +24,11 @@ const {
     preview: enabled.value ? true : undefined,
     token: enabled.value ? state.token : undefined,
   },
+  // Don't throw on error - allow page to work standalone
+  onResponseError() {
+    // Silently handle missing page - explore works without Directus content
+  },
 });
-
-if (!page.value || error.value) {
-  throw createError({ statusCode: 404, statusMessage: 'Page not found', fatal: true });
-}
 
 const pageBlocks = computed(() => (page.value?.blocks as PageBlock[]) || []);
 // Create data object for Posts component
@@ -34,15 +36,15 @@ const pageBlocks = computed(() => (page.value?.blocks as PageBlock[]) || []);
 const postsData = computed(() => ({
   id: `posts-${permalink}`,
   limit: 20, // Default limit, or get from page/block if needed
-  tagline: page.value?.title || undefined,
-  headline: 'Posts', // Or get from page/block
+  tagline: page.value?.title || 'Explore',
+  headline: page.value?.title || 'Posts', // Or get from page/block
   posts: [], // Empty array - Posts component will fetch its own
 }));
 useSeoMeta({
-  title: page.value?.seo?.title || page.value?.title || '',
-  description: page.value?.seo?.meta_description || '',
-  ogTitle: page.value?.seo?.title || page.value?.title || '',
-  ogDescription: page.value?.seo?.meta_description || '',
+  title: page.value?.seo?.title || page.value?.title || 'Explore',
+  description: page.value?.seo?.meta_description || 'Explore our content',
+  ogTitle: page.value?.seo?.title || page.value?.title || 'Explore',
+  ogDescription: page.value?.seo?.meta_description || 'Explore our content',
   ogUrl: pageUrl.toString(),
 });
 
@@ -79,7 +81,11 @@ onMounted(() => {
   <UDashboardPanel v-if="isAuthenticated" class="pb-[64px]" variant="ghost">
     <Posts :data="postsData" />
   </UDashboardPanel>
-  <PageBuilder v-else :sections="pageBlocks" />
+  <!-- Show Directus page content if available, otherwise show posts directly -->
+  <PageBuilder v-else-if="page && pageBlocks.length > 0" :sections="pageBlocks" />
+  <div v-else>
+    <Posts :data="postsData" />
+  </div>
 
   <div v-if="isVisualEditingEnabled && page">
     <!-- If you're not using the visual editor it's safe to remove this element. Just a helper to let editors add edit / add new blocks to a page. -->

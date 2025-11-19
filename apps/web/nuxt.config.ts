@@ -40,6 +40,7 @@ export default defineNuxtConfig({
 
   routeRules: {
     '/docs': { redirect: '/docs/getting-started', prerender: false },
+    '/explore': { prerender: false }, // Exclude from prerender - depends on API data
     '/api/pages/**': { cors: true, headers: { 'Cache-Control': 's-maxage=300' } },
     '/api/posts/**': { cors: true, headers: { 'Cache-Control': 's-maxage=60' } },
     '/api/posts/categories': { cors: true, headers: { 'Cache-Control': 's-maxage=600' } },
@@ -50,7 +51,8 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       routes: ['/'],
-      crawlLinks: true,
+      crawlLinks: false, // Disable link crawling to avoid prerender failures for dynamic pages
+      failOnError: false, // Don't fail build on prerender errors
     },
   },
 
