@@ -55,7 +55,7 @@ const handleSubmit = async (data: Record<string, string | number | boolean | Fil
   <UCard v-if="form.is_active" :class="className">
     <UAlert
       v-if="error"
-      color="red"
+      color="error"
       icon="i-lucide-alert-circle"
       variant="solid"
       :title="error"
@@ -64,7 +64,7 @@ const handleSubmit = async (data: Record<string, string | number | boolean | Fil
 
     <UAlert
       v-if="isSubmitted"
-      color="green"
+      color="success"
       icon="i-lucide-check-circle"
       variant="subtle"
       :description="form.success_message || 'Your form has been submitted successfully.'"

@@ -52,11 +52,13 @@ export default defineCachedEventHandler(async (event) => {
               author: ['id', 'first_name', 'last_name', 'avatar'],
             },
             {
-              categories: ['id', 'title', 'slug'],
-            },
+              categories: {
+                categories_id: ['id', 'title', 'slug'],
+              },
+            } as any,
           ],
           filter,
-        })
+        } as any)
       );
     } catch (error: unknown) {
       // If categories field causes permission error, fetch without it

@@ -57,7 +57,7 @@ function applyVisualEditing() {
 
 function applyVisualEditingButton() {
   apply({
-    elements: document.querySelector('#visual-editing-button') as HTMLElement,
+    elements: document.querySelector('#visual-editing-button'),
     customClass: 'visual-editing-button-class',
     onSaved: async () => {
       await refresh();

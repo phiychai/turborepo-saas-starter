@@ -37,7 +37,9 @@ class DirectusService {
       const email = env.get('DIRECTUS_ADMIN_EMAIL');
       const password = env.get('DIRECTUS_ADMIN_PASSWORD');
 
+      // @ts-expect-error - Directus SDK types don't properly expose plugin methods
       await this.client.login(email, password);
+      // @ts-expect-error - Directus SDK types don't properly expose plugin methods
       this.adminToken = this.client.getToken();
 
       return this.adminToken;
@@ -111,6 +113,7 @@ class DirectusService {
     params?: Record<string, any>
   ) {
     const client = await this.getClient();
+    // @ts-expect-error - Directus SDK has strict types that don't work well with generic collection names
     return client.request(readItems(collection, params));
   }
 
@@ -124,6 +127,7 @@ class DirectusService {
     params?: Record<string, any>
   ) {
     const client = await this.getClient();
+    // @ts-expect-error - Directus SDK has strict types that don't work well with generic collection names
     return client.request(readItem(collection, id, params));
   }
 
@@ -136,6 +140,7 @@ class DirectusService {
     data: Record<string, any>
   ) {
     const client = await this.getClient();
+    // @ts-expect-error - Directus SDK has strict types that don't work well with generic collection names
     return client.request(createItem(collection, data));
   }
 
@@ -149,6 +154,7 @@ class DirectusService {
     data: Record<string, any>
   ) {
     const client = await this.getClient();
+    // @ts-expect-error - Directus SDK has strict types that don't work well with generic collection names
     return client.request(updateItem(collection, id, data));
   }
 
@@ -157,6 +163,7 @@ class DirectusService {
    */
   async deleteItem(collection: string, id: string | number) {
     const client = await this.getClient();
+    // @ts-expect-error - Directus SDK has strict types that don't work well with generic collection names
     return client.request(deleteItem(collection as never, id));
   }
 }

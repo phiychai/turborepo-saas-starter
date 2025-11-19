@@ -10,6 +10,7 @@ export interface BetterAuthUser {
   name?: string | null;
   image?: string | null;
   emailVerified?: boolean;
+  mfaEnabled?: boolean;
   username?: string | null; // If using Better Auth Username Plugin
 }
 

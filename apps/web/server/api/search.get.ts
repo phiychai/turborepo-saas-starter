@@ -35,7 +35,7 @@ export default defineCachedEventHandler(
                 },
               ],
             },
-            fields: ['id', 'title', 'description', 'slug', 'content', 'status'],
+            fields: ['id', 'title', 'description', 'slug', 'content', 'status', 'type'],
           })
         ),
       ]);

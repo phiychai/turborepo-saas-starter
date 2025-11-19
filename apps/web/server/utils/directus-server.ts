@@ -14,7 +14,7 @@ import {
   // readMe,
   withToken,
   type QueryFilter,
-  readUser,
+  // readUser,
 } from '@directus/sdk';
 
 const {

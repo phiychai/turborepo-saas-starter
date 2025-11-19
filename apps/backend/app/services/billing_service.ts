@@ -1,5 +1,5 @@
-import type { Plan, Subscription, Invoice } from '@turborepo-saas-starter/shared-types';
-import type { LagoApiResponse, LagoEvent, LagoCharge, LagoAccountResponse } from '#types/billing';
+import type { Plan, Subscription } from '@turborepo-saas-starter/shared-types';
+import type { LagoApiResponse, LagoEvent, LagoCharge } from '#types/billing';
 
 import env from '#start/env';
 
@@ -94,7 +94,7 @@ class BillingService {
       // Check if response has content
       const contentType = response.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
-        return await response.json();
+        return (await response.json()) as LagoApiResponse<T>;
       }
 
       return null;
@@ -187,15 +187,15 @@ class BillingService {
     endingAt?: string;
     subscriptionAt?: string;
   }) {
-    const payload: { subscription: LagoSubscription } = {
+    const payload: { subscription: Partial<LagoSubscription> } = {
       subscription: {
         external_customer_id: subscription.externalCustomerId,
         plan_code: subscription.planCode,
-        external_id: subscription.externalId,
-        name: subscription.name,
-        billing_time: subscription.billingTime,
-        ending_at: subscription.endingAt,
-        subscription_at: subscription.subscriptionAt,
+        ...(subscription.externalId && { external_id: subscription.externalId }),
+        ...(subscription.name && { name: subscription.name }),
+        ...(subscription.billingTime && { billing_time: subscription.billingTime }),
+        ...(subscription.endingAt && { ending_at: subscription.endingAt }),
+        ...(subscription.subscriptionAt && { subscription_at: subscription.subscriptionAt }),
       },
     };
 
@@ -483,8 +483,12 @@ class BillingService {
    * Get payment provider status for customer
    */
   async getPaymentProvider(externalCustomerId: string) {
-    const customer = await this.getCustomer(externalCustomerId);
-    return customer?.customer?.billing_configuration;
+    const customerResponse = await this.getCustomer(externalCustomerId);
+    if (!customerResponse || typeof customerResponse !== 'object' || !('customer' in customerResponse)) {
+      return undefined;
+    }
+    const customer = customerResponse as { customer?: { billing_configuration?: unknown } };
+    return customer.customer?.billing_configuration;
   }
 }
 

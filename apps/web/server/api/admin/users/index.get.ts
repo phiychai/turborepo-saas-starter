@@ -10,7 +10,17 @@ export default defineEventHandler(async (event) => {
 
   // Get query parameters
   const query = getQuery(event);
-  const queryString = new URLSearchParams(query as Record<string, string | string[]>).toString();
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(query)) {
+    if (value !== undefined) {
+      if (Array.isArray(value)) {
+        value.forEach((v) => params.append(key, String(v)));
+      } else {
+        params.append(key, String(value));
+      }
+    }
+  }
+  const queryString = params.toString();
   const fullUrl = queryString ? `${targetUrl}?${queryString}` : targetUrl;
 
   // Forward the request to backend using native fetch
@@ -20,8 +30,8 @@ export default defineEventHandler(async (event) => {
 
     // Forward all headers except host
     for (const [key, value] of Object.entries(incomingHeaders)) {
-      if (key.toLowerCase() !== 'host') {
-        headers[key] = value;
+      if (key.toLowerCase() !== 'host' && value !== undefined) {
+        headers[key] = String(value);
       }
     }
 

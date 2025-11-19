@@ -48,7 +48,7 @@ const initialValues = computed(() => {
           defaults[name] = false;
           break;
         case 'checkbox_group':
-          defaults[name] = [];
+          defaults[name] = [] as unknown as string | number | boolean | File | null | undefined;
           break;
         case 'select':
         case 'radio':
@@ -93,7 +93,7 @@ const onSubmitForm = handleSubmit(async (formValues) => {
     :data-directus="
       setAttr({
         collection: 'forms',
-        item: props.formId,
+        item: props.formId || null,
         fields: 'fields',
         mode: 'popover',
       })

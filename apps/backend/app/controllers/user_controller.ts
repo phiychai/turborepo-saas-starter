@@ -24,8 +24,8 @@ export default class UserController {
     // Build DTO from Adonis User and Better Auth data
     const profile: UserProfileDTO = UserProfileDTOBuilder.build(
       auth.user!,
-      betterAuthUser,
-      betterAuthSession
+      betterAuthUser ?? null,
+      betterAuthSession ?? null
     );
 
     return response.json(profile);
@@ -163,7 +163,8 @@ export default class UserController {
         // If username didn't change, don't update (already correct)
       }
       if (data.preferences !== undefined) {
-        user.preferences = data.preferences;
+        // Validator allows unknown properties, but we need to ensure type compatibility
+        user.preferences = data.preferences as import('@turborepo-saas-starter/shared-types').UserPreferences | null;
       }
 
       await user.save();

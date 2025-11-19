@@ -23,7 +23,6 @@ export default defineCachedEventHandler(async (event) => {
             'title',
             'id',
             {
-              seo: ['title', 'meta_description', 'og_image'],
               blocks: [
                 'id',
                 'background',
@@ -145,21 +144,21 @@ export default defineCachedEventHandler(async (event) => {
     // Replace the loop with parallel fetching
     if (Array.isArray(page?.blocks)) {
       const postBlockPromises = page.blocks
-        .filter(
-          (block): block is PageBlock & { item: BlockPost } =>
-            block.collection === 'block_posts' &&
-            block.item &&
-            typeof block.item !== 'string' &&
-            'collection' in block.item &&
-            block.item.collection === 'posts'
-        )
+        .filter((block): block is PageBlock & { collection: 'block_posts'; item: BlockPost } => {
+          if (typeof block === 'string') return false;
+          if (!('collection' in block)) return false;
+          if (block.collection !== 'block_posts') return false;
+          if (!block.item || typeof block.item === 'string') return false;
+          if (!('collection' in block.item)) return false;
+          return block.item.collection === 'posts';
+        })
         .map(async (block) => {
           const blockPost = block.item as BlockPost;
           const limit = blockPost.limit ?? 12;
 
           const posts = await directusServer.request(
             readItems('posts', {
-              fields: ['id', 'title', 'description', 'slug', 'image', 'published_at'],
+              fields: ['id', 'title', 'description', 'slug', 'image', 'published_at', 'type'],
               filter: { status: { _eq: 'published' } },
               sort: ['-published_at'],
               limit,

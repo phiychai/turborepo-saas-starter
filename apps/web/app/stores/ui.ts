@@ -139,5 +139,5 @@ export const useUIStore = defineStore('ui', {
   persist: {
     storage: typeof window !== 'undefined' ? localStorage : undefined,
     paths: ['sidebarCollapsed', 'theme'],
-  },
+  } as any,
 });

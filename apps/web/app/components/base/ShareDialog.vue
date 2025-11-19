@@ -46,8 +46,10 @@ const socialLinks = [
   <div>
     <UButton variant="outline" icon="i-lucide-share" label="Share Blog" @click="isOpen = true" />
 
-    <UModal v-model="isOpen" :ui="{ width: 'sm:max-w-md' }">
-      <UCard>
+    <UModal v-model="isOpen">
+      <template #default>
+        <div class="sm:max-w-md">
+          <UCard>
         <template #header>
           <h3 class="text-base font-semibold leading-6">Share this blog post</h3>
         </template>
@@ -77,7 +79,7 @@ const socialLinks = [
             <UButton
               icon="i-lucide-copy"
               size="sm"
-              color="gray"
+              color="neutral"
               variant="solid"
               @click="handleCopy"
             />
@@ -90,10 +92,12 @@ const socialLinks = [
 
         <template #footer>
           <div class="flex justify-start">
-            <UButton color="gray" variant="ghost" label="Close" @click="isOpen = false" />
+            <UButton color="neutral" variant="ghost" label="Close" @click="isOpen = false" />
           </div>
         </template>
       </UCard>
+        </div>
+      </template>
     </UModal>
   </div>
 </template>

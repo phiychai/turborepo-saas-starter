@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Page, PageBlock } from '@turborepo-saas-starter/shared-types/schema';
 import { withLeadingSlash, withoutTrailingSlash } from 'ufo';
-const authStore = useAuthStore();
+
 const { isAuthenticated } = useAuth();
 
 const route = useRoute();
@@ -57,7 +57,7 @@ function applyVisualEditing() {
 
 function applyVisualEditingButton() {
   apply({
-    elements: document.querySelector('#visual-editing-button') as HTMLElement,
+    elements: document.querySelector('#visual-editing-button'),
     customClass: 'visual-editing-button-class',
     onSaved: async () => {
       await refresh();

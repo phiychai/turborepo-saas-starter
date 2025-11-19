@@ -5,11 +5,6 @@ import Database from 'better-sqlite3';
 import { DateTime } from 'luxon';
 import { Pool } from 'pg';
 
-import User from '#models/user';
-import { EmailService } from '#services/email_service';
-import { PasswordValidatorService } from '#services/password_validator_service';
-import { UserSyncService } from '#services/user_sync_service';
-import env from '#start/env';
 import type {
   BetterAuthBeforeSignUpContext,
   BetterAuthBeforePasswordUpdateContext,
@@ -18,6 +13,12 @@ import type {
   BetterAuthAfterFailedSignInContext,
   BetterAuthBeforeSignInContext,
 } from '#types/better_auth';
+
+import User from '#models/user';
+import { EmailService } from '#services/email_service';
+import { PasswordValidatorService } from '#services/password_validator_service';
+import { UserSyncService } from '#services/user_sync_service';
+import env from '#start/env';
 
 /**
  * Better Auth Configuration
@@ -263,13 +264,30 @@ export const auth = betterAuth({
      */
     onAfterSignUp: async ({ user, account }: BetterAuthAfterSignUpContext) => {
       try {
-        // Extract request context if available
+        // Extract request context if available with robust type guards
         const request = account?.request;
+        const headers =
+          request && typeof request === 'object' && 'headers' in request
+            ? request.headers
+            : undefined;
+        const getHeader =
+          headers &&
+          typeof headers === 'object' &&
+          'get' in headers &&
+          typeof headers.get === 'function'
+            ? headers.get.bind(headers)
+            : undefined;
         const clientIp =
-          request?.headers?.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-          request?.headers?.get('x-real-ip') ||
+          (getHeader?.('x-forwarded-for') as string | undefined)?.split(',')[0]?.trim() ||
+          (getHeader?.('x-real-ip') as string | undefined) ||
           null;
-        const requestPath = request?.url || null;
+        const requestPath =
+          request &&
+          typeof request === 'object' &&
+          'url' in request &&
+          typeof request.url === 'string'
+            ? request.url
+            : null;
 
         // Upsert Adonis User record
         // This stores the mapping in our database (users.better_auth_user_id)
@@ -297,12 +315,30 @@ export const auth = betterAuth({
      */
     onAfterSignIn: async ({ user, account }: BetterAuthAfterSignInContext) => {
       try {
+        // Extract request context if available with robust type guards
         const request = account?.request;
+        const headers =
+          request && typeof request === 'object' && 'headers' in request
+            ? request.headers
+            : undefined;
+        const getHeader =
+          headers &&
+          typeof headers === 'object' &&
+          'get' in headers &&
+          typeof headers.get === 'function'
+            ? headers.get.bind(headers)
+            : undefined;
         const clientIp =
-          request?.headers?.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-          request?.headers?.get('x-real-ip') ||
+          (getHeader?.('x-forwarded-for') as string | undefined)?.split(',')[0]?.trim() ||
+          (getHeader?.('x-real-ip') as string | undefined) ||
           null;
-        const requestPath = request?.url || null;
+        const requestPath =
+          request &&
+          typeof request === 'object' &&
+          'url' in request &&
+          typeof request.url === 'string'
+            ? request.url
+            : null;
 
         // Upsert Adonis User record (updates if exists, creates if new)
         const adonisUser = await UserSyncService.syncUser({

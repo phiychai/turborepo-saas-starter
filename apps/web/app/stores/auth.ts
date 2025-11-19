@@ -102,12 +102,15 @@ export const useAuthStore = defineStore('auth', {
       this.loading = true;
 
       try {
-        const result = await signUp.email({
+        // Build signUp data, only including optional fields if they have values
+        const signUpData = {
           email: data.email,
           password: data.password,
-          name: data.fullName || undefined,
-          username: data.username || undefined, // Better Auth Username Plugin accepts username here
-        });
+          ...(data.fullName && { name: data.fullName }),
+          ...(data.username && { username: data.username }),
+        };
+
+        const result = await signUp.email(signUpData as Parameters<typeof signUp.email>[0]);
 
         if (result.error) {
           return {
@@ -183,7 +186,10 @@ export const useAuthStore = defineStore('auth', {
       } catch (error: unknown) {
         // Silently handle 401/403 - user is not authenticated (expected)
         // Don't log to console as this is normal when user is not logged in
-        const statusCode = error && typeof error === 'object' && 'statusCode' in error ? (error as { statusCode: number }).statusCode : undefined;
+        const statusCode =
+          error && typeof error === 'object' && 'statusCode' in error
+            ? (error as { statusCode: number }).statusCode
+            : undefined;
         if (statusCode === 401 || statusCode === 403) {
           this.user = null;
           this.initialized = true;
@@ -365,5 +371,5 @@ export const useAuthStore = defineStore('auth', {
   persist: {
     storage: typeof window !== 'undefined' ? localStorage : undefined,
     paths: ['user'], // Only persist user data, not loading states
-  },
+  } as any,
 });

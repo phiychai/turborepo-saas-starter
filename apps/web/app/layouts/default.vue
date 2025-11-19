@@ -122,11 +122,11 @@ const links = computed(() => [
 const isCollapsed = computed(() => route.path.startsWith('/blog'));
 onMounted(() => {
   if (!isVisualEditingEnabled.value) return;
+
+  const elements = [navigation.value, footer.value].filter((el) => el !== null) as HTMLElement[];
+
   apply({
-    elements: [
-      (navigation.value && typeof navigation.value === 'object' && 'navigationRef' in navigation.value ? navigation.value.navigationRef as HTMLElement : null),
-      (footer.value && typeof footer.value === 'object' && 'footerRef' in footer.value ? footer.value.footerRef as HTMLElement : null),
-    ],
+    elements,
     onSaved: () => {
       refresh();
     },
@@ -136,7 +136,9 @@ onMounted(() => {
 
 <template>
   <div>
-    <AppHeader />
+    <div ref="navigationRef">
+      <AppHeader />
+    </div>
     <!-- Dashboard Layout (Authenticated) -->
     <template v-if="isAuthenticated">
       <UDashboardGroup unit="rem" style="margin-top: 56px">
@@ -182,7 +184,9 @@ onMounted(() => {
       <UMain>
         <slot />
       </UMain>
-      <AppFooter />
+      <div ref="footerRef">
+        <AppFooter />
+      </div>
     </template>
   </div>
 </template>

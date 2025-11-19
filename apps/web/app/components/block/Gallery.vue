@@ -50,19 +50,22 @@ function handleNext() {
 defineShortcuts({
   arrowleft: {
     usingInput: false,
-    whenever: [isLightboxOpen],
-    handler: () => handlePrev(),
+    handler: () => {
+      if (isLightboxOpen.value) handlePrev();
+    },
   },
   arrowright: {
     usingInput: false,
-    whenever: [isLightboxOpen],
-    handler: () => handleNext(),
+    handler: () => {
+      if (isLightboxOpen.value) handleNext();
+    },
   },
   escape: {
     usingInput: false,
-    whenever: [isLightboxOpen],
     handler: () => {
-      isLightboxOpen.value = false;
+      if (isLightboxOpen.value) {
+        isLightboxOpen.value = false;
+      }
     },
   },
 });
@@ -120,10 +123,8 @@ const { setAttr } = useVisualEditing();
       v-model="isLightboxOpen"
       fullscreen
       :ui="{
-        background: 'bg-black/90 dark:bg-black/95',
-        width: 'w-screen max-w-none',
-        height: 'h-screen',
-        padding: 'p-0',
+        overlay: 'bg-black/90 dark:bg-black/95',
+        content: 'w-screen max-w-none h-screen p-0',
       }"
     >
       <div class="relative w-full h-full flex items-center justify-center p-4">
@@ -140,7 +141,7 @@ const { setAttr } = useVisualEditing();
         >
           <UButton
             icon="i-lucide-arrow-left"
-            color="white"
+            color="neutral"
             variant="solid"
             size="lg"
             @click="handlePrev"
@@ -149,7 +150,7 @@ const { setAttr } = useVisualEditing();
           </UButton>
           <UButton
             trailing-icon="i-lucide-arrow-right"
-            color="white"
+            color="neutral"
             variant="solid"
             size="lg"
             @click="handleNext"
@@ -160,7 +161,7 @@ const { setAttr } = useVisualEditing();
 
         <UButton
           icon="i-lucide-x"
-          color="white"
+          color="neutral"
           variant="solid"
           size="lg"
           class="absolute top-8 right-8"

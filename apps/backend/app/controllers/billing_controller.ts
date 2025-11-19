@@ -45,8 +45,11 @@ export default class BillingController {
       // Get the Lago account
       const account = await billingService.getAccountByEmail(user.email);
 
+      if (!account) {
+        return response.ok({ subscriptions: [] });
+      }
       const accountResponse = account as LagoAccountResponse;
-      if (!accountResponse || !accountResponse.customer?.external_id) {
+      if (!accountResponse.customer?.external_id) {
         return response.ok({
           subscriptions: [],
         });
@@ -93,6 +96,9 @@ export default class BillingController {
 
       const accountResponse = account as LagoAccountResponse;
       const accountExternalId = accountResponse?.customer?.external_id || accountResponse?.external_id;
+      if (!accountExternalId) {
+        return response.badRequest({ error: 'Customer external ID not found' });
+      }
       const subscription = await billingService.createSubscription({
         externalCustomerId: accountExternalId,
         planCode: planName,
@@ -141,8 +147,11 @@ export default class BillingController {
 
       const account = await billingService.getAccountByEmail(user.email);
 
+      if (!account) {
+        return response.ok({ invoices: [] });
+      }
       const accountResponse = account as LagoAccountResponse;
-      if (!accountResponse || !accountResponse.customer?.external_id) {
+      if (!accountResponse.customer?.external_id) {
         return response.ok({
           invoices: [],
         });
@@ -222,6 +231,9 @@ export default class BillingController {
 
       const account = await billingService.getAccountByEmail(user.email);
 
+      if (!account) {
+        return response.ok({ paymentMethods: [] });
+      }
       const accountResponse = account as LagoAccountResponse;
       if (!accountResponse || !accountResponse.customer?.external_id) {
         return response.ok({

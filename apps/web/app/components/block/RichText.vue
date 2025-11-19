@@ -33,7 +33,7 @@ const { setAttr } = useVisualEditing();
       :data-directus="
         setAttr({
           collection: 'block_richtext',
-          item: data.id,
+          item: data.id || null,
           fields: 'tagline',
           mode: 'popover',
         })
@@ -45,7 +45,7 @@ const { setAttr } = useVisualEditing();
       :data-directus="
         setAttr({
           collection: 'block_richtext',
-          item: data.id,
+          item: data.id || null,
           fields: 'headline',
           mode: 'popover',
         })
@@ -57,7 +57,7 @@ const { setAttr } = useVisualEditing();
       :data-directus="
         setAttr({
           collection: 'block_richtext',
-          item: data.id,
+          item: data.id || null,
           fields: 'content',
           mode: 'drawer',
         })

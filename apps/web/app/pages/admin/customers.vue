@@ -39,13 +39,57 @@ const {
   data: usersData,
   status,
   refresh,
-} = await useFetch<{ users?: { data?: unknown[] } | unknown[]; data?: unknown[] }>('/api/admin/users', {
+} = await useFetch<{ users?: { data?: unknown[]; pagination?: { page?: number; perPage?: number; total?: number } } | unknown[]; data?: unknown[]; pagination?: { page?: number; perPage?: number; total?: number } }>('/api/admin/users', {
   lazy: true,
   query: {
     page: computed(() => pagination.value.pageIndex + 1),
     limit: computed(() => pagination.value.pageSize),
     search: computed(() => columnFilters.value.find((f) => f.id === 'email')?.value || ''),
   },
+});
+
+// Pagination helpers
+const getPaginationTotal = computed(() => {
+  const data = usersData.value;
+  if (data && typeof data === 'object') {
+    if ('pagination' in data && data.pagination && typeof data.pagination === 'object' && 'total' in data.pagination) {
+      return (data.pagination as { total?: number }).total ?? 0;
+    }
+    if ('users' in data && data.users && typeof data.users === 'object' && 'pagination' in data.users) {
+      const users = data.users as { pagination?: { total?: number } };
+      return users.pagination?.total ?? 0;
+    }
+  }
+  if (!data) return 0;
+  return (Array.isArray(data) ? data.length : 0);
+});
+
+const getPaginationPage = computed(() => {
+  const data = usersData.value;
+  if (data && typeof data === 'object') {
+    if ('pagination' in data && data.pagination && typeof data.pagination === 'object' && 'page' in data.pagination) {
+      return (data.pagination as { page?: number }).page ?? pagination.value.pageIndex + 1;
+    }
+    if ('users' in data && data.users && typeof data.users === 'object' && 'pagination' in data.users) {
+      const users = data.users as { pagination?: { page?: number } };
+      return users.pagination?.page ?? pagination.value.pageIndex + 1;
+    }
+  }
+  return pagination.value.pageIndex + 1;
+});
+
+const getPaginationPerPage = computed(() => {
+  const data = usersData.value;
+  if (data && typeof data === 'object') {
+    if ('pagination' in data && data.pagination && typeof data.pagination === 'object' && 'perPage' in data.pagination) {
+      return (data.pagination as { perPage?: number }).perPage ?? pagination.value.pageSize;
+    }
+    if ('users' in data && data.users && typeof data.users === 'object' && 'pagination' in data.users) {
+      const users = data.users as { pagination?: { perPage?: number } };
+      return users.pagination?.perPage ?? pagination.value.pageSize;
+    }
+  }
+  return pagination.value.pageSize;
 });
 
 // Map backend users to DashboardUser format
@@ -116,9 +160,10 @@ async function syncAllUsers() {
       credentials: 'include',
     });
 
+    const responseData = response as { synced?: number; skipped?: number; failed?: number };
     toast.add({
       title: 'Sync Complete',
-      description: `Synced ${response.synced} users, ${response.skipped} already existed, ${response.failed} failed`,
+      description: `Synced ${responseData.synced || 0} users, ${responseData.skipped || 0} already existed, ${responseData.failed || 0} failed`,
       color: 'success',
     });
 
@@ -408,7 +453,7 @@ watch(
                 .map((column: { id: string; getIsVisible?: () => boolean }) => ({
                   label: upperFirst(column.id),
                   type: 'checkbox' as const,
-                  checked: column.getIsVisible(),
+                  checked: column.getIsVisible?.() ?? true,
                   onUpdateChecked(checked: boolean) {
                     table?.tableApi?.getColumn(column.id)?.toggleVisibility(!!checked);
                   },
@@ -455,14 +500,14 @@ watch(
       <div class="flex items-center justify-between gap-3 border-t border-default pt-4 mt-auto">
         <div class="text-sm text-muted">
           {{ table?.tableApi?.getFilteredSelectedRowModel().rows.length || 0 }} of
-          {{ usersData?.pagination?.total || data.length || 0 }} row(s) selected.
+          {{ getPaginationTotal }} row(s) selected.
         </div>
 
         <div class="flex items-center gap-1.5">
           <UPagination
-            :default-page="usersData?.pagination?.page || pagination.pageIndex + 1"
-            :items-per-page="usersData?.pagination?.perPage || pagination.pageSize"
-            :total="usersData?.pagination?.total || data.length || 0"
+            :default-page="getPaginationPage"
+            :items-per-page="getPaginationPerPage"
+            :total="getPaginationTotal"
             @update:page="
               (p: number) => {
                 pagination.pageIndex = p - 1;

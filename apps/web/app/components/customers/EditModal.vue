@@ -70,11 +70,17 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     });
 
     // Emit updated user data
-    const updatedUser = {
-      ...props.user,
+    const responseData = response as { user?: Record<string, unknown> };
+    const updatedUser: DashboardUser = {
+      id: props.user.id,
       name: `${event.data.firstName} ${event.data.lastName}`,
-      status: event.data.isActive ? 'subscribed' : ('unsubscribed' as const),
-      ...response.user,
+      email: props.user.email,
+      status: event.data.isActive ? 'subscribed' : 'unsubscribed',
+      location: props.user.location,
+      avatar: props.user.avatar,
+      role: props.user.role,
+      isActive: event.data.isActive,
+      ...(responseData.user || {}),
     };
 
     emit('updated', updatedUser);

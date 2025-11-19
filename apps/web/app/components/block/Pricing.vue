@@ -17,7 +17,7 @@ const { setAttr } = useVisualEditing();
       :data-directus="
         setAttr({
           collection: 'block_pricing',
-          item: data.id,
+          item: data.id || null,
           fields: 'tagline',
           mode: 'popover',
         })
@@ -29,7 +29,7 @@ const { setAttr } = useVisualEditing();
       :data-directus="
         setAttr({
           collection: 'block_pricing',
-          item: data.id,
+          item: data.id || null,
           fields: 'headline',
           mode: 'popover',
         })
@@ -47,7 +47,7 @@ const { setAttr } = useVisualEditing();
       :data-directus="
         setAttr({
           collection: 'block_pricing',
-          item: data.id,
+          item: data.id || null,
           fields: ['pricing_cards'],
           mode: 'modal',
         })
@@ -57,9 +57,16 @@ const { setAttr } = useVisualEditing();
         <UPricingPlan
           v-for="card in data.pricing_cards"
           :key="card.id"
-          v-bind="card"
+          :title="card.title"
+          :description="card.description"
           :price="card.price"
-          :billing-cycle="card.billing_cycle"
+          :badge="card.badge"
+          :features="card.features"
+          :button="card.button && card.button.label ? {
+            label: card.button.label,
+            ...(card.button.variant ? { variant: card.button.variant as 'solid' | 'outline' | 'soft' | 'subtle' | 'ghost' | 'link' } : {}),
+            ...(card.button.url ? { to: card.button.url } : {}),
+          } : undefined"
         />
       </UPricingPlans>
       <!-- <PricingCard v-for="card in data.pricing_cards" :key="card.id" :card="card" /> -->

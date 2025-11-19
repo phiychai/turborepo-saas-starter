@@ -112,12 +112,17 @@ export class EmailService {
    */
   private static async sendViaResend(to: string, subject: string, html: string): Promise<void> {
     // Optional dependency - may not be installed
+    // @ts-expect-error - resend is an optional dependency, may not be installed
     const resendModule = (await import('resend').catch(() => null)) as ResendModule | null;
     if (!resendModule || !resendModule.Resend) {
       throw new Error('Resend package not installed. Run: npm install resend');
     }
 
-    const resend = new resendModule.Resend(env.get('RESEND_API_KEY'));
+    const apiKey = env.get('RESEND_API_KEY');
+    if (!apiKey) {
+      throw new Error('RESEND_API_KEY environment variable is not set');
+    }
+    const resend = new resendModule.Resend(apiKey);
     await resend.emails.send({
       from: env.get('EMAIL_FROM', 'noreply@example.com'),
       to,
@@ -130,7 +135,7 @@ export class EmailService {
    * Send email via SendGrid
    */
   private static async sendViaSendGrid(to: string, subject: string, html: string): Promise<void> {
-    // Optional dependency - may not be installed
+    // @ts-expect-error - @sendgrid/mail is an optional dependency, may not be installed
     const sgMail = (await import('@sendgrid/mail').catch(() => null)) as SendGridModule | null;
     if (!sgMail || !sgMail.default) {
       throw new Error('SendGrid package not installed. Run: npm install @sendgrid/mail');
