@@ -27,7 +27,7 @@
     "eslint-plugin-prettier": "^5.2.6",
     "eslint-plugin-vue": "^10.5.1",
     "prettier": "^3.6.2",
-    "typescript-eslint": "^8.29.1"
+    "typescript-eslint": "^8.47.0"
   },
   "devDependencies": {
     "prettier-plugin-organize-imports": "^4.3.0",
