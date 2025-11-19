@@ -11,6 +11,10 @@ concurrency:
   cancel-in-progress: true
 
 env:
+  # Environment
+  NODE_ENV: test
+  PORT: 3333
+
   # Application
   APP_KEY: test-key-for-ci-validation-only-32-chars
   HOST: localhost
