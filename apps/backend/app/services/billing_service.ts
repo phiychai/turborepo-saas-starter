@@ -1,5 +1,5 @@
-import type { Plan, Subscription } from '@turborepo-saas-starter/shared-types';
 import type { LagoApiResponse, LagoEvent, LagoCharge } from '#types/billing';
+import type { Plan, Subscription } from '@turborepo-saas-starter/shared-types';
 
 import env from '#start/env';
 
@@ -62,7 +62,10 @@ class BillingService {
   /**
    * Make a request to Lago API
    */
-  private async request<T = unknown>(endpoint: string, options: RequestInit = {}): Promise<LagoApiResponse<T> | null> {
+  private async request<T = unknown>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<LagoApiResponse<T> | null> {
     const url = `${this.apiUrl}/api/v1${endpoint}`;
 
     const headers: Record<string, string> = {
@@ -484,7 +487,11 @@ class BillingService {
    */
   async getPaymentProvider(externalCustomerId: string) {
     const customerResponse = await this.getCustomer(externalCustomerId);
-    if (!customerResponse || typeof customerResponse !== 'object' || !('customer' in customerResponse)) {
+    if (
+      !customerResponse ||
+      typeof customerResponse !== 'object' ||
+      !('customer' in customerResponse)
+    ) {
       return undefined;
     }
     const customer = customerResponse as { customer?: { billing_configuration?: unknown } };

@@ -18,4 +18,3 @@ declare module '@adonisjs/core/http' {
     betterAuthSession?: BetterAuthSession;
   }
 }
-

@@ -138,10 +138,13 @@ export class UserSyncService {
       });
 
       // Log to console without sensitive data
-      logger.error(`Failed to sync user: ${error instanceof Error ? error.message : String(error)}`, {
-        externalUserId: betterAuthUser.id,
-        // Don't log email or other sensitive data
-      });
+      logger.error(
+        `Failed to sync user: ${error instanceof Error ? error.message : String(error)}`,
+        {
+          externalUserId: betterAuthUser.id,
+          // Don't log email or other sensitive data
+        }
+      );
       return null;
     }
   }

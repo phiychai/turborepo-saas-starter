@@ -2,6 +2,8 @@ import hash from '@adonisjs/core/services/hash';
 import logger from '@adonisjs/core/services/logger';
 import { DateTime } from 'luxon';
 
+import type { AuthSyncErrorPayload } from '@turborepo-saas-starter/shared-types';
+
 import AuthSyncError from '#models/auth_sync_error';
 
 export type AuthSyncErrorType =
@@ -20,7 +22,7 @@ export interface LogErrorOptions {
   requestPath?: string | null;
   clientIp?: string | null;
   error: string | Error;
-  payload?: import('@turborepo-saas-starter/shared-types').AuthSyncErrorPayload | null;
+  payload?: AuthSyncErrorPayload | null;
 }
 
 export class AuthErrorLogger {
@@ -65,9 +67,12 @@ export class AuthErrorLogger {
       return error;
     } catch (logError: unknown) {
       // If logging fails, at least log to console
-      logger.error(`Failed to log auth sync error: ${logError instanceof Error ? logError.message : String(logError)}`, {
-        originalError: errorMessage,
-      });
+      logger.error(
+        `Failed to log auth sync error: ${logError instanceof Error ? logError.message : String(logError)}`,
+        {
+          originalError: errorMessage,
+        }
+      );
       throw logError;
     }
   }
@@ -75,9 +80,7 @@ export class AuthErrorLogger {
   /**
    * Truncate payload to max 1KB
    */
-  private static truncatePayload(
-    payload: import('@turborepo-saas-starter/shared-types').AuthSyncErrorPayload
-  ): import('@turborepo-saas-starter/shared-types').AuthSyncErrorPayload {
+  private static truncatePayload(payload: AuthSyncErrorPayload): AuthSyncErrorPayload {
     // First sanitize
     const sanitized = AuthSyncError.sanitizePayload(payload);
     const json = JSON.stringify(sanitized);

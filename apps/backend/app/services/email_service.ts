@@ -1,5 +1,6 @@
-import env from '#start/env';
 import type { ResendModule, SendGridModule } from '#types/email';
+
+import env from '#start/env';
 
 /**
  * Email Service

@@ -1,7 +1,7 @@
+import type { LagoAccountResponse } from '#types/billing';
 import type { HttpContext } from '@adonisjs/core/http';
 
 import billingService from '#services/billing_service';
-import type { LagoAccountResponse } from '#types/billing';
 
 export default class BillingController {
   /**
@@ -55,7 +55,9 @@ export default class BillingController {
         });
       }
 
-      const subscriptions = await billingService.getSubscriptions(accountResponse.customer.external_id);
+      const subscriptions = await billingService.getSubscriptions(
+        accountResponse.customer.external_id
+      );
 
       return response.ok({
         subscriptions,
@@ -95,7 +97,8 @@ export default class BillingController {
       }
 
       const accountResponse = account as LagoAccountResponse;
-      const accountExternalId = accountResponse?.customer?.external_id || accountResponse?.external_id;
+      const accountExternalId =
+        accountResponse?.customer?.external_id || accountResponse?.external_id;
       if (!accountExternalId) {
         return response.badRequest({ error: 'Customer external ID not found' });
       }

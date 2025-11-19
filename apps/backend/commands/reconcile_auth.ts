@@ -24,7 +24,9 @@ export default class ReconcileAuth extends BaseCommand {
         `  Mappings: ${result.mappings.fixed} fixed, ${result.mappings.failed} failed`
       );
     } catch (error: unknown) {
-      this.logger.error(`Reconciliation failed: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.error(
+        `Reconciliation failed: ${error instanceof Error ? error.message : String(error)}`
+      );
       this.exitCode = 1;
     }
   }

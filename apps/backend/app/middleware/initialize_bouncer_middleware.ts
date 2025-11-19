@@ -18,7 +18,7 @@ export default class InitializeBouncerMiddleware {
      */
     // Bouncer expects policies as Record<string, LazyImport>, but we have a plain object
     // The runtime behavior works correctly, but TypeScript types are strict
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     ctx.bouncer = new Bouncer(
       () => ctx.auth.user || null,
       abilities,
@@ -28,7 +28,13 @@ export default class InitializeBouncerMiddleware {
     /**
      * Share bouncer helpers with Edge templates.
      */
-    if ('view' in ctx && ctx.view && typeof ctx.view === 'object' && 'share' in ctx.view && typeof ctx.view.share === 'function') {
+    if (
+      'view' in ctx &&
+      ctx.view &&
+      typeof ctx.view === 'object' &&
+      'share' in ctx.view &&
+      typeof ctx.view.share === 'function'
+    ) {
       ctx.view.share(ctx.bouncer.edgeHelpers);
     }
 

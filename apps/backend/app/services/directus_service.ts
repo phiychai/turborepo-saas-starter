@@ -9,6 +9,7 @@ import {
   deleteItem,
   type DirectusClient,
 } from '@directus/sdk';
+
 import type { Schema } from '@turborepo-saas-starter/shared-types/schema';
 
 import env from '#start/env';
@@ -62,7 +63,12 @@ class DirectusService {
   /**
    * Proxy a request to Directus
    */
-  async proxyRequest(path: string, method: string, body?: unknown, headers?: Record<string, string>) {
+  async proxyRequest(
+    path: string,
+    method: string,
+    body?: unknown,
+    headers?: Record<string, string>
+  ) {
     const directusUrl = env.get('DIRECTUS_URL');
     const url = `${directusUrl}${path}`;
 

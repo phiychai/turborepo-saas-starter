@@ -5,7 +5,9 @@ import app from '@adonisjs/core/services/app';
 
 import { UserProfileDTOBuilder, type UserProfileDTO } from '../dto/user_profile_dto.js';
 
+import type { BetterAuthInstance } from '#types/better_auth';
 import type { HttpContext } from '@adonisjs/core/http';
+import type { UserPreferences } from '@turborepo-saas-starter/shared-types';
 
 import * as abilities from '#abilities/main';
 import { auth } from '#config/better_auth';
@@ -13,7 +15,6 @@ import User from '#models/user';
 import UserPolicy from '#policies/user_policy';
 import { toWebRequest } from '#utils/better_auth_helpers';
 import { updateProfileValidator } from '#validators/auth_validator';
-import type { BetterAuthInstance } from '#types/better_auth';
 
 export default class UserController {
   /**
@@ -116,14 +117,23 @@ export default class UserController {
       if ('bio' in requestBody || data.bio !== undefined) {
         // Get original value from request body (might be empty string)
         const originalBio = 'bio' in requestBody ? requestBody.bio : undefined;
-        user.bio = originalBio === '' || originalBio === undefined ? null : (typeof originalBio === 'string' ? originalBio : data.bio || null);
+        user.bio =
+          originalBio === '' || originalBio === undefined
+            ? null
+            : typeof originalBio === 'string'
+              ? originalBio
+              : data.bio || null;
       }
       // Handle username updates via Better Auth API
       // Better Auth handles validation, uniqueness, and normalization
       if ('username' in requestBody || data.username !== undefined) {
         const originalUsername = 'username' in requestBody ? requestBody.username : undefined;
         const newUsername =
-          originalUsername === '' || originalUsername === undefined ? null : (typeof originalUsername === 'string' ? originalUsername : data.username || null);
+          originalUsername === '' || originalUsername === undefined
+            ? null
+            : typeof originalUsername === 'string'
+              ? originalUsername
+              : data.username || null;
 
         // Check if username actually changed
         const usernameChanged = newUsername !== user.username;
@@ -151,7 +161,12 @@ export default class UserController {
               console.error('Error updating username in Better Auth:', error);
               const errorMessage =
                 (error instanceof Error && error.message) ||
-                (typeof error === 'object' && error !== null && 'error' in error && typeof (error as { error?: { message?: string } }).error?.message === 'string' ? (error as { error: { message: string } }).error.message : undefined) ||
+                (typeof error === 'object' &&
+                error !== null &&
+                'error' in error &&
+                typeof (error as { error?: { message?: string } }).error?.message === 'string'
+                  ? (error as { error: { message: string } }).error.message
+                  : undefined) ||
                 'Failed to update username';
               throw new Error(`Username update failed: ${errorMessage}`);
             }
@@ -164,7 +179,7 @@ export default class UserController {
       }
       if (data.preferences !== undefined) {
         // Validator allows unknown properties, but we need to ensure type compatibility
-        user.preferences = data.preferences as import('@turborepo-saas-starter/shared-types').UserPreferences | null;
+        user.preferences = data.preferences as UserPreferences | null;
       }
 
       await user.save();

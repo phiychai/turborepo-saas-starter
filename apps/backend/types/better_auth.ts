@@ -134,4 +134,3 @@ export interface BetterAuthInstance {
   handler?: (request: Request) => Promise<Response>;
   [key: string]: unknown;
 }
-
