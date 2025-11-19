@@ -48,8 +48,7 @@ components.d.ts
 *.db
 
 # CMS/Directus
-apps/cms/directus/data/
-apps/cms/directus/uploads/
+apps/cms
 
 # Temporary files
 tmp
