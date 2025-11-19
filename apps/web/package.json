@@ -58,14 +58,14 @@
     "@nuxt/eslint": "^1.10.0",
     "@nuxt/test-utils": "^3.20.1",
     "@turborepo-saas-starter/eslint-config": "workspace:*",
-    "@vitest/ui": "^3.2.0",
+    "@vitest/ui": "^4.0.10",
     "@vue/test-utils": "^2.4.6",
     "directus-sdk-typegen": "^0.2.0",
-    "eslint": "^9.31.0",
+    "eslint": "^9.39.1",
     "happy-dom": "^20.0.10",
     "prettier": "3.6.2",
     "typescript": "^5.8.3",
-    "vitest": "^3.2.0",
+    "vitest": "^4.0.10",
     "vue-tsc": "^3.0.1"
   },
   "packageManager": "pnpm@10.13.1"
