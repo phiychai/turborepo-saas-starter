@@ -13,7 +13,9 @@
     "./prettier.config.cjs": "./prettier.config.cjs"
   },
   "scripts": {
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@eslint/js": "^9.39.1",

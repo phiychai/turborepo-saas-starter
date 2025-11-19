@@ -34,4 +34,3 @@ export interface UserProfile {
     tokenExpiresAt: string | null;
   };
 }
-
