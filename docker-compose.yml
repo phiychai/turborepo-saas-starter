@@ -1,4 +1,4 @@
-version: "3.9"
+version: '3.9'
 
 services:
   # PostgreSQL - Single instance with multiple databases
@@ -8,7 +8,7 @@ services:
     container_name: saas-postgres
     restart: unless-stopped
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - '${POSTGRES_PORT:-5432}:5432'
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
@@ -17,7 +17,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-postgres}']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -30,11 +30,11 @@ services:
     container_name: saas-redis
     restart: unless-stopped
     ports:
-      - "${REDIS_PORT:-6379}:6379"
+      - '${REDIS_PORT:-6379}:6379'
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ['CMD', 'redis-cli', 'ping']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -47,7 +47,7 @@ services:
     container_name: saas-directus
     restart: unless-stopped
     ports:
-      - "${DIRECTUS_PORT:-8055}:8055"
+      - '${DIRECTUS_PORT:-8055}:8055'
     depends_on:
       postgres:
         condition: service_healthy
@@ -99,8 +99,8 @@ services:
     container_name: saas-lago
     restart: unless-stopped
     ports:
-      - "${LAGO_API_PORT:-3100}:3000" # API exposed on 3100 to avoid conflict with Nuxt
-      - "${LAGO_FRONT_PORT:-3001}:80" # Frontend Dashboard
+      - '${LAGO_API_PORT:-3100}:3000' # API exposed on 3100 to avoid conflict with Nuxt
+      - '${LAGO_FRONT_PORT:-3001}:80' # Frontend Dashboard
     depends_on:
       postgres:
         condition: service_healthy
@@ -150,7 +150,7 @@ services:
     networks:
       - saas-network
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:3000/health || exit 1"]
+      test: ['CMD-SHELL', 'curl -f http://localhost:3000/health || exit 1']
       interval: 10s
       timeout: 5s
       retries: 5
@@ -163,7 +163,7 @@ services:
     container_name: saas-backend
     restart: unless-stopped
     ports:
-      - "${BACKEND_PORT:-3333}:3333"
+      - '${BACKEND_PORT:-3333}:3333'
     depends_on:
       postgres:
         condition: service_healthy
@@ -225,7 +225,7 @@ services:
     container_name: saas-web
     restart: unless-stopped
     ports:
-      - "${WEB_PORT:-3000}:3000"
+      - '${WEB_PORT:-3000}:3000'
     depends_on:
       - backend
     environment:
@@ -252,8 +252,8 @@ services:
     container_name: saas-nginx
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
+      - '80:80'
+      - '443:443'
     depends_on:
       - backend
       - web

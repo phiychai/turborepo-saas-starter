@@ -2,8 +2,10 @@
 
 # 🚀 Turborepo SaaS Starter
 
-> **⚠️ NOT PRODUCTION READY YET**
-> This project is currently under active development and is not recommended for production use. Features may be incomplete, breaking changes may occur, and documentation is still being finalized.
+> **⚠️ NOT PRODUCTION READY YET** This project is currently under active
+> development and is not recommended for production use. Features may be
+> incomplete, breaking changes may occur, and documentation is still being
+> finalized.
 
 **Monorepo for building modern SaaS applications**
 
@@ -13,9 +15,12 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![pnpm](https://img.shields.io/badge/pnpm-10.15-F69220?style=for-the-badge&logo=pnpm&logoColor=white)](https://pnpm.io)
 
-*A fully-featured, enterprise-grade monorepo with frontend, backend, CMS, and shared packages*
+_A fully-featured, enterprise-grade monorepo with frontend, backend, CMS, and
+shared packages_
 
-[Features](#-features) • [Quick Start](#-quick-start) • [Architecture](#-architecture) • [Testing](./TESTING.md) • [Documentation](#-documentation)
+[Features](#-features) • [Quick Start](#-quick-start) •
+[Architecture](#-architecture) • [Testing](./TESTING.md) •
+[Documentation](#-documentation)
 
 </div>
 
@@ -24,11 +29,13 @@
 ## ✨ Features
 
 ### 🏗️ **Monorepo Architecture**
+
 - **Turborepo** - High-performance build system with intelligent caching
 - **pnpm Workspaces** - Fast, disk space efficient package management
 - **Shared Packages** - Reusable types, utilities, and configurations
 
 ### 🎨 **Modern Frontend**
+
 - **Nuxt 4** - The Intuitive Vue Framework with server-side rendering
 - **Nuxt UI Pro** - Beautiful, accessible components built on Radix Vue
 - **TypeScript** - Full type safety across the entire stack
@@ -36,12 +43,15 @@
 - **Visual Editing** - Live preview and editing with Directus integration
 
 ### ⚡ **Powerful Backend**
+
 - **AdonisJS 6** - Elegant Node.js framework with full TypeScript support
 - **SQLite/PostgreSQL** - Flexible database options with Lucid ORM
-- **Better Auth** - Modern authentication with email/password and OAuth (Google, GitHub)
+- **Better Auth** - Modern authentication with email/password and OAuth (Google,
+  GitHub)
 - **API Documentation** - Auto-generated Swagger/OpenAPI docs
 
 ### 💳 **Billing & Subscriptions**
+
 - **Lago** - Open-source billing platform for modern SaaS
   - Subscription management (recurring billing, tiers)
   - Usage-based billing (metered/pay-as-you-go)
@@ -51,6 +61,7 @@
   - Beautiful Admin Dashboard
 
 ### 🛠️ **Developer Experience**
+
 - **ESLint 9** - Modern flat config with shared rules across workspace
 - **Prettier** - Consistent code formatting
 - **TypeScript Project References** - Fast incremental builds
@@ -59,6 +70,7 @@
 - **Testing** - Vitest for unit tests, Playwright for E2E tests
 
 ### 🔒 **Production Ready**
+
 - **Type-safe APIs** - End-to-end type safety with TypeScript
 - **Security Headers** - nuxt-security module configured
 - **SEO Optimized** - Meta tags, sitemaps, and structured data
@@ -139,6 +151,7 @@ pnpm dev
 ```
 
 This will start:
+
 - 🌐 **Frontend** at http://localhost:3000
 - 🔌 **Backend API** at http://localhost:3333
 - 📦 **Directus CMS** at http://localhost:8055
@@ -196,7 +209,8 @@ To enable Google or GitHub authentication:
 
 1. Go to [GitHub Developer Settings](https://github.com/settings/developers)
 2. Click "New OAuth App"
-3. Set Authorization callback URL: `http://localhost:3333/api/auth/callback/github`
+3. Set Authorization callback URL:
+   `http://localhost:3333/api/auth/callback/github`
 4. Copy Client ID and generate Client Secret
 5. Add them to your `.env`
 
@@ -285,6 +299,7 @@ pnpm install
 ### Tech Stack
 
 #### Frontend (Nuxt App)
+
 ```typescript
 Nuxt 4 + Vue 3
 ├── Nuxt UI Pro          // Component library
@@ -297,6 +312,7 @@ Nuxt 4 + Vue 3
 ```
 
 #### Backend (AdonisJS)
+
 ```typescript
 AdonisJS 6
 ├── Lucid ORM           // Database ORM
@@ -307,6 +323,7 @@ AdonisJS 6
 ```
 
 #### CMS (Directus)
+
 ```typescript
 Directus
 ├── PostgreSQL/SQLite   // Database
@@ -315,6 +332,7 @@ Directus
 ```
 
 #### Billing (Lago)
+
 ```typescript
 Lago
 ├── Subscription Management   // Recurring billing, tiers
@@ -361,6 +379,7 @@ curl -X POST http://localhost:3100/api/v1/plans \
 ### Features
 
 #### 💰 **Subscription Management**
+
 - Recurring billing (monthly, yearly, weekly)
 - Tiered pricing and seat-based billing
 - Free trials and grace periods
@@ -368,6 +387,7 @@ curl -X POST http://localhost:3100/api/v1/plans \
 - Proration support
 
 #### 📊 **Usage-Based Billing**
+
 - Track API calls, storage, compute
 - Metered billing (pay-as-you-go)
 - Custom billable metrics
@@ -375,6 +395,7 @@ curl -X POST http://localhost:3100/api/v1/plans \
 - Aggregation rules (sum, count, max, etc.)
 
 #### 🧾 **Invoice Management**
+
 - Automatic invoice generation
 - PDF invoices with custom branding
 - Tax calculation and handling
@@ -382,12 +403,14 @@ curl -X POST http://localhost:3100/api/v1/plans \
 - Dunning management (failed payments)
 
 #### 🔌 **Multi-Gateway Support**
+
 - **Stripe** - Credit cards, ACH, SEPA
 - **PayPal** - PayPal accounts
 - **Adyen** - Global payment methods
 - Custom payment providers via API
 
 #### 🎨 **Admin Dashboard**
+
 - Customer management
 - Plan configuration
 - Invoice viewing
@@ -429,44 +452,69 @@ const invoices = await BillingService.getInvoices(user.id);
 
 ### Documentation
 
-See [**LAGO_INTEGRATION.md**](./LAGO_INTEGRATION.md) for complete setup and usage guide
+See [**LAGO_INTEGRATION.md**](./LAGO_INTEGRATION.md) for complete setup and
+usage guide
 
 ---
 
 ## 📚 Documentation
 
-> **📖 Documentation System:** All documentation lives in `docs/` and syncs to Nuxt Content.
-> See [**Documentation Guide**](./DOCUMENTATION_GUIDE.md) for how to create and manage docs.
+> **📖 Documentation System:** All documentation lives in `docs/` and syncs to
+> Nuxt Content. See [**Documentation Guide**](./DOCUMENTATION_GUIDE.md) for how
+> to create and manage docs.
 
 ### Core Documentation
-- [**Quick Start**](./docs/getting-started/QUICK_START.md) - Get up and running quickly
-- [**Authentication**](./docs/authentication/AUTHENTICATION.md) - Complete guide to Better Auth integration
-- [**Better Auth Architecture**](./docs/authentication/BETTER_AUTH_ARCHITECTURE.md) - Quick reference with flow diagrams
+
+- [**Quick Start**](./docs/getting-started/QUICK_START.md) - Get up and running
+  quickly
+- [**Authentication**](./docs/authentication/AUTHENTICATION.md) - Complete guide
+  to Better Auth integration
+- [**Better Auth Architecture**](./docs/authentication/BETTER_AUTH_ARCHITECTURE.md) -
+  Quick reference with flow diagrams
 - [**Testing**](./docs/testing/TESTING.md) - Vitest and Playwright testing setup
 
 ### Architecture
-- [**Architecture Overview**](./docs/architecture/ARCHITECTURE.md) - System architecture and design
-- [**Implementation Summary**](./docs/architecture/IMPLEMENTATION_SUMMARY.md) - Key implementation details
-- [**Package Structure**](./docs/architecture/PACKAGE_STRUCTURE.md) - Monorepo organization
-- [**Pinia State Management**](./docs/architecture/PINIA_STATE_MANAGEMENT.md) - State management with Pinia stores
-- [**Smart Routing System**](./docs/architecture/ROUTING_SYSTEM.md) - Dynamic routing based on auth status and roles
-- [**Migration Progress**](./docs/architecture/MIGRATION_PROGRESS.md) - Development migration notes
+
+- [**Architecture Overview**](./docs/architecture/ARCHITECTURE.md) - System
+  architecture and design
+- [**Implementation Summary**](./docs/architecture/IMPLEMENTATION_SUMMARY.md) -
+  Key implementation details
+- [**Package Structure**](./docs/architecture/PACKAGE_STRUCTURE.md) - Monorepo
+  organization
+- [**Pinia State Management**](./docs/architecture/PINIA_STATE_MANAGEMENT.md) -
+  State management with Pinia stores
+- [**Smart Routing System**](./docs/architecture/ROUTING_SYSTEM.md) - Dynamic
+  routing based on auth status and roles
+- [**Migration Progress**](./docs/architecture/MIGRATION_PROGRESS.md) -
+  Development migration notes
 
 ### Tooling
-- [**ESLint & Prettier Setup**](./docs/tooling/ESLINT_PRETTIER_SETUP.md) - Code formatting and linting
-- [**Config Files**](./docs/tooling/CONFIG_FILES.md) - Configuration file documentation
-- [**Module Types**](./docs/tooling/MODULE_TYPES.md) - Module system documentation
+
+- [**ESLint & Prettier Setup**](./docs/tooling/ESLINT_PRETTIER_SETUP.md) - Code
+  formatting and linting
+- [**Config Files**](./docs/tooling/CONFIG_FILES.md) - Configuration file
+  documentation
+- [**Module Types**](./docs/tooling/MODULE_TYPES.md) - Module system
+  documentation
 
 ### Integration Guides
-- [**Better Auth Integration**](./docs/authentication/BETTER_AUTH_INTEGRATION.md) - Technical implementation details
-- [**Lago Setup & Configuration**](./docs/integrations/LAGO_SETUP.md) - Complete Lago billing setup guide
-- [**Lago Integration**](./docs/integrations/LAGO_INTEGRATION.md) - Billing and subscription management API
-- [**Directus CMS Upgrade**](./docs/integrations/DIRECTUS_UPGRADE.md) - How to safely upgrade Directus
+
+- [**Better Auth Integration**](./docs/authentication/BETTER_AUTH_INTEGRATION.md) -
+  Technical implementation details
+- [**Lago Setup & Configuration**](./docs/integrations/LAGO_SETUP.md) - Complete
+  Lago billing setup guide
+- [**Lago Integration**](./docs/integrations/LAGO_INTEGRATION.md) - Billing and
+  subscription management API
+- [**Directus CMS Upgrade**](./docs/integrations/DIRECTUS_UPGRADE.md) - How to
+  safely upgrade Directus
 
 ### Deployment
-- [**Production Deployment**](./docs/deployment/PRODUCTION_DEPLOYMENT.md) - Complete deployment guide
+
+- [**Production Deployment**](./docs/deployment/PRODUCTION_DEPLOYMENT.md) -
+  Complete deployment guide
 
 ### Framework Documentation
+
 - [Turborepo Docs](https://turbo.build/repo/docs)
 - [Nuxt Documentation](https://nuxt.com/docs)
 - [AdonisJS Documentation](https://docs.adonisjs.com)
@@ -475,10 +523,11 @@ See [**LAGO_INTEGRATION.md**](./LAGO_INTEGRATION.md) for complete setup and usag
 - [Lago Documentation](https://docs.getlago.com)
 
 ### Guides & Tutorials
+
 - [Adding a New Package](#adding-a-new-package)
 - [Environment Configuration](#environment-setup)
-- [Deployment Guide](./docs/DEPLOYMENT.md) *(coming soon)*
-- [Contributing Guidelines](./CONTRIBUTING.md) *(coming soon)*
+- [Deployment Guide](./docs/DEPLOYMENT.md) _(coming soon)_
+- [Contributing Guidelines](./CONTRIBUTING.md) _(coming soon)_
 
 ---
 
@@ -504,23 +553,28 @@ pnpm test --watch
 This project includes comprehensive CI/CD workflows:
 
 #### 🧪 **Continuous Integration**
+
 Runs on every push and PR:
+
 - ✅ **Lint** - Code quality checks
 - ✅ **Type Check** - TypeScript validation
 - ✅ **Build** - Production builds
 - ✅ **Test** - Automated testing
 
 #### 🚀 **Automated Deployment**
+
 - **Preview Deployments** - Automatic preview for PRs
 - **Production Deploy** - Deploy to production on merge to main
 - **Multi-platform Support** - Vercel, Netlify, Railway, Render
 
 #### 🔒 **Security & Quality**
+
 - **CodeQL Analysis** - Security vulnerability scanning
 - **Dependency Review** - License and security checks
 - **Dependabot** - Automated dependency updates
 
 #### 📦 **Release Management**
+
 - **Automated Releases** - Create releases from git tags
 - **Changelog Generation** - Auto-generated release notes
 - **Build Artifacts** - Downloadable builds
@@ -543,7 +597,8 @@ Runs on every push and PR:
 3. **Configure branch protection** for `main` branch
 4. **Enable Dependabot** for automated updates
 
-See [`.github/workflows/README.md`](./.github/workflows/README.md) for detailed documentation.
+See [`.github/workflows/README.md`](./.github/workflows/README.md) for detailed
+documentation.
 
 ---
 
@@ -580,7 +635,8 @@ docker-compose -f docker-compose.prod.yml up -d
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read our [Contributing Guidelines](./CONTRIBUTING.md) before submitting a PR.
+Contributions are welcome! Please read our
+[Contributing Guidelines](./CONTRIBUTING.md) before submitting a PR.
 
 ### Development Workflow
 
@@ -588,7 +644,8 @@ Contributions are welcome! Please read our [Contributing Guidelines](./CONTRIBUT
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes
 4. Run linting and tests (`pnpm lint && pnpm test`)
-5. Commit using conventional commits (`git commit -m 'feat(web): add amazing feature'`)
+5. Commit using conventional commits
+   (`git commit -m 'feat(web): add amazing feature'`)
 6. Push to the branch (`git push origin feature/amazing-feature`)
 7. Open a Pull Request
 
@@ -621,4 +678,3 @@ Built with amazing open-source technologies:
 Made with ❤️ by developers, for developers
 
 </div>
-

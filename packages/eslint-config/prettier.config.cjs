@@ -75,5 +75,14 @@ module.exports = {
         printWidth: 80,
       },
     },
+    {
+      files: ['*.yml', '*.yaml'],
+      options: {
+        // Prefer single quotes for YAML (Prettier's default behavior)
+        // Note: Prettier doesn't have a YAML-specific quote option,
+        // but it will use single quotes when possible
+        printWidth: 100,
+      },
+    },
   ],
 };

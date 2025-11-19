@@ -71,6 +71,12 @@ jspm_packages/
 .nuxt
 dist
 
+# Generated JS files from TypeScript compilation in src directories
+packages/*/src/*.js
+packages/shared-types/src/*.js
+packages/shared-utils/src/*.js
+packages/shared-utils/src/**/*.js
+packages/shared-utils/src/index.js
 # Storybook build outputs
 .out
 .storybook-out
@@ -111,3 +117,4 @@ uploads/
 public/uploads/
 *.tsbuildinfo
 *.code-workspace
+

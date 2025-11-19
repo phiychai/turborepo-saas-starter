@@ -1,4 +1,4 @@
-version: "3.9"
+version: '3.9'
 
 # Production overrides for docker-compose.yml
 services:
@@ -68,4 +68,3 @@ volumes:
     driver: local
   letsencrypt:
     driver: local
-
