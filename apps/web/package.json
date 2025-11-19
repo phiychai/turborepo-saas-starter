@@ -33,7 +33,7 @@
     "@turborepo-saas-starter/shared-types": "workspace:*",
     "@turborepo-saas-starter/shared-utils": "workspace:*",
     "@unovis/ts": "^1.6.1",
-    "@unovis/vue": "^1.6.1",
+    "@unovis/vue": "^1.6.2",
     "@vee-validate/zod": "^4.15.1",
     "@vueuse/core": "14.0.0",
     "@vueuse/nuxt": "^14.0.0",
