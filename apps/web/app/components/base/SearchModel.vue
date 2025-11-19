@@ -44,6 +44,7 @@ const groups = computed(() => {
   if (loading.value) {
     return [
       {
+        id: 'loading',
         key: 'loading',
         label: 'Searching...',
         commands: [],
@@ -54,6 +55,7 @@ const groups = computed(() => {
   if (!searched.value) {
     return [
       {
+        id: 'empty',
         key: 'empty',
         label: 'Start typing to search',
         commands: [],
@@ -64,6 +66,7 @@ const groups = computed(() => {
   if (results.value.length === 0) {
     return [
       {
+        id: 'no-results',
         key: 'no-results',
         label: 'No results found',
         commands: [],
@@ -73,6 +76,7 @@ const groups = computed(() => {
 
   return [
     {
+      id: 'results',
       key: 'results',
       label: 'Search Results',
       commands: results.value.map((result) => ({
@@ -133,20 +137,21 @@ watch(isOpen, (open) => {
       @click="isOpen = true"
     />
 
-    <UModal v-model="isOpen" :ui="{ width: 'sm:max-w-2xl' }">
-      <UCommandPalette
-        v-model="query"
-        nullable
-        :groups="groups"
-        :loading="loading"
-        placeholder="Search for pages or posts..."
-        :ui="{
-          input: {
-            wrapper: 'border-b border-gray-200 dark:border-gray-800',
-            base: 'text-base',
-          },
-        }"
-      />
+    <UModal v-model="isOpen">
+      <template #default>
+        <div class="sm:max-w-2xl">
+          <UCommandPalette
+            v-model="query"
+            nullable
+            :groups="groups"
+            :loading="loading"
+            placeholder="Search for pages or posts..."
+            :ui="{
+              input: 'text-base',
+            }"
+          />
+        </div>
+      </template>
     </UModal>
   </div>
 </template>

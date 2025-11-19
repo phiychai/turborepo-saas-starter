@@ -1,5 +1,6 @@
 import { BaseModel, column } from '@adonisjs/lucid/orm';
 import { DateTime } from 'luxon';
+
 import type { UserPreferences } from '@turborepo-saas-starter/shared-types';
 
 export default class User extends BaseModel {

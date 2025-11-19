@@ -22,7 +22,7 @@
       "dependsOn": ["^lint:fix"]
     },
     "type-check": {
-      "dependsOn": ["^type-check"]
+      "dependsOn": ["^build", "^type-check"]
     },
     "test": {
       "dependsOn": ["^build"],

@@ -4,7 +4,7 @@
  * Uses UPagination for pagination controls
  */
 import { formatDistanceToNow } from 'date-fns';
-import type { Post, DirectusFile, DirectusUser } from '~turborepo-saas-starter/shared-types/schema';
+import type { Post, DirectusFile, DirectusUser } from '@turborepo-saas-starter/shared-types/schema';
 import type { PostsProps } from '~/types/components';
 
 const props = defineProps<PostsProps>();
@@ -71,35 +71,34 @@ const categoriesFromPosts = computed(() => {
     posts.value.forEach((post) => {
       if (post.categories) {
         const postCategories = Array.isArray(post.categories) ? post.categories : [];
-        postCategories.forEach(
-          (cat: string | { id: string; title?: string | null; slug?: string | null }) => {
-            if (typeof cat === 'string') {
-              // If it's a string, create a category from it
-              const slug = cat.toLowerCase().replace(/\s+/g, '-');
-              if (!categoryMap.has(slug)) {
-                categoryMap.set(slug, {
-                  id: slug,
-                  name: cat,
-                  slug,
-                });
-              }
-            } else if (typeof cat === 'object' && cat !== null && 'id' in cat && 'title' in cat) {
-              // If it's an object with id and title
-              const category = {
-                id: String(cat.id),
-                name: String(cat.title || ''),
-                slug: cat.slug
+        postCategories.forEach((cat) => {
+          if (typeof cat === 'string') {
+            // If it's a string, create a category from it
+            const slug = cat.toLowerCase().replace(/\s+/g, '-');
+            if (!categoryMap.has(slug)) {
+              categoryMap.set(slug, {
+                id: slug,
+                name: cat,
+                slug,
+              });
+            }
+          } else if (typeof cat === 'object' && cat !== null) {
+            // Handle PostsCategory type (id can be number or string)
+            const catId = typeof cat.id === 'number' ? String(cat.id) : String(cat.id || '');
+            const catTitle = 'title' in cat ? String(cat.title || '') : '';
+            const category = {
+              id: catId,
+              name: catTitle,
+              slug:
+                'slug' in cat && cat.slug
                   ? String(cat.slug)
-                  : String(cat.title || '')
-                      .toLowerCase()
-                      .replace(/\s+/g, '-'),
-              };
-              if (category.id && category.name && !categoryMap.has(category.id)) {
-                categoryMap.set(category.id, category);
-              }
+                  : catTitle.toLowerCase().replace(/\s+/g, '-'),
+            };
+            if (category.id && category.name && !categoryMap.has(category.id)) {
+              categoryMap.set(category.id, category);
             }
           }
-        );
+        });
       }
     });
   }
@@ -252,9 +251,13 @@ const feedOrientation = ref<'vertical' | 'horizontal'>('horizontal');
           post.categories && post.categories.length > 0
             ? {
                 label:
-                  typeof post.categories[0] === 'string'
-                    ? post.categories[0]
-                    : post.categories[0]?.title || post.categories[0]?.name || '',
+                  post.categories && post.categories.length > 0 && post.categories[0]
+                    ? typeof post.categories[0] === 'string'
+                      ? post.categories[0]
+                      : 'title' in post.categories[0]
+                        ? String(post.categories[0].title || '')
+                        : ''
+                    : '',
               }
             : undefined
         "

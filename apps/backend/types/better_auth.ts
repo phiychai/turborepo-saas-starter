@@ -4,7 +4,6 @@
  */
 
 import type { BetterAuthUser } from '#services/user_sync_service';
-import type { BetterAuthSession } from './context';
 
 /**
  * Better Auth account object (for OAuth providers)
@@ -135,4 +134,3 @@ export interface BetterAuthInstance {
   handler?: (request: Request) => Promise<Response>;
   [key: string]: unknown;
 }
-

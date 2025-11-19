@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
     const categories = await directusServer.request(
       readItems('categories', {
         fields: ['id', 'name', 'slug'],
-        sort: ['sort', 'name'],
+        sort: ['sort', 'title'],
         limit: -1,
       })
     );

@@ -3,7 +3,19 @@
  * Extracted from Vue component files for better organization and reusability
  */
 
-// BaseButton
+import type {
+  Post,
+  FormField,
+  PageBlock,
+  BlockHero,
+  DirectusFile,
+  BlockRichtext,
+  BlockGallery,
+  BlockPricing,
+  BlockPost,
+  BlockForm,
+} from '@turborepo-saas-starter/shared-types/schema';
+
 export interface ButtonProps {
   id: string;
   label?: string | null;
@@ -112,9 +124,6 @@ export interface GalleryProps {
   };
 }
 
-// Posts
-import type { Post } from '@turborepo-saas-starter/shared-types/schema';
-
 export interface PostsProps {
   data: {
     id?: string;
@@ -137,9 +146,6 @@ export interface RichTextProps {
   };
 }
 
-// FormBlock & FormBuilder
-import type { FormField } from '@turborepo-saas-starter/shared-types/schema';
-
 export interface CustomForm {
   id: string;
   on_success?: 'redirect' | 'message' | null;
@@ -159,16 +165,6 @@ export interface CustomFormData {
   form: CustomForm;
 }
 
-// BaseBlock
-import type {
-  BlockHero,
-  BlockRichtext,
-  BlockGallery,
-  BlockPricing,
-  BlockPost,
-  BlockForm,
-} from '@turborepo-saas-starter/shared-types/schema';
-
 export type BlockItem =
   | BlockHero
   | BlockRichtext
@@ -179,14 +175,17 @@ export type BlockItem =
 
 export interface BaseBlockProps {
   block: {
-    collection: 'block_hero' | 'block_richtext' | 'block_gallery' | 'block_pricing' | 'block_posts' | 'block_form';
+    collection:
+      | 'block_hero'
+      | 'block_richtext'
+      | 'block_gallery'
+      | 'block_pricing'
+      | 'block_posts'
+      | 'block_form';
     item: BlockItem;
     id: string;
   };
 }
-
-// PageBuilder
-import type { PageBlock } from '@turborepo-saas-starter/shared-types/schema';
 
 export interface PageBuilderProps {
   sections: PageBlock[];
@@ -210,9 +209,6 @@ export interface TaglineProps {
   tagline?: string | null;
   className?: string;
 }
-
-// DirectusImage
-import type { DirectusFile } from '@turborepo-saas-starter/shared-types/schema';
 
 export interface DirectusImageProps {
   uuid: string;

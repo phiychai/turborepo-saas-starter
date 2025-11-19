@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
     const incomingHeaders = getHeaders(event);
 
     for (const [key, value] of Object.entries(incomingHeaders)) {
-      if (key.toLowerCase() !== 'host') {
+      if (key.toLowerCase() !== 'host' && value !== undefined) {
         headers[key] = value;
       }
     }

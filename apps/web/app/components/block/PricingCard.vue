@@ -35,7 +35,7 @@ const { setAttr } = useVisualEditing();
       <div class="flex-shrink-0">
         <UBadge
           v-if="card.badge"
-          :color="card.is_highlighted ? 'primary' : 'gray'"
+          :color="card.is_highlighted ? 'primary' : 'neutral'"
           variant="subtle"
           class="text-xs font-medium uppercase"
           :data-directus="

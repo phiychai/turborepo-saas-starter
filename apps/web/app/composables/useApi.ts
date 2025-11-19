@@ -18,15 +18,20 @@ export const useApi = () => {
     try {
       const data = await $fetch<T>(`${apiUrl}${endpoint}`, {
         method: options.method || 'GET',
-        body: options.body,
+        body: options.body as Record<string, unknown> | undefined,
         query: options.query,
         credentials: 'include',
       });
 
-      return { data, error: null };
+      return { data: data as T, error: null };
     } catch (error: unknown) {
       const errorMessage =
-        (error && typeof error === 'object' && 'data' in error && typeof (error as { data?: { message?: string } }).data?.message === 'string' ? (error as { data: { message: string } }).data.message : undefined) ||
+        (error &&
+        typeof error === 'object' &&
+        'data' in error &&
+        typeof (error as { data?: { message?: string } }).data?.message === 'string'
+          ? (error as { data: { message: string } }).data.message
+          : undefined) ||
         (error instanceof Error ? error.message : undefined) ||
         'Request failed';
       return {

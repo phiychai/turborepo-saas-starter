@@ -37,4 +37,3 @@ export interface SendGridModule {
     }) => Promise<unknown>;
   };
 }
-

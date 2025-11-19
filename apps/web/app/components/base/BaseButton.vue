@@ -35,16 +35,18 @@ const href = computed(() => {
 const isExternal = computed(() => href.value?.startsWith('http') || props.target === '_blank');
 
 // Map variant to Nuxt UI variant/color
-const buttonVariant = computed(() => {
-  const variantMap: Record<string, string> = {
-    default: 'solid',
-    outline: 'outline',
-    ghost: 'ghost',
-    link: 'link',
-    destructive: 'solid',
-  };
-  return variantMap[props.variant || 'default'] || 'solid';
-});
+const buttonVariant = computed(
+  (): 'link' | 'solid' | 'outline' | 'soft' | 'subtle' | 'ghost' | undefined => {
+    const variantMap: Record<string, 'link' | 'solid' | 'outline' | 'soft' | 'subtle' | 'ghost'> = {
+      default: 'solid',
+      outline: 'outline',
+      ghost: 'ghost',
+      link: 'link',
+      destructive: 'solid',
+    };
+    return variantMap[props.variant || 'default'] || 'solid';
+  }
+);
 
 const buttonColor = computed(() => {
   if (props.variant === 'destructive') return 'error';

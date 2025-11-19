@@ -28,7 +28,7 @@ onMounted(() => {
     toast.add({
       title: 'Email Verified',
       description: 'Your email has been verified successfully. Please login to continue.',
-      color: 'green',
+      color: 'success',
     });
     // Clean up query param
     router.replace({ query: {} });

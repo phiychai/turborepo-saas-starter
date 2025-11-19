@@ -44,4 +44,3 @@ export interface LagoAccountResponse {
   external_id?: string;
   [key: string]: unknown;
 }
-

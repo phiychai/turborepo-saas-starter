@@ -135,7 +135,7 @@ const items = computed<DropdownMenuItem[][]>(() => [
       }"
     />
 
-    <template #chip-leading="{ item }">
+    <template #chip-leading="{ item }: { item: Record<string, unknown> }">
       <span
         :style="{
           '--chip-light': `var(--color-${'chip' in item && typeof item.chip === 'string' ? item.chip : 'neutral'}-500)`,

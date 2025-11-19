@@ -1,6 +1,5 @@
-import type { ParsedContent } from '@nuxt/content';
-import type { Avatar, Badge, Link } from '#ui/types';
-import type { AvatarProps } from '@nuxt/ui';
+import type { ParsedContentv2 } from '@nuxt/content';
+import type { BadgeProps, LinkProps, AvatarProps } from '#ui/types';
 import type { UserProfile } from '@turborepo-saas-starter/shared-types';
 
 // Re-export types from organized type files
@@ -8,17 +7,17 @@ export type * from './components';
 export type * from './stores';
 export type * from './composables';
 
-export interface BlogPost extends ParsedContent {
+export interface BlogPost extends ParsedContentv2 {
   title: string;
   description: string;
   date: string;
-  image?: HTMLImageElement;
-  badge?: Badge;
+  image?: string;
+  badge?: BadgeProps;
   authors?: ({
     name: string;
     description?: string;
-    avatar: Avatar;
-  } & Link)[];
+    avatar: AvatarProps;
+  } & LinkProps)[];
 }
 
 /**
@@ -90,4 +89,3 @@ export interface Range {
   start: Date;
   end: Date;
 }
-

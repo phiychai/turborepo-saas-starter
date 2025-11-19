@@ -17,10 +17,11 @@ export default function useVisualEditing() {
 
   const apply = (options: Pick<ApplyOptions, 'elements' | 'onSaved' | 'customClass'>) => {
     if (!isVisualEditingEnabled.value) return;
+    // Type assertion needed due to @directus/visual-editing type mismatch
     applyVisualEditing({
       ...options,
       directusUrl,
-    });
+    } as Parameters<typeof applyVisualEditing>[0]);
   };
 
   return {

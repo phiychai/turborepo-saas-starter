@@ -1,6 +1,5 @@
 import { z } from 'zod';
-import type { Schema } from '@turborepo-saas-starter/shared-types/schema';
-import type { Post } from '@turborepo-saas-starter/shared-types/schema';
+import type { Schema, Post } from '@turborepo-saas-starter/shared-types/schema';
 
 const querySchema = z.object({
   limit: z.coerce.number().min(1).max(100).default(12),
@@ -52,11 +51,13 @@ export default defineCachedEventHandler(async (event) => {
               author: ['id', 'first_name', 'last_name', 'avatar'],
             },
             {
-              categories: ['id', 'title', 'slug'],
-            },
+              categories: {
+                categories_id: ['id', 'title', 'slug'],
+              },
+            } as any,
           ],
           filter,
-        })
+        } as any)
       );
     } catch (error: unknown) {
       // If categories field causes permission error, fetch without it

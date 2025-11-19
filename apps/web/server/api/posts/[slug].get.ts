@@ -1,5 +1,4 @@
-import type { Schema } from '@turborepo-saas-starter/shared-types/schema';
-import type { Post } from '@turborepo-saas-starter/shared-types/schema';
+import type { Schema, Post } from '@turborepo-saas-starter/shared-types/schema';
 
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug');

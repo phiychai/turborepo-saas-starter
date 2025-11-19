@@ -4,7 +4,7 @@ import type { CommandOptions } from '@adonisjs/core/types/ace';
 
 import { auth } from '#config/better_auth';
 import User from '#models/user';
-import { UserSyncService } from '#services/user_sync_service';
+import { UserSyncService, type BetterAuthUser } from '#services/user_sync_service';
 
 export default class CreateAdmin extends BaseCommand {
   static commandName = 'create:admin';
@@ -74,7 +74,12 @@ export default class CreateAdmin extends BaseCommand {
       } catch (error: unknown) {
         const errorMessage =
           (error instanceof Error && error.message) ||
-          (typeof error === 'object' && error !== null && 'error' in error && typeof (error as { error?: { message?: string } }).error?.message === 'string' ? (error as { error: { message: string } }).error.message : undefined) ||
+          (typeof error === 'object' &&
+          error !== null &&
+          'error' in error &&
+          typeof (error as { error?: { message?: string } }).error?.message === 'string'
+            ? (error as { error: { message: string } }).error.message
+            : undefined) ||
           'Unknown error';
         throw new Error(`Better Auth sign-up failed: ${errorMessage}`);
       }
@@ -123,7 +128,7 @@ export default class CreateAdmin extends BaseCommand {
           };
 
           adonisUser = await UserSyncService.syncUser({
-            betterAuthUser: fallbackUser as import('#services/user_sync_service').BetterAuthUser,
+            betterAuthUser: fallbackUser as BetterAuthUser,
             provider: 'email',
             requestPath: undefined,
             clientIp: undefined,
@@ -152,7 +157,9 @@ export default class CreateAdmin extends BaseCommand {
         this.logger.info(`  Username: ${adonisUser.username}`);
       }
     } catch (error: unknown) {
-      this.logger.error(`Failed to create admin user: ${error instanceof Error ? error.message : String(error)}`);
+      this.logger.error(
+        `Failed to create admin user: ${error instanceof Error ? error.message : String(error)}`
+      );
       this.exitCode = 1;
     }
   }

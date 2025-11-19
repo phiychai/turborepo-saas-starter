@@ -1,5 +1,6 @@
 import { BaseModel, column } from '@adonisjs/lucid/orm';
 import { DateTime } from 'luxon';
+
 import type { AuthSyncErrorPayload } from '@turborepo-saas-starter/shared-types';
 
 export type AuthSyncErrorType =

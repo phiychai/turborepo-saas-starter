@@ -8,7 +8,9 @@ import BaseButton from '../base/BaseButton.vue';
 
 const props = defineProps<{
   fields: FormField[];
-  onSubmit: (data: Record<string, string | number | boolean | File | null | undefined>) => Promise<void> | void;
+  onSubmit: (
+    data: Record<string, string | number | boolean | File | null | undefined>
+  ) => Promise<void> | void;
   submitLabel: string;
   formId?: string;
 }>();
@@ -48,7 +50,7 @@ const initialValues = computed(() => {
           defaults[name] = false;
           break;
         case 'checkbox_group':
-          defaults[name] = [];
+          defaults[name] = [] as unknown as string | number | boolean | File | null | undefined;
           break;
         case 'select':
         case 'radio':
@@ -93,7 +95,7 @@ const onSubmitForm = handleSubmit(async (formValues) => {
     :data-directus="
       setAttr({
         collection: 'forms',
-        item: props.formId,
+        item: props.formId || null,
         fields: 'fields',
         mode: 'popover',
       })

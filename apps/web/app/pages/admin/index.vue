@@ -46,7 +46,7 @@ onMounted(async () => {
                 System overview and administration
               </p>
             </div>
-            <UBadge color="red" variant="subtle">
+            <UBadge color="error" variant="subtle">
               <Icon name="lucide:shield-check" class="mr-1" />
               Admin
             </UBadge>
@@ -220,28 +220,28 @@ onMounted(async () => {
                     <div class="w-2 h-2 rounded-full bg-green-500" />
                     <span>Database</span>
                   </div>
-                  <UBadge color="green" variant="subtle">Healthy</UBadge>
+                  <UBadge color="success" variant="subtle">Healthy</UBadge>
                 </div>
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
                     <div class="w-2 h-2 rounded-full bg-green-500" />
                     <span>API</span>
                   </div>
-                  <UBadge color="green" variant="subtle">Operational</UBadge>
+                  <UBadge color="success" variant="subtle">Operational</UBadge>
                 </div>
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
                     <div class="w-2 h-2 rounded-full bg-green-500" />
                     <span>Billing Service</span>
                   </div>
-                  <UBadge color="green" variant="subtle">Connected</UBadge>
+                  <UBadge color="success" variant="subtle">Connected</UBadge>
                 </div>
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2">
                     <div class="w-2 h-2 rounded-full bg-yellow-500" />
                     <span>Email Service</span>
                   </div>
-                  <UBadge color="yellow" variant="subtle">Degraded</UBadge>
+                  <UBadge color="warning" variant="subtle">Degraded</UBadge>
                 </div>
               </div>
             </UCard>

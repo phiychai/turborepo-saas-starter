@@ -20,10 +20,11 @@ export const useUserStore = defineStore('user', {
       this.loading = true;
 
       try {
-        const { $fetch } = useNuxtApp();
+        // Use useRequestFetch for SSR cookie forwarding
+        const requestFetch = useRequestFetch();
 
-        const preferences = await $fetch('/api/user/preferences');
-        this.preferences = preferences as UserPreferences;
+        const preferences = await requestFetch<UserPreferences>('/api/user/preferences');
+        this.preferences = preferences;
 
         return {
           success: true,
@@ -47,14 +48,15 @@ export const useUserStore = defineStore('user', {
       this.loading = true;
 
       try {
-        const { $fetch } = useNuxtApp();
+        // Use useRequestFetch for SSR cookie forwarding
+        const requestFetch = useRequestFetch();
 
-        const preferences = await $fetch('/api/user/preferences', {
+        const preferences = await requestFetch<UserPreferences>('/api/user/preferences', {
           method: 'PATCH',
           body: updates,
         });
 
-        this.preferences = preferences as UserPreferences;
+        this.preferences = preferences;
 
         return {
           success: true,
@@ -83,5 +85,5 @@ export const useUserStore = defineStore('user', {
   persist: {
     storage: typeof window !== 'undefined' ? localStorage : undefined,
     paths: ['preferences'],
-  },
+  } as any,
 });

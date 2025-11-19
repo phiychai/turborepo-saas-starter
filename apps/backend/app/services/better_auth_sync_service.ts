@@ -1,7 +1,8 @@
 import logger from '@adonisjs/core/services/logger';
 
-import User from '#models/user';
 import type { HttpContext } from '@adonisjs/core/http';
+
+import User from '#models/user';
 
 /**
  * Sync Service: AdonisJS → Better Auth
@@ -13,7 +14,11 @@ export class BetterAuthSyncService {
   /**
    * Sync role change from AdonisJS to Better Auth
    */
-  static async syncRole(adonisUserId: number, newRole: string, _request?: HttpContext['request']): Promise<void> {
+  static async syncRole(
+    adonisUserId: number,
+    newRole: string,
+    _request?: HttpContext['request']
+  ): Promise<void> {
     const user = await User.findOrFail(adonisUserId);
 
     if (!user.betterAuthUserId) {
@@ -69,7 +74,10 @@ export class BetterAuthSyncService {
   /**
    * Sync user deletion from AdonisJS to Better Auth
    */
-  static async syncUserDeletion(adonisUserId: number, _request?: HttpContext['request']): Promise<void> {
+  static async syncUserDeletion(
+    adonisUserId: number,
+    _request?: HttpContext['request']
+  ): Promise<void> {
     const user = await User.findByOrFail('id', adonisUserId);
 
     if (!user.betterAuthUserId) {

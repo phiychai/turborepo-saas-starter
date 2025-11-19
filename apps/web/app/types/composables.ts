@@ -8,7 +8,8 @@ import type { PrimaryKey } from '@directus/types';
 // useVisualEditing
 export interface ApplyOptions {
   directusUrl: string;
-  elements?: HTMLElement[] | HTMLElement;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  elements?: any;
   onSaved?: (data: {
     collection?: string;
     item?: PrimaryKey | null;
@@ -24,4 +25,3 @@ export interface TocLink {
   depth: number;
   children?: TocLink[];
 }
-

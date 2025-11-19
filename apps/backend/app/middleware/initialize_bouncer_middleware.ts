@@ -16,16 +16,25 @@ export default class InitializeBouncerMiddleware {
      * Create bouncer instance for the ongoing HTTP request.
      * We will pull the user from the HTTP context.
      */
+    // Bouncer expects policies as Record<string, LazyImport>, but we have a plain object
+    // The runtime behavior works correctly, but TypeScript types are strict
+
     ctx.bouncer = new Bouncer(
       () => ctx.auth.user || null,
       abilities,
-      policies as typeof policies
+      policies as any
     ).setContainerResolver(ctx.containerResolver);
 
     /**
      * Share bouncer helpers with Edge templates.
      */
-    if ('view' in ctx && ctx.view && typeof ctx.view === 'object' && 'share' in ctx.view && typeof ctx.view.share === 'function') {
+    if (
+      'view' in ctx &&
+      ctx.view &&
+      typeof ctx.view === 'object' &&
+      'share' in ctx.view &&
+      typeof ctx.view.share === 'function'
+    ) {
       ctx.view.share(ctx.bouncer.edgeHelpers);
     }
 
@@ -35,10 +44,7 @@ export default class InitializeBouncerMiddleware {
 
 declare module '@adonisjs/core/http' {
   export interface HttpContext {
-    bouncer: Bouncer<
-      Exclude<HttpContext['auth']['user'], undefined>,
-      typeof abilities,
-      typeof policies
-    >;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    bouncer: Bouncer<Exclude<HttpContext['auth']['user'], undefined>, typeof abilities, any>;
   }
 }

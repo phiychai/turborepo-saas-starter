@@ -7,21 +7,29 @@ import withNuxt from './.nuxt/eslint.config.mjs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Filter out import plugin from vueConfig since Nuxt provides its own
-const vueConfigWithoutImport = vueConfig.map((config) => {
-  if (config.plugins?.import) {
-    const plugins = { ...config.plugins };
-    delete plugins.import;
-    return {
-      ...config,
-      plugins,
-      rules: Object.fromEntries(
-        Object.entries(config.rules || {}).filter(([key]) => !key.startsWith('import/'))
-      ),
-    };
-  }
-  return config;
-});
+// Filter out import and vue plugins from vueConfig since Nuxt provides its own
+const vueConfigWithoutImport = vueConfig
+  .map((config) => {
+    // Skip configs that set up Vue plugin or Vue parser (Nuxt handles this)
+    if (config.plugins?.vue || config.languageOptions?.parser === 'vue-eslint-parser') {
+      return null;
+    }
+
+    // Filter out import plugin
+    if (config.plugins?.import) {
+      const plugins = { ...config.plugins };
+      delete plugins.import;
+      return {
+        ...config,
+        plugins,
+        rules: Object.fromEntries(
+          Object.entries(config.rules || {}).filter(([key]) => !key.startsWith('import/'))
+        ),
+      };
+    }
+    return config;
+  })
+  .filter((config) => config !== null);
 
 export default withNuxt(
   ...vueConfigWithoutImport,

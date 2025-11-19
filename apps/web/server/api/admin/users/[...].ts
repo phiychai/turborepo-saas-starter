@@ -16,7 +16,20 @@ export default defineEventHandler(async (event) => {
 
   // Get query parameters
   const query = getQuery(event);
-  const queryString = new URLSearchParams(query as Record<string, string | string[]>).toString();
+
+  // Convert query params to URLSearchParams format, handling arrays
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(query)) {
+    if (value !== undefined) {
+      if (Array.isArray(value)) {
+        // For arrays, append each value
+        value.forEach((v) => params.append(key, String(v)));
+      } else {
+        params.append(key, String(value));
+      }
+    }
+  }
+  const queryString = params.toString();
   const fullUrl = queryString ? `${targetUrl}?${queryString}` : targetUrl;
 
   // Get request body for POST/PUT/PATCH
@@ -32,7 +45,7 @@ export default defineEventHandler(async (event) => {
 
     // Forward all headers except host
     for (const [key, value] of Object.entries(incomingHeaders)) {
-      if (key.toLowerCase() !== 'host') {
+      if (key.toLowerCase() !== 'host' && value !== undefined) {
         headers[key] = value;
       }
     }

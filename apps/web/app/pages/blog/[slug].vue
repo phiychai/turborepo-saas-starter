@@ -195,7 +195,7 @@ useSeoMeta({
         class="absolute inset-0 bg-primary/5 transition-all duration-150 ease-out pointer-events-none h-[64px]"
         :style="{ width: `${readingProgress}%` }"
       /> -->
-      <UDashboardNavbar :title="post.title" :ui="{ right: 'gap-3' }">
+      <UDashboardNavbar :title="post?.title" :ui="{ right: 'gap-3' }">
         <!-- Progress bar background -->
 
         <template #leading>

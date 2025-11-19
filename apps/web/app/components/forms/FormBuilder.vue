@@ -14,7 +14,9 @@ const props = defineProps<{
 const isSubmitted = ref(false);
 const error = ref<string | null>(null);
 
-const handleSubmit = async (data: Record<string, string | number | boolean | File | null | undefined>) => {
+const handleSubmit = async (
+  data: Record<string, string | number | boolean | File | null | undefined>
+) => {
   error.value = null;
   try {
     const fieldsWithNames = props.form.fields.map((field) => ({
@@ -55,7 +57,7 @@ const handleSubmit = async (data: Record<string, string | number | boolean | Fil
   <UCard v-if="form.is_active" :class="className">
     <UAlert
       v-if="error"
-      color="red"
+      color="error"
       icon="i-lucide-alert-circle"
       variant="solid"
       :title="error"
@@ -64,7 +66,7 @@ const handleSubmit = async (data: Record<string, string | number | boolean | Fil
 
     <UAlert
       v-if="isSubmitted"
-      color="green"
+      color="success"
       icon="i-lucide-check-circle"
       variant="subtle"
       :description="form.success_message || 'Your form has been submitted successfully.'"

@@ -76,7 +76,7 @@ async function handleVerify() {
     toast.add({
       title: 'Success',
       description: 'Email verified successfully!',
-      color: 'green',
+      color: 'primary',
     });
 
     // Better Auth may auto-sign in after verification (if autoSignInAfterVerification is enabled)
@@ -139,7 +139,7 @@ async function resendOTP() {
     toast.add({
       title: 'Code Sent',
       description: 'A new verification code has been sent to your email',
-      color: 'blue',
+      color: 'primary',
     });
   } catch (err: unknown) {
     error.value = err instanceof Error ? err.message : 'Failed to resend code';

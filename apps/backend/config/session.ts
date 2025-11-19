@@ -44,7 +44,7 @@ const sessionConfig = defineConfig({
   stores: {
     cookie: stores.cookie(),
     redis: stores.redis({
-      // @ts-ignore - Redis connection type issue
+      // @ts-expect-error - connection is not typed
       connection: 'main',
     }),
   },

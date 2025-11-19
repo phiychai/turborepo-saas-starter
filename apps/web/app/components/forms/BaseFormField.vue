@@ -14,8 +14,8 @@ import FileUploadField from './fields/FileUploadField.vue';
 const props = defineProps<{ field: FormField }>();
 const { value, errorMessage } = useField(props.field.name ?? '');
 
-const componentMap: Record<string, Component> = {
-  textarea: resolveComponent('UTextarea'),
+const componentMap: Record<string, Component | string> = {
+  textarea: 'UTextarea',
   checkbox: CheckboxField,
   checkbox_group: CheckboxGroupField,
   radio: RadioGroupField,
@@ -23,7 +23,13 @@ const componentMap: Record<string, Component> = {
   file: FileUploadField,
 };
 
-const getFieldComponent = () => componentMap[props.field.type ?? ''] || resolveComponent('UInput');
+const getFieldComponent = () => {
+  const component = componentMap[props.field.type ?? ''];
+  if (typeof component === 'string') {
+    return resolveComponent(component);
+  }
+  return component || resolveComponent('UInput');
+};
 
 const getComponentProps = (field: FormField) => {
   const baseProps = {
@@ -31,7 +37,8 @@ const getComponentProps = (field: FormField) => {
     name: field.name ?? '',
     placeholder: field.placeholder ?? '',
     modelValue: value.value,
-    'onUpdate:modelValue': (val: string | number | boolean | File | null | undefined) => (value.value = val),
+    'onUpdate:modelValue': (val: string | number | boolean | File | null | undefined) =>
+      (value.value = val),
   };
 
   if (['checkbox_group', 'radio', 'select'].includes(field.type ?? '')) {

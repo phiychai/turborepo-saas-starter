@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const colorMode = useColorMode();
-const toaster = { position: 'bottom-right', orientation: 'vertical' };
+const toaster = { position: 'bottom-right' as const, orientation: 'vertical' as const };
 const color = computed(() => (colorMode.value === 'dark' ? '#020618' : 'white'));
 
 useHead({

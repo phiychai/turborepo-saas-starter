@@ -29,9 +29,10 @@ export const useBillingStore = defineStore('billing', {
       this.plansLoading = true;
 
       try {
-        const { $fetch } = useNuxtApp();
+        // Use useRequestFetch for SSR cookie forwarding
+        const requestFetch = useRequestFetch();
 
-        const response = await $fetch('/api/billing/plans');
+        const response = await requestFetch('/api/billing/plans');
         this.plans = response as Plan[];
 
         return {
@@ -56,9 +57,10 @@ export const useBillingStore = defineStore('billing', {
       this.subscriptionsLoading = true;
 
       try {
-        const { $fetch } = useNuxtApp();
+        // Use useRequestFetch for SSR cookie forwarding
+        const requestFetch = useRequestFetch();
 
-        const response = await $fetch('/api/billing/subscriptions');
+        const response = await requestFetch('/api/billing/subscriptions');
         this.subscriptions = response as Subscription[];
 
         // Set current active subscription
@@ -87,9 +89,10 @@ export const useBillingStore = defineStore('billing', {
       this.loading = true;
 
       try {
-        const { $fetch } = useNuxtApp();
+        // Use useRequestFetch for SSR cookie forwarding
+        const requestFetch = useRequestFetch();
 
-        const subscription = await $fetch('/api/billing/subscriptions', {
+        const subscription = await requestFetch('/api/billing/subscriptions', {
           method: 'POST',
           body: {
             planCode,
@@ -122,9 +125,10 @@ export const useBillingStore = defineStore('billing', {
       this.loading = true;
 
       try {
-        const { $fetch } = useNuxtApp();
+        // Use useRequestFetch for SSR cookie forwarding
+        const requestFetch = useRequestFetch();
 
-        await $fetch(`/api/billing/subscriptions/${externalId}`, {
+        await requestFetch(`/api/billing/subscriptions/${externalId}`, {
           method: 'DELETE',
         });
 
@@ -158,9 +162,10 @@ export const useBillingStore = defineStore('billing', {
       this.invoicesLoading = true;
 
       try {
-        const { $fetch } = useNuxtApp();
+        // Use useRequestFetch for SSR cookie forwarding
+        const requestFetch = useRequestFetch();
 
-        const response = await $fetch('/api/billing/invoices');
+        const response = await requestFetch('/api/billing/invoices');
         this.invoices = response as Invoice[];
 
         return {
@@ -183,9 +188,10 @@ export const useBillingStore = defineStore('billing', {
      */
     async downloadInvoice(invoiceId: string) {
       try {
-        const { $fetch } = useNuxtApp();
+        // Use useRequestFetch for SSR cookie forwarding
+        const requestFetch = useRequestFetch();
 
-        const response = await $fetch(`/api/billing/invoices/${invoiceId}/download`, {
+        const response = await requestFetch(`/api/billing/invoices/${invoiceId}/download`, {
           method: 'GET',
         });
 
@@ -217,5 +223,5 @@ export const useBillingStore = defineStore('billing', {
   persist: {
     storage: typeof window !== 'undefined' ? localStorage : undefined,
     paths: ['currentSubscription'],
-  },
+  } as any,
 });

@@ -10,6 +10,7 @@ export interface BetterAuthUser {
   name?: string | null;
   image?: string | null;
   emailVerified?: boolean;
+  mfaEnabled?: boolean;
   username?: string | null; // If using Better Auth Username Plugin
 }
 
@@ -137,10 +138,13 @@ export class UserSyncService {
       });
 
       // Log to console without sensitive data
-      logger.error(`Failed to sync user: ${error instanceof Error ? error.message : String(error)}`, {
-        externalUserId: betterAuthUser.id,
-        // Don't log email or other sensitive data
-      });
+      logger.error(
+        `Failed to sync user: ${error instanceof Error ? error.message : String(error)}`,
+        {
+          externalUserId: betterAuthUser.id,
+          // Don't log email or other sensitive data
+        }
+      );
       return null;
     }
   }
