@@ -20,7 +20,7 @@
   "dependencies": {
     "@directus/sdk": "19.1.0",
     "@directus/visual-editing": "^1.1.0",
-    "@iconify-json/lucide": "^1.2.57",
+    "@iconify-json/lucide": "^1.2.73",
     "@iconify-json/simple-icons": "^1.2.43",
     "@iconify-json/tabler": "^1.2.23",
     "@nuxt/content": "^3.8.2",
