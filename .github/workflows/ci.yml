@@ -10,6 +10,31 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # Application
+  APP_KEY: test-key-for-ci-validation-only-32-chars
+  HOST: localhost
+  LOG_LEVEL: info
+
+  # Database
+  DB_HOST: localhost
+  DB_PORT: 5432
+  DB_USER: postgres
+  DB_DATABASE: test_db
+
+  # Redis
+  REDIS_HOST: localhost
+  REDIS_PORT: 6379
+  SESSION_DRIVER: memory
+
+  # Directus
+  DIRECTUS_URL: http://localhost:8055
+  DIRECTUS_ADMIN_EMAIL: admin@example.com
+  DIRECTUS_ADMIN_PASSWORD: test123
+
+  # Lago
+  LAGO_API_URL: http://localhost:3100
+
 jobs:
   lint:
     name: Lint
