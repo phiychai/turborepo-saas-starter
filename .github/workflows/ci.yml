@@ -249,6 +249,28 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Create .env file for backend tests
+        working-directory: apps/backend
+        run: |
+          cat > .env << EOF
+          NODE_ENV=test
+          PORT=3333
+          APP_KEY=test-key-for-ci-validation-only-32-chars
+          HOST=localhost
+          LOG_LEVEL=info
+          DB_HOST=localhost
+          DB_PORT=5432
+          DB_USER=postgres
+          DB_DATABASE=test_db
+          REDIS_HOST=localhost
+          REDIS_PORT=6379
+          SESSION_DRIVER=memory
+          DIRECTUS_URL=http://localhost:8055
+          DIRECTUS_ADMIN_EMAIL=admin@example.com
+          DIRECTUS_ADMIN_PASSWORD=test123
+          LAGO_API_URL=http://localhost:3100
+          EOF
+
       - name: Cache Turbo
         uses: actions/cache@v4
         with:
