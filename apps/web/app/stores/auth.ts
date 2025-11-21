@@ -249,7 +249,7 @@ export const useAuthStore = defineStore('auth', {
           profileData.lastName = data.lastName;
         }
 
-        const response = await requestFetch<{ user: UserProfile }>('/api/user/profile', {
+        const response = await requestFetch<{ user: UserProfile }>('/api/user/me', {
           method: 'PATCH',
           body: profileData,
           credentials: 'include',
@@ -331,6 +331,71 @@ export const useAuthStore = defineStore('auth', {
         return {
           success: false,
           error: error instanceof Error ? error.message : 'Password change failed',
+        };
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    /**
+     * Request password reset OTP
+     */
+    async requestPasswordReset(email: string) {
+      this.loading = true;
+
+      try {
+        const { authClient } = await import('~/lib/auth-client');
+        const result = await authClient.emailOtp.sendVerificationOtp({
+          email,
+          type: 'forget-password',
+        });
+
+        if (result.error) {
+          return {
+            success: false,
+            error: result.error.message || 'Failed to send password reset code',
+          };
+        }
+
+        return { success: true };
+      } catch (error: unknown) {
+        console.error('Request password reset error:', error);
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : 'Failed to send password reset code',
+        };
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    /**
+     * Reset password with OTP
+     */
+    async resetPassword(email: string, otp: string, newPassword: string) {
+      this.loading = true;
+
+      try {
+        const { authClient } = await import('~/lib/auth-client');
+        const result = await authClient.emailOtp.resetPassword({
+          email,
+          otp,
+          password: newPassword,
+        });
+
+        if (result.error) {
+          return {
+            success: false,
+            error: result.error.message || 'Password reset failed',
+          };
+        }
+
+        return { success: true };
+      } catch (error: unknown) {
+        console.error('Reset password error:', error);
+        return {
+          success: false,
+          error: error instanceof Error ? error.message : 'Password reset failed',
         };
       } finally {
         this.loading = false;

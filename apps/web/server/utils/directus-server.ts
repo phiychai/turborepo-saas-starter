@@ -1,7 +1,7 @@
 import { $fetch } from 'ofetch';
 import type { Schema } from '@turborepo-saas-starter/shared-types/schema';
 import {
-  // aggregate,
+  aggregate,
   createDirectus,
   readItem,
   readItems,

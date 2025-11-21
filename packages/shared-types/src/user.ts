@@ -16,7 +16,7 @@ export interface UserProfile {
   displayName: string;
 
   // Authorization (from Adonis User)
-  role: 'user' | 'admin';
+  role: 'user' | 'admin' | 'content_admin' | 'editor' | 'writer';
   isActive: boolean;
 
   // Preferences (from Adonis User)

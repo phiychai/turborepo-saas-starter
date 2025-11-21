@@ -36,7 +36,7 @@ watch(
   () => props.user,
   (user) => {
     if (user) {
-      // Parse name into first and last name
+      // Always update form when user is set
       const nameParts = user.name.split(' ');
       state.firstName = nameParts[0] || '';
       state.lastName = nameParts.slice(1).join(' ') || '';
@@ -44,9 +44,15 @@ watch(
         'role' in user && (user.role === 'user' || user.role === 'admin') ? user.role : 'user';
       state.isActive =
         'isActive' in user && typeof user.isActive === 'boolean' ? user.isActive : true;
+
+      // Always open modal when user is set (even if same user, to allow reopening)
       open.value = true;
+    } else {
+      // User was cleared, close modal
+      open.value = false;
     }
-  }
+  },
+  { immediate: false }
 );
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
@@ -113,6 +119,8 @@ function reset() {
 watch(open, (isOpen) => {
   if (!isOpen) {
     reset();
+    // Clear selected user when modal closes to allow reopening
+    // This is handled by the parent component, but we ensure state is reset
   }
 });
 </script>

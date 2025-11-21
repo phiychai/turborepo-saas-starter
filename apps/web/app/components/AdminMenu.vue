@@ -62,9 +62,9 @@ const items = computed<DropdownMenuItem[][]>(() => [
   ],
   [
     {
-      label: 'Profile',
+      label: 'Admin',
       icon: 'tabler:user',
-      to: profileUrl.value,
+      to: '/admin',
     },
     {
       label: 'Billing',

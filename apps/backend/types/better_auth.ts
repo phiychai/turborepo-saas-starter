@@ -123,6 +123,10 @@ export interface BetterAuthApi {
     body: { userId: string };
     headers?: Headers | Record<string, string>;
   }) => Promise<void>;
+  removeUser?: (options: {
+    body: { userId: string };
+    headers?: Headers | Record<string, string>;
+  }) => Promise<{ deletedUser?: unknown }>;
   [key: string]: unknown;
 }
 

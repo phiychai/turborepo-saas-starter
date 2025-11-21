@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import type { TableColumn } from '@nuxt/ui';
 import { upperFirst } from 'scule';
-import { getPaginationRowModel } from '@tanstack/table-core';
 import type { Row } from '@tanstack/table-core';
 import type { DashboardUser } from '~/types';
+import CustomersEditModal from '~/components/customers/EditModal.vue';
+import CustomersAddModal from '~/components/customers/AddModal.vue';
 
 definePageMeta({
-  layout: 'dashboard',
+  layout: 'admin',
   middleware: 'admin',
 });
 
@@ -296,6 +297,11 @@ function handleUserUpdated(updatedUser: DashboardUser) {
   selectedUser.value = null;
 }
 
+function handleUserCreated() {
+  // Refresh the data after new user is created
+  refresh();
+}
+
 const columns: TableColumn<DashboardUser>[] = [
   {
     id: 'select',
@@ -449,7 +455,7 @@ watch(
             :loading="syncing"
             @click="syncAllUsers"
           />
-          <CustomersAddModal />
+          <CustomersAddModal @created="handleUserCreated" />
         </template>
       </UDashboardNavbar>
     </template>
@@ -529,9 +535,6 @@ watch(
         v-model:column-visibility="columnVisibility"
         v-model:row-selection="rowSelection"
         v-model:pagination="pagination"
-        :pagination-options="{
-          getPaginationRowModel: getPaginationRowModel(),
-        }"
         class="shrink-0"
         :data="data"
         :columns="columns"
