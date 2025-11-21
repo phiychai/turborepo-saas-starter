@@ -1,4 +1,5 @@
 import { defineCollection, z } from '@nuxt/content';
+import { resolve } from 'path';
 
 const variantEnum = z.enum(['solid', 'outline', 'subtle', 'soft', 'ghost', 'link']);
 const colorEnum = z.enum([
@@ -84,7 +85,14 @@ export const collections = {
     }),
   }),
   docs: defineCollection({
-    source: '1.docs/**/*',
+    // Read directly from root docs folder using cwd (current working directory)
+    // According to Nuxt Content docs: https://content.nuxt.com/docs/collections/sources
+    // Use cwd to include files from outside the content directory
+    source: {
+      cwd: resolve(__dirname, '../../docs'),
+      include: '**/*.md',
+      prefix: '/docs',
+    },
     type: 'page',
   }),
   pricing: defineCollection({

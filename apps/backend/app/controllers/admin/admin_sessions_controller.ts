@@ -11,8 +11,17 @@ import { toWebRequest } from '#utils/better_auth_helpers';
 
 export default class AdminSessionsController {
   /**
-   * List user sessions (Better Auth)
-   * GET /api/admin/users/:id/sessions
+   * @listUserSessions
+   * @summary List user sessions (admin)
+   * @description Retrieves all active sessions for a specific user from Better Auth. Admin only endpoint.
+   * @tag Admin
+   * @paramPath {string} id - User ID (UUID, required)
+   * @response 200 - User sessions retrieved successfully
+   * @response 400 - Bad request - User not linked to Better Auth
+   * @response 401 - Unauthorized - Authentication required
+   * @response 403 - Forbidden - Admin access required
+   * @response 404 - User not found
+   * @response 500 - Server error - Failed to list sessions
    */
   async listUserSessions({ params, request, response, auth }: HttpContext) {
     await abilities.manageUsers.execute(auth.user!);
@@ -68,8 +77,16 @@ export default class AdminSessionsController {
   }
 
   /**
-   * Revoke user session (Better Auth)
-   * DELETE /api/admin/sessions/:sessionToken
+   * @revokeSession
+   * @summary Revoke user session (admin)
+   * @description Revokes a specific user session by session token. The user will be logged out from that session. Admin only endpoint.
+   * @tag Admin
+   * @paramPath {string} sessionToken - Session token to revoke (required)
+   * @response 200 - Session revoked successfully
+   * @response 401 - Unauthorized - Authentication required
+   * @response 403 - Forbidden - Admin access required
+   * @response 404 - Session not found
+   * @response 500 - Server error - Failed to revoke session
    */
   async revokeSession({ params, request, response, auth }: HttpContext) {
     await abilities.manageUsers.execute(auth.user!);
@@ -111,8 +128,17 @@ export default class AdminSessionsController {
   }
 
   /**
-   * Revoke all sessions for user (Better Auth)
-   * DELETE /api/admin/users/:id/sessions
+   * @revokeAllSessions
+   * @summary Revoke all user sessions (admin)
+   * @description Revokes all active sessions for a specific user. The user will be logged out from all devices. Admin only endpoint.
+   * @tag Admin
+   * @paramPath {string} id - User ID (UUID, required)
+   * @response 200 - All sessions revoked successfully
+   * @response 400 - Bad request - User not linked to Better Auth
+   * @response 401 - Unauthorized - Authentication required
+   * @response 403 - Forbidden - Admin access required
+   * @response 404 - User not found
+   * @response 500 - Server error - Failed to revoke sessions
    */
   async revokeAllSessions({ params, request, response, auth }: HttpContext) {
     await abilities.manageUsers.execute(auth.user!);
