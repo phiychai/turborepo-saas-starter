@@ -50,10 +50,7 @@ export default class AuthController {
       const isSignInRequest = request.url()?.includes('/sign-in/email');
       if (isSignInRequest) {
         const errorMessage = error instanceof Error ? error.message : String(error);
-        if (
-          errorMessage.includes('PASSWORD_COMPROMISED') ||
-          errorMessage.includes('data breach')
-        ) {
+        if (errorMessage.includes('PASSWORD_COMPROMISED') || errorMessage.includes('data breach')) {
           return response.status(401).send({
             code: 'INVALID_CREDENTIALS',
             message: 'Invalid email or password',

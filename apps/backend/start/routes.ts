@@ -14,7 +14,6 @@ import swagger from '#config/swagger';
 import { middleware } from '#start/kernel';
 
 const UserController = () => import('#controllers/user_controller');
-const SpaceController = () => import('#controllers/space_controller');
 const CmsProxyController = () => import('#controllers/cms_proxy_controller');
 const BillingController = () => import('#controllers/billing_controller');
 const AuthController = () => import('#controllers/auth_controller');
@@ -64,10 +63,10 @@ router.get('/', async () => ({
 || Public Routes
 ||--------------------------------------------------------------------------
 */
-// Public user lookup by username (for username resolution in spaces)
+// Public user lookup by username
 /**
  * @summary Get user by username (public)
- * @description Public endpoint to retrieve user information by username. Used for username resolution in spaces and public profiles. Only returns active users.
+ * @description Public endpoint to retrieve user information by username. Only returns active users.
  * @tag Public
  * @paramPath {string} username - Username to lookup (required)
  * @response 200 - User found and returned
@@ -105,12 +104,6 @@ router
     router.post('/avatar', [UserController, 'uploadAvatar']); // Avatar upload
     router.get('/users', [UserController, 'index']); // Admin only
     router.patch('/users/:id/toggle-status', [UserController, 'toggleStatus']); // Admin only
-
-    // Space management
-    router.get('/spaces', [SpaceController, 'index']);
-    router.post('/spaces', [SpaceController, 'create']);
-    router.patch('/spaces/:id', [SpaceController, 'update']);
-    router.delete('/spaces/:id', [SpaceController, 'delete']);
   })
   .prefix('/api/user')
   .use(middleware.auth());

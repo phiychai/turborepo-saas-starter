@@ -162,16 +162,16 @@ export class DirectusUserSyncService {
   static async syncUserToDirectus(
     user: User,
     role: string
-  ): Promise<{ directusUserId: string | null; spaceId: string | null }> {
+  ): Promise<{ directusUserId: string | null }> {
     // Only create Directus users for content roles
     if (!this.requiresDirectusUser(role)) {
-      return { directusUserId: null, spaceId: null };
+      return { directusUserId: null };
     }
 
     const directusRoleId = await this.getDirectusRoleId(role);
     if (!directusRoleId) {
       logger.warn(`Cannot sync user ${user.id} to Directus: invalid role ${role}`);
-      return { directusUserId: null, spaceId: null };
+      return { directusUserId: null };
     }
 
     try {
@@ -268,68 +268,13 @@ export class DirectusUserSyncService {
       user.directusUserId = directusUserId;
       await user.save();
 
-      // Create default space for Writer role (Substack-style)
-      let spaceId: string | null = null;
-      if (role === 'writer') {
-        spaceId = await this.createDefaultSpaceForWriter(
-          directusUserId,
-          user.firstName,
-          user.lastName,
-          user.email
-        );
-      }
-
-      return { directusUserId, spaceId };
+      return { directusUserId };
     } catch (error) {
       logger.error(`Failed to sync user ${user.id} to Directus: ${error}`);
-      return { directusUserId: null, spaceId: null };
+      return { directusUserId: null };
     }
   }
 
-  /**
-   * Create default space for Writer role (Substack-style)
-   * Uses user's first name for the space name
-   */
-  static async createDefaultSpaceForWriter(
-    directusUserId: string,
-    firstName: string | null,
-    lastName: string | null,
-    email: string
-  ): Promise<string | null> {
-    try {
-      // Check if user already has a default space
-      const existingSpaces = await directusService.getItems('spaces', {
-        filter: {
-          owner: { _eq: directusUserId },
-          is_default: { _eq: true },
-        },
-        limit: 1,
-        fields: ['id'],
-      });
-
-      if (existingSpaces && existingSpaces.length > 0) {
-        return existingSpaces[0].id;
-      }
-
-      // Get user name for space (prefer first name, fallback to last name, then email prefix)
-      const userName = firstName || lastName || email.split('@')[0] || 'User';
-
-      // Create default space
-      const space = await directusService.createItem('spaces', {
-        slug: 'article',
-        name: `${userName}'s Articles`,
-        description: 'Default space for general articles',
-        owner: directusUserId,
-        is_default: true,
-      });
-
-      logger.info(`Created default space ${space.id} for Writer ${directusUserId}`);
-      return space.id;
-    } catch (error) {
-      logger.error(`Failed to create default space for Writer ${directusUserId}: ${error}`);
-      return null;
-    }
-  }
 
   /**
    * Update Directus user email

@@ -4,8 +4,8 @@ import db from '@adonisjs/lucid/services/db';
 import type { HttpContext } from '@adonisjs/core/http';
 
 import { auth } from '#config/better_auth';
-import { toWebRequest } from '#utils/better_auth_helpers';
 import User from '#models/user';
+import { toWebRequest } from '#utils/better_auth_helpers';
 
 /**
  * Sync Service: AdonisJS → Better Auth

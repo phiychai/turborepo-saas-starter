@@ -330,7 +330,7 @@ export default class UserController {
   /**
    * @getByUsername
    * @summary Get user by username (public)
-   * @description Public endpoint to retrieve user information by username. Used for username resolution in spaces and public profiles. Only returns active users.
+   * @description Public endpoint to retrieve user information by username. Only returns active users.
    * @tag Public
    * @paramPath {string} username - Username to lookup
    * @response 200 - User found and returned
