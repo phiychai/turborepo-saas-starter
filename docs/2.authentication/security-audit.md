@@ -6,8 +6,6 @@ navigation:
   order: 0
 ---
 
-# Authentication Security Audit
-
 This document identifies potential security issues in the authentication plan and milestone documents. All issues should be addressed before implementation.
 
 ## Critical Issues

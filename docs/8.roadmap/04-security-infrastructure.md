@@ -6,8 +6,6 @@ navigation:
   order: 5
 ---
 
-# Security & Infrastructure
-
 ## Overview
 
 Harden the application for production with security best practices, error handling, monitoring, rate limiting, backups, and performance optimization.

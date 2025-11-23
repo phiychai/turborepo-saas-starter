@@ -6,8 +6,6 @@ navigation:
   order: 2
 ---
 
-# Better Auth Architecture - Quick Reference
-
 > 📖 For complete documentation, see [Authentication Guide](./1.authentication)
 
 ## Overview
@@ -354,7 +352,7 @@ definePageMeta({
 
 ```typescript
 // start/routes.ts
-router.get('/api/user/profile', [UserController, 'profile'])
+router.get('/api/user/me', [UserController, 'me'])
   .use(middleware.auth());
 ```
 

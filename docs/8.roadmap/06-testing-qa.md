@@ -6,8 +6,6 @@ navigation:
   order: 7
 ---
 
-# Testing & Quality Assurance
-
 ## Overview
 
 Ensure code quality and reliability through comprehensive test coverage, integration testing, E2E testing, and load testing.

@@ -6,8 +6,6 @@ navigation:
   order: 8
 ---
 
-# Documentation & Compliance
-
 ## Overview
 
 Create comprehensive documentation for users, developers, and operators, and ensure legal compliance with GDPR, PCI DSS, and other regulations.

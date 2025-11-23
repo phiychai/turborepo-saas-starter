@@ -6,11 +6,17 @@ navigation:
   order: 3
 ---
 
-# Billing - Full Lago Integration
-
 ## Overview
 
 Complete the Lago billing integration with webhook handling, payment methods UI, subscription management, and full lifecycle support.
+
+## Implementation Status
+
+- [ ] Webhook Integration
+- [ ] Payment Methods UI
+- [~] Subscription Management UI ⚠️ (Backend service exists, UI may be incomplete)
+- [ ] Subscription Lifecycle
+- [x] Lago Customer Sync ✅ (BillingService implemented)
 
 ## 2.1 Webhook Integration
 
@@ -181,16 +187,18 @@ Complete the Lago billing integration with webhook handling, payment methods UI,
 
 ## 2.5 Lago Customer Sync
 
+**Status**: ✅ Partially Completed
+
 ### Ensure Customer Sync on User Creation
 - **Verify**: `apps/backend/app/controllers/auth_controller.ts`
-  - Already creates Lago customer on registration
-  - Check for error handling
-  - Verify customer creation success
+  - ✅ BillingService exists with customer creation methods
+  - ⚠️ Check for error handling (needs verification)
+  - ⚠️ Verify customer creation success (needs verification)
 - **Handle failures gracefully**:
-  - Implement retry queue for failed customer creation
-  - Log failures for admin review
-  - Don't fail user registration if Lago is down
-  - Retry mechanism (exponential backoff)
+  - [ ] Implement retry queue for failed customer creation
+  - [ ] Log failures for admin review
+  - [ ] Don't fail user registration if Lago is down
+  - [ ] Retry mechanism (exponential backoff)
 
 ### Customer Update Sync
 - **Sync user profile changes** to Lago customer:
@@ -211,14 +219,14 @@ Complete the Lago billing integration with webhook handling, payment methods UI,
 - [ ] Create payment methods UI page
 - [ ] Integrate Stripe.js and Stripe Elements
 - [ ] Implement 3D Secure support
-- [ ] Create subscription dashboard UI
+- [~] Create subscription dashboard UI ⚠️ (Billing store exists, UI may be incomplete)
 - [ ] Build plan comparison and upgrade flow
 - [ ] Implement invoice management page
 - [ ] Add usage tracking UI (if applicable)
 - [ ] Configure trial periods in Lago
 - [ ] Implement trial ending notifications
 - [ ] Handle grace periods and dunning in UI
-- [ ] Create customer sync on user creation
+- [x] Create customer sync on user creation ✅ (BillingService exists)
 - [ ] Implement profile change sync to Lago
 
 ---

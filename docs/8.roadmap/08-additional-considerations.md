@@ -6,8 +6,6 @@ navigation:
   order: 9
 ---
 
-# Additional Production Considerations
-
 ## Overview
 
 Additional considerations for production readiness including email deliverability, compliance, monitoring, alerts, and scalability preparation.

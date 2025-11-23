@@ -6,8 +6,6 @@ navigation:
   order: 6
 ---
 
-# Frontend UI/UX Polish
-
 ## Overview
 
 Polish the frontend user interface and user experience to ensure consistency, accessibility, responsiveness, and professional appearance throughout the application.
