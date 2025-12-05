@@ -53,16 +53,6 @@
     "unimport": "4.1.1"
   },
   "pnpm": {
-    "overrides": {
-      "@nuxtjs/mdc": "^0.18.2",
-      "magicast": "^0.5.1"
-    },
-    "peerDependencyRules": {
-      "allowedVersions": {
-        "@pinia/nuxt": "0.11.3",
-        "magicast": "0.5.1"
-      }
-    },
     "onlyBuiltDependencies": [
       "@parcel/watcher",
       "@scarf/scarf",

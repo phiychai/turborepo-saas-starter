@@ -116,7 +116,9 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
     </template>
 
     <template #password-hint>
-      <ULink to="/" class="text-primary font-medium" tabindex="-1">Forgot password?</ULink>
+      <ULink to="/forgot-password" class="text-primary font-medium" tabindex="-1">
+        Forgot password?
+      </ULink>
     </template>
 
     <template #footer>

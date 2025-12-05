@@ -1,8 +1,11 @@
 import logger from '@adonisjs/core/services/logger';
+import db from '@adonisjs/lucid/services/db';
 
 import type { HttpContext } from '@adonisjs/core/http';
 
+import { auth } from '#config/better_auth';
 import User from '#models/user';
+import { toWebRequest } from '#utils/better_auth_helpers';
 
 /**
  * Sync Service: AdonisJS → Better Auth
@@ -13,6 +16,9 @@ import User from '#models/user';
 export class BetterAuthSyncService {
   /**
    * Sync role change from AdonisJS to Better Auth
+   * Maps Adonis roles to Better Auth roles:
+   * - 'admin' → 'admin' in Better Auth
+   * - 'user', 'content_admin', 'editor', 'writer' → 'user' in Better Auth
    */
   static async syncRole(
     adonisUserId: number,
@@ -26,13 +32,21 @@ export class BetterAuthSyncService {
     }
 
     try {
-      // Better Auth Admin plugin handles role syncing
-      // We'll use Better Auth Admin API if available
-      // For now, log the change - Better Auth Admin plugin may handle it automatically
-      logger.info(`Role sync requested for user ${user.id}: ${newRole}`);
+      // Map Adonis role to Better Auth role
+      // Better Auth only needs admin vs non-admin distinction
+      const betterAuthRole = newRole === 'admin' ? 'admin' : 'user';
 
-      // If Better Auth Admin plugin provides API for role syncing, use it here
-      // await auth.api.setRole({ ... });
+      // Update Better Auth user role directly in database
+      // Better Auth stores roles in the 'user' table with a 'role' column
+      const dbConnection = db.connection();
+      await dbConnection
+        .from('user')
+        .where('id', user.betterAuthUserId)
+        .update({ role: betterAuthRole });
+
+      logger.info(
+        `Synced role to Better Auth: Adonis role '${newRole}' → Better Auth role '${betterAuthRole}' for user ${user.id}`
+      );
     } catch (error) {
       logger.error('Failed to sync role to Better Auth:', error);
       // Don't throw - AdonisJS is canonical, Better Auth is secondary
@@ -73,10 +87,11 @@ export class BetterAuthSyncService {
 
   /**
    * Sync user deletion from AdonisJS to Better Auth
+   * Uses Better Auth Admin plugin's removeUser API to delete the user
    */
   static async syncUserDeletion(
     adonisUserId: number,
-    _request?: HttpContext['request']
+    request?: HttpContext['request']
   ): Promise<void> {
     const user = await User.findByOrFail('id', adonisUserId);
 
@@ -85,14 +100,27 @@ export class BetterAuthSyncService {
     }
 
     try {
-      // Better Auth Admin plugin handles user deletion
-      logger.info(`User deletion sync requested for Better Auth user: ${user.betterAuthUserId}`);
+      logger.info(`Deleting Better Auth user: ${user.betterAuthUserId}`);
 
-      // If Better Auth Admin plugin provides API for user deletion, use it here
-      // await auth.api.removeUser({ ... });
+      // Use Better Auth Admin plugin's removeUser API
+      if (auth.api?.removeUser && request) {
+        const webRequest = await toWebRequest(request);
+        await auth.api.removeUser({
+          body: {
+            userId: user.betterAuthUserId,
+          },
+          headers: webRequest.headers,
+        });
+        logger.info(`Successfully deleted Better Auth user: ${user.betterAuthUserId}`);
+      } else {
+        // Fallback: Delete directly from database if API not available
+        const dbConnection = db.connection();
+        await dbConnection.from('user').where('id', user.betterAuthUserId).delete();
+        logger.info(`Deleted Better Auth user from database: ${user.betterAuthUserId}`);
+      }
     } catch (error) {
       logger.error('Failed to sync user deletion to Better Auth:', error);
-      // Don't throw - AdonisJS is canonical
+      // Don't throw - AdonisJS is canonical, but log the error
     }
   }
 }

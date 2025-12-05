@@ -3,6 +3,7 @@ import db from '@adonisjs/lucid/services/db';
 
 import User from '#models/user';
 import { AuthErrorLogger } from '#services/auth_error_logger';
+import { DirectusUserSyncService } from '#services/directus_user_sync_service';
 
 export interface BetterAuthUser {
   id: string;
@@ -19,6 +20,7 @@ export interface SyncUserOptions {
   provider?: string;
   requestPath?: string;
   clientIp?: string;
+  role?: 'user' | 'admin' | 'content_admin' | 'editor' | 'writer'; // Optional role override (for admin-created users)
 }
 
 export class UserSyncService {
@@ -48,9 +50,12 @@ export class UserSyncService {
   /**
    * Upsert Adonis User from Better Auth user data
    * Uses database transaction to prevent race conditions
+   *
+   * For frontend registrations: role defaults to 'user' (no Directus user created)
+   * For admin-created users: role can be specified (Directus user created if content role)
    */
   static async syncUser(options: SyncUserOptions): Promise<User | null> {
-    const { betterAuthUser, provider, requestPath, clientIp } = options;
+    const { betterAuthUser, provider, requestPath, clientIp, role } = options;
 
     try {
       // Validate input data before processing
@@ -81,8 +86,10 @@ export class UserSyncService {
             existingUser.username = betterAuthUser.username;
           }
 
-          // Set default role if not set
-          if (!existingUser.role) {
+          // Set role if provided, otherwise keep existing role or default to 'user'
+          if (role !== undefined) {
+            existingUser.role = role;
+          } else if (!existingUser.role) {
             existingUser.role = 'user';
           }
 
@@ -101,6 +108,8 @@ export class UserSyncService {
 
           // Create new user
           // Note: If using Better Auth Username Plugin, username will be in betterAuthUser.username
+          // Use provided role or default to 'user' for frontend registrations
+          const userRole = role || 'user';
           const newUser = await User.create({
             betterAuthUserId: betterAuthUser.id,
             email: betterAuthUser.email,
@@ -108,15 +117,23 @@ export class UserSyncService {
             lastName: nameParts.lastName,
             username: betterAuthUser.username || null, // Sync username from Better Auth if available
             avatarUrl: betterAuthUser.image,
-            role: 'user',
+            role: userRole,
             isActive: true,
             failedAttempts: 0,
             lockedUntil: null,
             preferences: null,
+            directusUserId: null, // Will be set if Directus user is created
           });
           return newUser;
         }
       });
+
+      // If role requires Directus user, sync to Directus
+      // This happens for admin-created users with content roles
+      if (role && DirectusUserSyncService.requiresDirectusUser(role)) {
+        const finalRole = role || user.role;
+        await DirectusUserSyncService.syncUserToDirectus(user, finalRole);
+      }
 
       logger.info(`User synced successfully: ${user.id} (${user.email})`);
       return user;

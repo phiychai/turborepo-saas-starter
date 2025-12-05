@@ -46,6 +46,8 @@ export const useAuth = () => {
     updateProfile: authStore.updateProfile,
     updateUsername: authStore.updateUsername,
     changePassword: authStore.changePassword,
+    requestPasswordReset: authStore.requestPasswordReset,
+    resetPassword: authStore.resetPassword,
   };
 };
 

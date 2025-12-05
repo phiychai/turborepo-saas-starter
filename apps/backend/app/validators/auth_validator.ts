@@ -13,7 +13,9 @@ export const updateProfileValidator = vine.compile(
       .string()
       .trim()
       .email()
-      .normalizeEmail()
+      // Note: normalizeEmail() removed to preserve dots in email addresses
+      // Gmail treats user.name@gmail.com and username@gmail.com as the same,
+      // but we preserve the exact format the user provides
       .unique(async (db, value, field) => {
         const user = await db
           .from('users')

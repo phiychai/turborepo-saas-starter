@@ -52,6 +52,119 @@ if (dbConnection === 'postgres') {
   database = new Database(dbPath);
 }
 
+/**
+ * Generate a unique username from email address
+ * Extracts the email prefix, sanitizes it, and ensures uniqueness
+ */
+async function generateUsernameFromEmail(email: string, db: Database | Pool): Promise<string> {
+  // Reserved usernames (same as in username plugin config)
+  const reserved = [
+    'admin',
+    'administrator',
+    'root',
+    'system',
+    'api',
+    'www',
+    'mail',
+    'ftp',
+    'localhost',
+    'test',
+    'demo',
+    'support',
+    'help',
+    'info',
+    'contact',
+    'about',
+    'terms',
+    'privacy',
+    'settings',
+    'account',
+    'profile',
+    'dashboard',
+    'login',
+    'logout',
+    'signup',
+    'register',
+  ];
+
+  // Extract email prefix (part before @)
+  let baseUsername = email.split('@')[0] || 'user';
+
+  // Sanitize: lowercase, keep only alphanumeric and underscores
+  baseUsername = baseUsername
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, '')
+    .replace(/^_+|_+$/g, '') // Remove leading/trailing underscores
+    .replace(/_+/g, '_'); // Replace multiple underscores with single
+
+  // Ensure minimum length (3 chars) - if too short, pad with random numbers
+  if (baseUsername.length < 3) {
+    const randomSuffix = Math.floor(Math.random() * 1000).toString();
+    baseUsername = (baseUsername || 'user') + randomSuffix;
+  }
+
+  // Ensure maximum length (30 chars) - truncate if needed
+  if (baseUsername.length > 30) {
+    baseUsername = baseUsername.substring(0, 30);
+    // Remove trailing underscore if truncated
+    baseUsername = baseUsername.replace(/_+$/, '');
+  }
+
+  // Check if reserved
+  if (reserved.includes(baseUsername)) {
+    baseUsername = `${baseUsername}1`;
+  }
+
+  // Check uniqueness and handle conflicts
+  let username = baseUsername;
+  let counter = 1;
+  const maxAttempts = 1000; // Prevent infinite loop
+
+  while (counter <= maxAttempts) {
+    // Check if username exists in Better Auth user table
+    const exists = await checkUsernameExists(username, db);
+
+    if (!exists) {
+      return username;
+    }
+
+    // Username exists, try with number suffix
+    const suffix = counter.toString();
+    const maxBaseLength = 30 - suffix.length;
+    username = baseUsername.substring(0, maxBaseLength) + suffix;
+    counter++;
+  }
+
+  // Fallback: use timestamp if all attempts failed
+  const timestamp = Date.now().toString().slice(-8);
+  return `user${timestamp}`;
+}
+
+/**
+ * Check if username exists in Better Auth user table
+ */
+async function checkUsernameExists(username: string, db: Database | Pool): Promise<boolean> {
+  try {
+    if (db instanceof Database) {
+      // SQLite
+      const stmt = db.prepare('SELECT id FROM user WHERE username = ? LIMIT 1');
+      const result = stmt.get(username);
+      return !!result;
+    } else {
+      // PostgreSQL
+      const result = await db.query('SELECT id FROM "user" WHERE username = $1 LIMIT 1', [
+        username,
+      ]);
+      return result.rows.length > 0;
+    }
+  } catch (error) {
+    // If table doesn't exist yet or column doesn't exist, assume username is available
+    // This can happen during initial setup
+    console.warn('Error checking username existence:', error);
+    return false;
+  }
+}
+
 // Initialize Better Auth instance (direct export, no wrapper)
 export const auth = betterAuth({
   database,
@@ -147,6 +260,10 @@ export const auth = betterAuth({
     }),
     haveIBeenPwned({
       // Customize error message (optional)
+      // Note: This plugin ONLY checks passwords during:
+      // 1. Sign-up (signUp.email()) - when creating a new account
+      // 2. Password update (changePassword()) - when changing password
+      // It does NOT check passwords during sign-in (signIn.email())
       customPasswordCompromisedMessage:
         'This password has been exposed in a data breach. Please choose a different password.',
     }),
@@ -225,13 +342,21 @@ export const auth = betterAuth({
   // These hooks are called by Better Auth automatically - we don't modify Better Auth
   hooks: {
     /**
-     * Validate password strength on sign-up
+     * Generate username from email if not provided and validate password strength on sign-up
      * Note: Better Auth Have I Been Pwned plugin runs automatically before this hook
      */
     // @ts-expect-error - Better Auth hook types may not include all hooks
     beforeSignUp: async ({ input }: BetterAuthBeforeSignUpContext) => {
-      const { password } = input;
+      const { password, email, username: providedUsername } = input;
 
+      // Generate username from email if not provided
+      if (!providedUsername && email) {
+        const generatedUsername = await generateUsernameFromEmail(email, database);
+        // @ts-expect-error - Better Auth input may allow username modification
+        input.username = generatedUsername;
+      }
+
+      // Validate password strength
       if (password) {
         const validation = PasswordValidatorService.validate(password);
         if (!validation.isValid) {

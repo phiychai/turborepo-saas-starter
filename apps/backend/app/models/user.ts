@@ -32,7 +32,11 @@ export default class User extends BaseModel {
 
   // Authorization
   @column()
-  declare role: 'user' | 'admin';
+  declare role: 'user' | 'admin' | 'content_admin' | 'editor' | 'writer';
+
+  // Link to Directus user (for content roles)
+  @column()
+  declare directusUserId: string | null;
 
   @column()
   declare isActive: boolean;

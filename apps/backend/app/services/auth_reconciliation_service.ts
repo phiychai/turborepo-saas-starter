@@ -142,6 +142,8 @@ export class AuthReconciliationService {
   }> {
     try {
       // Get all Better Auth users
+      // Note: Better Auth may or may not have soft deletes enabled
+      // We'll filter out soft-deleted users in the application code if the field exists
       const betterAuthUsers = await db.from('user').select('*');
 
       let synced = 0;
@@ -150,7 +152,15 @@ export class AuthReconciliationService {
 
       for (const baUser of betterAuthUsers) {
         try {
+          // Skip soft-deleted Better Auth users (if soft deletes are enabled)
+          // Better Auth uses 'deletedAt' (camelCase) or 'deleted_at' (snake_case)
+          if (baUser.deletedAt || baUser.deleted_at) {
+            skipped++;
+            continue;
+          }
+
           // Check if user already exists in AdonisJS
+          // This will find users even if they were soft-deleted (if soft deletes are enabled)
           const existingUser = await User.query()
             .where('better_auth_user_id', baUser.id)
             .orWhere('email', baUser.email)

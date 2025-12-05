@@ -39,6 +39,14 @@ const user = computed(() => ({
   },
 }));
 
+const profileUrl = computed(() => {
+  if (authUser.value?.username) {
+    return `/@${authUser.value.username}`;
+  }
+  // Fallback to settings/profile if no username
+  return '/settings';
+});
+
 const handleLogout = async () => {
   await logout();
   router.push('/');
@@ -56,7 +64,7 @@ const items = computed<DropdownMenuItem[][]>(() => [
     {
       label: 'Profile',
       icon: 'tabler:user',
-      to: '/profile',
+      to: profileUrl.value,
     },
     {
       label: 'Billing',

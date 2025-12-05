@@ -7,8 +7,17 @@ import { AuthReconciliationService } from '#services/auth_reconciliation_service
 
 export default class AuthErrorsController {
   /**
-   * List auth sync errors
-   * GET /api/admin/auth-errors
+   * @index
+   * @summary List auth sync errors
+   * @description Retrieves a paginated list of authentication synchronization errors between Better Auth and AdonisJS. Admin only endpoint.
+   * @tag Admin
+   * @paramQuery {integer} page - Page number (default: 1)
+   * @paramQuery {integer} limit - Items per page (default: 50)
+   * @paramQuery {string} event_type - Filter by event type
+   * @paramQuery {boolean} handled - Filter by handled status (true/false)
+   * @response 200 - List of auth sync errors retrieved successfully
+   * @response 401 - Unauthorized - Authentication required
+   * @response 403 - Forbidden - Admin access required
    */
   async index({ auth, request, response }: HttpContext) {
     // Admin only
@@ -35,8 +44,13 @@ export default class AuthErrorsController {
   }
 
   /**
-   * Get error statistics
-   * GET /api/admin/auth-errors/stats
+   * @stats
+   * @summary Get auth error statistics
+   * @description Retrieves aggregated statistics about authentication synchronization errors, including counts by type and status. Admin only endpoint.
+   * @tag Admin
+   * @response 200 - Error statistics retrieved successfully
+   * @response 401 - Unauthorized - Authentication required
+   * @response 403 - Forbidden - Admin access required
    */
   async stats({ auth, response }: HttpContext) {
     await abilities.manageUsers.execute(auth.user!);
@@ -46,8 +60,15 @@ export default class AuthErrorsController {
   }
 
   /**
-   * Mark error as handled
-   * PATCH /api/admin/auth-errors/:id/handle
+   * @handle
+   * @summary Mark error as handled
+   * @description Marks an authentication synchronization error as handled/resolved. Admin only endpoint.
+   * @tag Admin
+   * @paramPath {string} id - Error ID (UUID, required)
+   * @response 200 - Error marked as handled successfully
+   * @response 401 - Unauthorized - Authentication required
+   * @response 403 - Forbidden - Admin access required
+   * @response 404 - Error not found
    */
   async handle({ auth, params, response }: HttpContext) {
     await abilities.manageUsers.execute(auth.user!);
@@ -62,8 +83,14 @@ export default class AuthErrorsController {
   }
 
   /**
-   * Retry reconciliation
-   * POST /api/admin/auth-errors/reconcile
+   * @reconcile
+   * @summary Run auth reconciliation
+   * @description Runs the authentication reconciliation process to sync users between Better Auth and AdonisJS, resolving any discrepancies. Admin only endpoint.
+   * @tag Admin
+   * @response 200 - Reconciliation completed with results
+   * @response 401 - Unauthorized - Authentication required
+   * @response 403 - Forbidden - Admin access required
+   * @response 500 - Server error - Reconciliation failed
    */
   async reconcile({ auth, response }: HttpContext) {
     await abilities.manageUsers.execute(auth.user!);

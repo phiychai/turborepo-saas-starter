@@ -6,8 +6,6 @@ settings:
 
 overrides:
   unimport: 4.1.1
-  '@nuxtjs/mdc': ^0.18.2
-  magicast: ^0.5.1
 
 importers:
 
@@ -4153,7 +4151,7 @@ packages:
   c12@3.3.1:
     resolution: {integrity: sha512-LcWQ01LT9tkoUINHgpIOv3mMs+Abv7oVCrtpMRi1PaapVEpWoMga5WuT7/DqFTu7URP9ftbOmimNw1KNIGh9DQ==}
     peerDependencies:
-      magicast: ^0.5.1
+      magicast: ^0.3.5
     peerDependenciesMeta:
       magicast:
         optional: true
@@ -4161,7 +4159,7 @@ packages:
   c12@3.3.2:
     resolution: {integrity: sha512-QkikB2X5voO1okL3QsES0N690Sn/K9WokXqUsDQsWy5SnYb+psYQFGA10iy1bZHj3fjISKsI67Q90gruvWWM3A==}
     peerDependencies:
-      magicast: ^0.5.1
+      magicast: '*'
     peerDependenciesMeta:
       magicast:
         optional: true

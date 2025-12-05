@@ -4,6 +4,7 @@ import type { CommandOptions } from '@adonisjs/core/types/ace';
 
 import { auth } from '#config/better_auth';
 import User from '#models/user';
+import { DirectusUserSyncService } from '#services/directus_user_sync_service';
 import { UserSyncService, type BetterAuthUser } from '#services/user_sync_service';
 
 export default class CreateAdmin extends BaseCommand {
@@ -39,6 +40,14 @@ export default class CreateAdmin extends BaseCommand {
 
         existingUser.role = 'admin';
         await existingUser.save();
+
+        // Sync to Directus if role requires it
+        if (DirectusUserSyncService.requiresDirectusUser('admin')) {
+          this.logger.info('Syncing user to Directus...');
+          await DirectusUserSyncService.syncUserToDirectus(existingUser, 'admin');
+          await existingUser.refresh(); // Refresh to get directusUserId
+          this.logger.success(`User synced to Directus (ID: ${existingUser.directusUserId})`);
+        }
 
         this.logger.success(`User ${this.email} updated to admin role`);
         return;
@@ -148,6 +157,13 @@ export default class CreateAdmin extends BaseCommand {
       adonisUser.role = 'admin';
       await adonisUser.save();
 
+      // Sync to Directus if role requires it
+      if (DirectusUserSyncService.requiresDirectusUser('admin')) {
+        this.logger.info('Syncing user to Directus...');
+        await DirectusUserSyncService.syncUserToDirectus(adonisUser, 'admin');
+        await adonisUser.refresh(); // Refresh to get directusUserId
+      }
+
       this.logger.success(`Admin user created successfully!`);
       this.logger.info(`  Email: ${adonisUser.email}`);
       this.logger.info(`  Role: ${adonisUser.role}`);
@@ -155,6 +171,10 @@ export default class CreateAdmin extends BaseCommand {
 
       if (adonisUser.username) {
         this.logger.info(`  Username: ${adonisUser.username}`);
+      }
+
+      if (adonisUser.directusUserId) {
+        this.logger.info(`  Directus User ID: ${adonisUser.directusUserId}`);
       }
     } catch (error: unknown) {
       this.logger.error(

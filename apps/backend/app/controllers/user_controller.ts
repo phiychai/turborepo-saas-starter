@@ -2,6 +2,7 @@ import { randomBytes } from 'node:crypto';
 import { mkdir } from 'node:fs/promises';
 
 import app from '@adonisjs/core/services/app';
+import logger from '@adonisjs/core/services/logger';
 
 import { UserProfileDTOBuilder, type UserProfileDTO } from '../dto/user_profile_dto.js';
 
@@ -13,13 +14,18 @@ import * as abilities from '#abilities/main';
 import { auth } from '#config/better_auth';
 import User from '#models/user';
 import UserPolicy from '#policies/user_policy';
+import { EmailSyncService } from '#services/email_sync_service';
 import { toWebRequest } from '#utils/better_auth_helpers';
 import { updateProfileValidator } from '#validators/auth_validator';
 
 export default class UserController {
   /**
-   * Get current user profile (merged from Adonis + Better Auth)
-   * GET /api/user/me
+   * @me
+   * @summary Get current user profile
+   * @description Retrieves the current authenticated user's profile, merged from AdonisJS and Better Auth data. Returns complete user information including preferences, role, and session details.
+   * @tag User
+   * @response 200 - User profile retrieved successfully
+   * @response 401 - Unauthorized - Authentication required
    */
   async me({ auth, betterAuthUser, betterAuthSession, response }: HttpContext): Promise<void> {
     // Build DTO from Adonis User and Better Auth data
@@ -33,31 +39,27 @@ export default class UserController {
   }
 
   /**
-   * Get current user profile (legacy endpoint - kept for backward compatibility)
-   */
-  async profile({ auth, response }: HttpContext) {
-    // User is already authenticated (via middleware)
-    // No authorization needed - users can always view their own profile
-    const user = auth.user!;
-    return response.ok({
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      username: user.username,
-      avatarUrl: user.avatarUrl,
-      bio: user.bio,
-      fullName: user.fullName,
-      role: user.role,
-      isActive: user.isActive,
-      preferences: user.preferences,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    });
-  }
-
-  /**
-   * Update current user profile
+   * @updateProfile
+   * @summary Update current user profile
+   * @description Updates the current authenticated user's profile information. Supports partial updates - only provided fields will be updated. Email changes are synced to Better Auth and Directus. Username changes are validated by Better Auth.
+   * @tag User
+   * @requestBody {object} body - Profile update data
+   * @requestBody {string} body.firstName - User's first name (optional, 1-100 characters)
+   * @requestBody {string} body.lastName - User's last name (optional, 1-100 characters)
+   * @requestBody {string} body.fullName - User's full name (optional, 2-100 characters)
+   * @requestBody {string} body.email - User's email address (optional, must be unique)
+   * @requestBody {string} body.username - User's username (optional, validated by Better Auth)
+   * @requestBody {string} body.avatarUrl - URL to user's avatar image (optional)
+   * @requestBody {string} body.bio - User's biography (optional, max 500 characters)
+   * @requestBody {object} body.preferences - User preferences object (optional)
+   * @requestBody {boolean} body.preferences.emailNotifications - Email notification preference
+   * @requestBody {boolean} body.preferences.marketingEmails - Marketing email preference
+   * @requestBody {string} body.preferences.language - Preferred language
+   * @requestBody {string} body.preferences.timezone - User's timezone
+   * @requestBody {string} body.preferences.theme - UI theme preference (light, dark, system)
+   * @response 200 - Profile updated successfully
+   * @response 400 - Validation error - Invalid input data
+   * @response 401 - Unauthorized - Authentication required
    */
   async updateProfile({ auth: authContext, request, response }: HttpContext) {
     try {
@@ -101,15 +103,11 @@ export default class UserController {
         user.fullName = data.fullName;
       }
       if (data.email !== undefined && data.email !== user.email) {
-        // Update email in AdonisJS (canonical source)
-        user.email = data.email;
-
-        // Note: Better Auth does not allow email updates via updateUser API
-        // This is a security feature - emails require verification before changing
-        // AdonisJS is the canonical source for email, so we update it here
-        // Better Auth will continue using the original email for authentication
-        // If email verification is needed, users should use Better Auth's email change flow
-        // (which typically requires re-verification of the new email)
+        // Note: Email changes should go through Better Auth's email change flow for verification
+        // This endpoint allows email updates in Adonis, but Better Auth email should be updated separately
+        // For now, we update Adonis email and sync to Directus
+        // Better Auth email should be updated via Better Auth's email change API which includes verification
+        await EmailSyncService.syncEmailToAdonisAndDirectus(user, data.email);
       }
       if (data.avatarUrl !== undefined) {
         user.avatarUrl = data.avatarUrl;
@@ -210,7 +208,13 @@ export default class UserController {
   }
 
   /**
-   * List all users (admin only)
+   * @index
+   * @summary List all users
+   * @description Retrieves a list of all users in the system. Admin only endpoint. Returns basic user information including email, name, username, role, and active status.
+   * @tag User
+   * @response 200 - List of users retrieved successfully
+   * @response 401 - Unauthorized - Authentication required
+   * @response 403 - Forbidden - Admin access required
    */
   async index({ auth, response }: HttpContext) {
     // Check if user can view user list
@@ -226,8 +230,15 @@ export default class UserController {
   }
 
   /**
-   * Upload avatar image
-   * POST /api/user/avatar
+   * @uploadAvatar
+   * @summary Upload user avatar
+   * @description Uploads an avatar image for the current authenticated user. Accepts JPG, JPEG, PNG, or GIF files up to 1MB. The file is saved to the uploads/avatars directory and a public URL is returned.
+   * @tag User
+   * @requestBody {file} avatar - Avatar image file (required, max 1MB, formats: jpg, jpeg, png, gif)
+   * @response 200 - Avatar uploaded successfully
+   * @response 400 - Invalid file or no file provided
+   * @response 401 - Unauthorized - Authentication required
+   * @response 500 - Server error during upload
    */
   async uploadAvatar({ auth: authContext, request, response }: HttpContext) {
     try {
@@ -286,7 +297,15 @@ export default class UserController {
   }
 
   /**
-   * Toggle user status (admin only)
+   * @toggleStatus
+   * @summary Toggle user active status
+   * @description Toggles the active/inactive status of a user. Admin only endpoint. When deactivating a user, their Better Auth account is also banned.
+   * @tag User
+   * @paramPath {string} id - User ID (UUID, required)
+   * @response 200 - User status toggled successfully
+   * @response 401 - Unauthorized - Authentication required
+   * @response 403 - Forbidden - Admin access required
+   * @response 404 - User not found
    */
   async toggleStatus({ bouncer, params, response }: HttpContext) {
     const targetUser = await User.findOrFail(params.id);
@@ -306,5 +325,49 @@ export default class UserController {
         isActive: targetUser.isActive,
       },
     });
+  }
+
+  /**
+   * @getByUsername
+   * @summary Get user by username (public)
+   * @description Public endpoint to retrieve user information by username. Only returns active users.
+   * @tag Public
+   * @paramPath {string} username - Username to lookup
+   * @response 200 - User found and returned
+   * @response 400 - Username is required
+   * @response 404 - User not found or inactive
+   * @response 500 - Server error
+   */
+  async getByUsername({ params, response }: HttpContext) {
+    const { username } = params;
+
+    if (!username) {
+      return response.badRequest({ message: 'Username is required' });
+    }
+
+    try {
+      const user = await User.findBy('username', username);
+
+      if (!user || !user.isActive) {
+        return response.notFound({ message: 'User not found' });
+      }
+
+      // Return public profile info
+      return response.ok({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        avatarUrl: user.avatarUrl,
+        bio: user.bio,
+        betterAuthUserId: user.betterAuthUserId,
+      });
+    } catch (error: unknown) {
+      logger.error('Failed to fetch user:', error);
+      return response.internalServerError({
+        message: 'Failed to fetch user',
+      });
+    }
   }
 }

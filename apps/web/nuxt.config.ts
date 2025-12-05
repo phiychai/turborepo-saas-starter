@@ -6,6 +6,7 @@ export default defineNuxtConfig({
     { path: '~/components/shared', pathPrefix: false },
     { path: '~/components/base', pathPrefix: false },
     { path: '~/components/forms', pathPrefix: false },
+    { path: '~/components/customers' }, // pathPrefix defaults to true, so components get "Customers" prefix
   ],
 
   modules: [

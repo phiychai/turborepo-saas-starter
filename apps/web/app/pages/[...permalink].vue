@@ -11,6 +11,16 @@ const { isVisualEditingEnabled, apply, setAttr } = useVisualEditing();
 
 const permalink = withoutTrailingSlash(withLeadingSlash(route.path));
 
+// Redirect authenticated users from root to /home
+if (isAuthenticated.value && permalink === '/') {
+  await navigateTo('/home');
+}
+
+// Exclude @username routes - these are handled by specific pages
+if (route.path.startsWith('/@')) {
+  throw createError({ statusCode: 404, statusMessage: 'Page not found', fatal: true });
+}
+
 const {
   data: page,
   error,
@@ -34,15 +44,6 @@ if (!page.value || error.value) {
 }
 
 const pageBlocks = computed(() => (page.value?.blocks as PageBlock[]) || []);
-// Create data object for Posts component
-// Posts will fetch from /api/posts directly
-const postsData = computed(() => ({
-  id: `posts-${permalink}`,
-  limit: 20, // Default limit, or get from page/block if needed
-  tagline: page.value?.title || undefined,
-  headline: 'Posts', // Or get from page/block
-  posts: [], // Empty array - Posts component will fetch its own
-}));
 useSeoMeta({
   title: page.value?.seo?.title || page.value?.title || '',
   description: page.value?.seo?.meta_description || '',
@@ -81,10 +82,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <UDashboardPanel v-if="isAuthenticated" class="pb-[64px]" variant="ghost">
-    <Posts :data="postsData" />
-  </UDashboardPanel>
-  <PageBuilder v-else :sections="pageBlocks" />
+  <PageBuilder :sections="pageBlocks" />
 
   <div v-if="isVisualEditingEnabled && page">
     <!-- If you're not using the visual editor it's safe to remove this element. Just a helper to let editors add edit / add new blocks to a page. -->

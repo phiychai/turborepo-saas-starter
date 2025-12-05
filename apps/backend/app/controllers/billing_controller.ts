@@ -5,7 +5,13 @@ import billingService from '#services/billing_service';
 
 export default class BillingController {
   /**
-   * Get or create Lago account for the current user
+   * @getOrCreateAccount
+   * @summary Get or create billing account
+   * @description Retrieves the current user's Lago billing account, or creates one if it doesn't exist. The account is linked to the user's email address.
+   * @tag Billing
+   * @response 200 - Account retrieved or created successfully
+   * @response 401 - Unauthorized - Authentication required
+   * @response 500 - Server error - Failed to get or create account
    */
   async getOrCreateAccount({ response, auth }: HttpContext) {
     try {
@@ -36,7 +42,13 @@ export default class BillingController {
   }
 
   /**
-   * Get user's subscriptions
+   * @getSubscriptions
+   * @summary Get user's subscriptions
+   * @description Retrieves all active and past subscriptions for the current user's billing account.
+   * @tag Billing
+   * @response 200 - Subscriptions retrieved successfully (may be empty array)
+   * @response 401 - Unauthorized - Authentication required
+   * @response 500 - Server error - Failed to fetch subscriptions
    */
   async getSubscriptions({ response, auth }: HttpContext) {
     try {
@@ -71,7 +83,17 @@ export default class BillingController {
   }
 
   /**
-   * Create a new subscription
+   * @createSubscription
+   * @summary Create a new subscription
+   * @description Creates a new subscription for the current user to a billing plan. The user's billing account will be created if it doesn't exist.
+   * @tag Billing
+   * @requestBody {object} body - Subscription creation data
+   * @requestBody {string} body.planName - Plan code/name to subscribe to (required)
+   * @requestBody {string} body.externalKey - External identifier for the subscription (optional)
+   * @response 201 - Subscription created successfully
+   * @response 400 - Bad request - Plan name is required or customer external ID not found
+   * @response 401 - Unauthorized - Authentication required
+   * @response 500 - Server error - Failed to create subscription
    */
   async createSubscription({ request, response, auth }: HttpContext) {
     try {
@@ -121,7 +143,15 @@ export default class BillingController {
   }
 
   /**
-   * Cancel a subscription
+   * @cancelSubscription
+   * @summary Cancel a subscription
+   * @description Cancels an active subscription by its ID. The subscription will be terminated according to the billing provider's cancellation policy.
+   * @tag Billing
+   * @paramPath {string} id - Subscription ID (required)
+   * @response 200 - Subscription cancelled successfully
+   * @response 401 - Unauthorized - Authentication required
+   * @response 404 - Subscription not found
+   * @response 500 - Server error - Failed to cancel subscription
    */
   async cancelSubscription({ params, response, auth }: HttpContext) {
     try {
@@ -142,7 +172,13 @@ export default class BillingController {
   }
 
   /**
-   * Get user's invoices
+   * @getInvoices
+   * @summary Get user's invoices
+   * @description Retrieves all invoices for the current user's billing account, including paid and unpaid invoices.
+   * @tag Billing
+   * @response 200 - Invoices retrieved successfully (may be empty array)
+   * @response 401 - Unauthorized - Authentication required
+   * @response 500 - Server error - Failed to fetch invoices
    */
   async getInvoices({ response, auth }: HttpContext) {
     try {
@@ -174,7 +210,12 @@ export default class BillingController {
   }
 
   /**
-   * Get available plans
+   * @getPlans
+   * @summary Get available billing plans
+   * @description Retrieves all available billing plans from the billing provider. This is a public endpoint that doesn't require authentication.
+   * @tag Billing
+   * @response 200 - Plans retrieved successfully
+   * @response 500 - Server error - Failed to fetch plans
    */
   async getPlans({ response }: HttpContext) {
     try {
@@ -192,7 +233,16 @@ export default class BillingController {
   }
 
   /**
-   * Add payment method
+   * @addPaymentMethod
+   * @summary Add payment method
+   * @description Adds a payment method to the user's billing account. Currently not implemented - returns 501 Not Implemented.
+   * @tag Billing
+   * @requestBody {object} body - Payment method data
+   * @requestBody {string} body.pluginName - Payment plugin/provider name (required)
+   * @requestBody {object} body.pluginInfo - Payment plugin-specific information (required)
+   * @response 501 - Not implemented - Payment method management not yet implemented
+   * @response 400 - Bad request - Plugin name and info are required or account not found
+   * @response 401 - Unauthorized - Authentication required
    */
   async addPaymentMethod({ request, response, auth }: HttpContext) {
     try {
@@ -226,7 +276,13 @@ export default class BillingController {
   }
 
   /**
-   * Get payment methods
+   * @getPaymentMethods
+   * @summary Get payment methods
+   * @description Retrieves all payment methods associated with the user's billing account. Currently returns empty array as payment method management is not yet implemented.
+   * @tag Billing
+   * @response 200 - Payment methods retrieved (currently always empty array)
+   * @response 401 - Unauthorized - Authentication required
+   * @response 500 - Server error - Failed to fetch payment methods
    */
   async getPaymentMethods({ response, auth }: HttpContext) {
     try {
