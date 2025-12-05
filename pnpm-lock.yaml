@@ -193,8 +193,8 @@ importers:
         specifier: ^1.6.1
         version: 1.6.1
       '@unovis/vue':
-        specifier: ^1.6.1
-        version: 1.6.1(@unovis/ts@1.6.1)(vue@3.5.24(typescript@5.8.3))
+        specifier: ^1.6.2
+        version: 1.6.2(@unovis/ts@1.6.1)(vue@3.5.24(typescript@5.8.3))
       '@vee-validate/zod':
         specifier: ^4.15.1
         version: 4.15.1(vue@3.5.24(typescript@5.8.3))(zod@3.25.76)
@@ -3287,10 +3287,10 @@ packages:
   '@unovis/ts@1.6.1':
     resolution: {integrity: sha512-h6p9HFmgztlqy+6hn+eAXqjk598QCQ3OAWSYIb3Ii3ljVnzj6vrhunhUuktFRyS0sXC4SK57b/Yf3y+8hCukYg==}
 
-  '@unovis/vue@1.6.1':
-    resolution: {integrity: sha512-HT5JXAmscEK6GaxLYU8lY/LarvmkLDdt0uZz49b/Pun/K/+y02073Lr+WhLAUTGBC+tDbvNN2EcwgAvIgwBzrw==}
+  '@unovis/vue@1.6.2':
+    resolution: {integrity: sha512-vFglLeiTnNk8VaCEjctAMQXi8Vi+dc217JLkbiIkOLNLXzOClv1ZLv7QjKplRHG+eq/DKC17WSBKINsjXuYbtQ==}
     peerDependencies:
-      '@unovis/ts': 1.6.1
+      '@unovis/ts': 1.6.2
       vue: ^3
 
   '@unrs/resolver-binding-android-arm-eabi@1.11.1':
@@ -13383,7 +13383,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@unovis/vue@1.6.1(@unovis/ts@1.6.1)(vue@3.5.24(typescript@5.8.3))':
+  '@unovis/vue@1.6.2(@unovis/ts@1.6.1)(vue@3.5.24(typescript@5.8.3))':
     dependencies:
       '@unovis/ts': 1.6.1
       vue: 3.5.24(typescript@5.8.3)
