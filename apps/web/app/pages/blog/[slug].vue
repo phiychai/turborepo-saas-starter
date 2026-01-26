@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { Post, DirectusUser } from '@turborepo-saas-starter/shared-types';
 import { useTableOfContents } from '~/composables/useTableOfContents';
+import { useReadingProgress } from '~/composables/useReadingProgress';
+import { useComments, type BlogComment } from '~/composables/useComments';
 
 const route = useRoute();
 const { enabled, state } = useLivePreview();
@@ -36,58 +38,14 @@ const post = computed(() => data.value?.post);
 const relatedPosts = computed(() => data.value?.relatedPosts);
 const author = computed(() => post.value?.author as Partial<DirectusUser>);
 
-// Reading progress tracking with VueUse
-const articleContentRef = ref<HTMLElement | null>(null);
-const navbarRef = ref<HTMLElement | null>(null);
-
-const { y: scrollY } = useWindowScroll();
-const windowHeight = useWindowSize().height;
-
-// Get bounding boxes for article and navbar
-const articleBounding = useElementBounding(articleContentRef);
-const navbarBounding = useElementBounding(navbarRef);
-
-// Fixed header height (from layout: margin-top: 64px)
-const fixedHeaderHeight = 64;
-const navbarHeight = 64;
-const readingProgress = computed(() => {
-  if (!articleContentRef.value || !articleBounding.height.value) return 0;
-
-  const articleTop = articleBounding.top.value;
-  const articleHeight = articleBounding.height.value;
-
-  const viewportHeight = windowHeight.value;
-
-  // Total fixed height (header + navbar)
-  const totalFixedHeight = fixedHeaderHeight + navbarHeight;
-
-  // Article position relative to the effective viewport start (below fixed elements)
-  const relativeTop = articleTop + totalFixedHeight;
-
-  // How much has been scrolled past the article start
-  // When relativeTop becomes negative, we've scrolled past the start
-  const scrolled = Math.max(0, -relativeTop);
-
-  // Calculate progress
-  const progress = (scrolled / articleHeight) * 100;
-
-  return Math.min(100, Math.max(0, progress));
-});
+// Reading progress tracking
+const { articleContentRef, readingProgress } = useReadingProgress();
 
 // Slideover state for comments/chat
 const commentsSlideoverOpen = ref(false);
 
 // Dummy comments data
-interface Comment {
-  id: string;
-  role: 'user';
-  parts: Array<{ type: 'text'; id: string; text: string }>;
-  avatar?: { src?: string; icon?: string; alt: string };
-  author: string;
-  date: string;
-}
-
-const comments = ref<Comment[]>([
+const initialComments: BlogComment[] = [
   {
     id: '1',
     role: 'user',
@@ -144,31 +102,14 @@ const comments = ref<Comment[]>([
     author: 'Emily Davis',
     date: '2 days ago',
   },
-]);
+];
 
-const newComment = ref('');
-const isSubmitting = ref(false);
-
-function submitComment() {
-  if (!newComment.value.trim()) return;
-
-  isSubmitting.value = true;
-
-  // Simulate API call
-  setTimeout(() => {
-    comments.value.unshift({
-      id: String(Date.now()),
-      role: 'user',
-      parts: [{ type: 'text', id: `${Date.now()}-1`, text: newComment.value }],
-      avatar: { icon: 'i-lucide-user', alt: 'You' },
-      author: 'You',
-      date: 'Just now',
-    });
-
-    newComment.value = '';
-    isSubmitting.value = false;
-  }, 500);
-}
+const {
+  comments,
+  newComment,
+  isSubmitting: commentsSubmitting,
+  submitComment,
+} = useComments(initialComments);
 
 // Generate TOC from post content
 const { tocLinks } = useTableOfContents(() => post.value?.content || null);
@@ -330,14 +271,14 @@ useSeoMeta({
                         v-model="newComment"
                         placeholder="Write a comment..."
                         :rows="3"
-                        :disabled="isSubmitting"
+                        :disabled="commentsSubmitting"
                         autoresize
                         required
                       />
                       <div class="flex justify-end">
                         <UButton
                           type="submit"
-                          :loading="isSubmitting"
+                          :loading="commentsSubmitting"
                           :disabled="!newComment.trim()"
                           label="Post comment"
                           icon="i-lucide-send"

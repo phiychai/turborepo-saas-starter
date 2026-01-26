@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Post, DirectusUser } from '@turborepo-saas-starter/shared-types';
 import { useTableOfContents } from '~/composables/useTableOfContents';
+import { useReadingProgress } from '~/composables/useReadingProgress';
 
 const route = useRoute();
 const { enabled, state } = useLivePreview();
@@ -37,42 +38,8 @@ const post = computed(() => data.value?.post);
 const relatedPosts = computed(() => data.value?.relatedPosts);
 const author = computed(() => post.value?.author as Partial<DirectusUser>);
 
-// Reading progress tracking with VueUse
-const articleContentRef = ref<HTMLElement | null>(null);
-const navbarRef = ref<HTMLElement | null>(null);
-
-const { y: scrollY } = useWindowScroll();
-const windowHeight = useWindowSize().height;
-
-// Get bounding boxes for article and navbar
-const articleBounding = useElementBounding(articleContentRef);
-const navbarBounding = useElementBounding(navbarRef);
-
-// Fixed header height (from layout: margin-top: 64px)
-const fixedHeaderHeight = 64;
-const navbarHeight = 64;
-const readingProgress = computed(() => {
-  if (!articleContentRef.value || !articleBounding.height.value) return 0;
-
-  const articleTop = articleBounding.top.value;
-  const articleHeight = articleBounding.height.value;
-
-  const viewportHeight = windowHeight.value;
-
-  // Total fixed height (header + navbar)
-  const totalFixedHeight = fixedHeaderHeight + navbarHeight;
-
-  // Article position relative to the effective viewport start (below fixed elements)
-  const relativeTop = articleTop + totalFixedHeight;
-
-  // How much has been scrolled past the article start
-  const scrolled = Math.max(0, -relativeTop);
-
-  // Calculate progress
-  const progress = (scrolled / articleHeight) * 100;
-
-  return Math.min(100, Math.max(0, progress));
-});
+// Reading progress tracking
+const { articleContentRef, readingProgress } = useReadingProgress();
 
 // Slideover state for comments/chat
 const commentsSlideoverOpen = ref(false);
@@ -105,11 +72,11 @@ useSeoMeta({
             class="mr-3"
             variant="ghost"
             color="neutral"
-            @click="navigateTo(`/@${username}`)"
             size="sm"
+            @click="navigateTo(`/@${username}`)"
           />
         </template>
-        <template #default> <span class="text-muted"></span></template>
+        <template #default> <span class="text-muted" /></template>
         <template #right>
           <UButton icon="tabler:dots" variant="ghost" color="neutral" size="sm" />
           <UButton
@@ -147,8 +114,8 @@ useSeoMeta({
                   : (category as any).title || category.name || category
               }}
             </UBadge>
-            <span class="text-muted" v-if="post.published_at">&middot;</span>
-            <time class="text-muted" v-if="post.published_at">
+            <span v-if="post.published_at" class="text-muted">&middot;</span>
+            <time v-if="post.published_at" class="text-muted">
               {{
                 new Date(post.published_at).toLocaleDateString('en', {
                   year: 'numeric',
